@@ -121,7 +121,7 @@ class ProofNet:
         for parse in self.proofSpan[0, self.natom - 1]:
             if not symbolOnly: print(parse)
             s = sorted('(%s, %s)' % a(x, y) for x, y in parse.links)
-            print(', '.join(s), end='\n\n')
+            print(', '.join(s), end='\n' if symbolOnly else '\n\n')
 
     @staticmethod
     def __minCommonAnces(seq1, seq2):
