@@ -7,12 +7,11 @@ from parentheses import bipart, isatomic
 
 
 def atomicIden(x: str, y: str, pattern=re.compile(r'([a-zA-Z]+)_?(\d*)'), 
-                               indexIden=False,
-                               eqAtoms= set()):
-    '''Check if `x` equals `y` up to the given atom equivalence.'''
+                               indexIden=False):
+    '''Check if `x` equals `y` (up to indexation).'''
     x, x_i = pattern.search(x).groups()
     y, y_i = pattern.search(y).groups()
-    return (not indexIden or x_i == y_i) and (x == y or {x, y} in eqAtoms)
+    return x == y and (not indexIden or x_i == y_i)
 
 
 def errorReport(con: str, pres: tuple, depth: int, *, fstream=sys.stdout):
@@ -85,3 +84,19 @@ def hasProof(con: list, *pres, fstream=sys.stdout, depth=0, trace=True):
                         if trace and not hitNonatomic: 
                             errorReport(con, pres, depth, fstream=fstream)
                         return False
+
+
+def selfTest():
+    sep = '-' * 10
+
+    print(sep + 'Test 1' + sep)
+    con, *pres = ['s'], 's/(np\\s)', '(np\\s)/np', '(s/np)\\s'
+    print('%s\n%s\n' % (sep, hasProof(con, *pres)))
+
+    print(sep + 'Test 2' + sep)
+    con, *pres = ['s'], 's/(np\\s)', '(np\\s)/np', 's/(np\\s)'
+    print('%s\n%s\n' % (sep, hasProof(con, *pres)))
+
+
+if __name__ == '__main__':
+    selfTest()
