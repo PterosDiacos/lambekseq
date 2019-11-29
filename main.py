@@ -60,4 +60,4 @@ if __name__ == '__main__':
         # noprodLinks.count += noprodLinks(con, pres)
 
     if not (pnLinks.count or noprodLinks.count):
-        print('Total : 0\n')
+        print('Total: 0\n')
