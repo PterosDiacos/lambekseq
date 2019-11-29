@@ -208,24 +208,23 @@ class ProofNet:
 
 
 def selfTest():
-    import pprint
+    import pprint as pp
     sep = '-' * 10
+    
     print(sep + 'Test 1' + sep)
     fm = (('~p', Tensor, ((('q', Par, ('~s', Tensor, 's')), Tensor, '~s'), Par, 's')), Par, 
          (((('~s', Tensor, 's'), Par, ('~s', Par, 's')), Tensor, '~q'), Par, 'p'))
-    pprint.pprint(fm)
-    print()
     pn = ProofNet(fm)
     pn.buildProofs()
+    print(pp.pformat(pn.fm))
     pn.printProofLinks()
     print('Total: %d\n' % pn.proofCount)
 
     print(sep + 'Test 2' + sep)
     con, *pres = 's_0', 's_1/(np_2\\s_3)', '(np_4\\s_5)/np_6', '(s_7/np_8)\\s_9'
     pn = ProofNet.fromLambekSeq(con, pres)
-    pprint.pprint(pn.fm)
-    print()
     pn.buildProofs()
+    print(pp.pformat(pn.fm))
     pn.printProofLinks()
     print('Total: %d\n' % pn.proofCount)
 
