@@ -9,7 +9,7 @@ def pnLinks(con: str, pres: list):
     pn.buildProofs()
     if pn.proofCount:
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
-        pn.printProofLinks()
+        pn.printProofLinks(symbolOnly=True)
         print('Total: %d\n' % pn.proofCount)
 
 
@@ -19,7 +19,7 @@ def noprodLinks(con, pres):
     links = parseProof(proofs)
     if links:
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
-        print(*links, sep='\n')
+        print(*links, sep='\n', end='\n\n')
         print('Total: %d\n' % len(links))
 
 
@@ -38,12 +38,16 @@ def deAbbr(con: str, pres: list, abbr: dict):
 
 if __name__ == '__main__':
     abbr = {
-        'vpPrep': ['((np\\s)\\(np\\s))/np', '(s\\s)/np'],
-        'qnt': ['(s/(np\\s))/n', '((s/np)\\s)/n'],
-        'vt': ['(np\\s)/np']
+        'qt':     ['(s/(np\\s))/n', '((s/np)\\s)/n'],
+        'qnp':    ['s/(np\\s)', '(s/np)\\s'],
+        'vt':     ['(np\\s)/np'],
+        'vp':     ['np\\s'],
+        'inv':    ['((np\\s)\\(np\\s))/np', '(s\\s)/np'],
+        'inn':    ['(n\\n)/np'],
+        'rl':     ['(n\\n)/(s/np)', '(n\\n)/(np\\s)'],
     }
-    con, *pres = 's', 'qnt', 'n', 'vt', 'qnt', 'n', 'vpPrep', 'qnt', 'n'
-    
+
+    from exam import con, pres
     for con, pres in deAbbr(con, pres, abbr):
         pnLinks(con, pres)
         # noprodLinks(con, pres)
