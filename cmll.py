@@ -113,12 +113,16 @@ class ProofNet:
     def proofCount(self):
         return len(self.proofSpan[0, self.natom - 1])
 
-    def printProofLinks(self):
+    def printProofLinks(self, symbolOnly=False):
+        a = lambda x, y: ((self.adict[x], self.adict[y])
+                          if isNeg(self.adict[x]) else
+                          (self.adict[y], self.adict[x]))
+
         for parse in self.proofSpan[0, self.natom - 1]:
-            print(parse)
-            print('in symbols:')
-            s = sorted('(%s, %s)' % (self.adict[x], self.adict[y]) 
-                       for x, y in parse.links)
+            if not symbolOnly:
+                print(parse)
+                print('in symbols:')
+            s = sorted('(%s, %s)' % a(x, y) for x, y in parse.links)
             print(', '.join(s), end='\n\n')
 
     @staticmethod
