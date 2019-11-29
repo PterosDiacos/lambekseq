@@ -1,5 +1,5 @@
 '''Lambek sequent calculus without products in conclusion. 
-This script finds all proofs, showing only axiomatic steps.
+This script finds the axioms of every proof.
 '''
 import re
 from itertools import product
@@ -133,3 +133,5 @@ def parseProof(s):
     if tree:
         links = {frozenset(l) for l in tree2links(tree)}
         return {tuple(sorted(l)) for l in links}
+    else:
+        return set()
