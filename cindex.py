@@ -56,12 +56,3 @@ def indexToken(con: str, pres: list):
         for idx in range(natom, natom1): idx2TokenNum[idx] = n
         natom = natom1        
     return alltokens, idx2TokenNum
-    
-
-if __name__ == '__main__':
-    # print(idx2depthDict(depthtag('np_0\\(s_1/np_2)')))
-
-    con, *pres = 's', 'np', 'np', 'np', 's\\(np\\s)', 'np\\(np\\s)'
-    (con, *pres), idx2TokenNum = indexToken(con, pres)
-    print(con, pres)
-    print(idx2TokenNum)

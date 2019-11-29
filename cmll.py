@@ -119,9 +119,7 @@ class ProofNet:
                           (self.adict[y], self.adict[x]))
 
         for parse in self.proofSpan[0, self.natom - 1]:
-            if not symbolOnly:
-                print(parse)
-                print('in symbols:')
+            if not symbolOnly: print(parse)
             s = sorted('(%s, %s)' % a(x, y) for x, y in parse.links)
             print(', '.join(s), end='\n\n')
 
