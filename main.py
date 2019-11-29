@@ -11,6 +11,8 @@ def pnLinks(con: str, pres: list):
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
         pn.printProofLinks(symbolOnly=True)
         print('Total: %d\n' % pn.proofCount)
+    
+    return pn.proofCount
 
 
 def noprodLinks(con, pres):
@@ -21,6 +23,8 @@ def noprodLinks(con, pres):
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
         print(*links, sep='\n', end='\n\n')
         print('Total: %d\n' % len(links))
+    
+    return len(links)
 
 
 def deAbbr(con: str, pres: list, abbr: dict):
@@ -37,6 +41,7 @@ def deAbbr(con: str, pres: list, abbr: dict):
 
 
 if __name__ == '__main__':
+    from exam import con, pres
     abbr = {
         'qt':     ['(s/(np\\s))/n', '((s/np)\\s)/n'],
         'qnp':    ['s/(np\\s)', '(s/np)\\s'],
@@ -47,7 +52,12 @@ if __name__ == '__main__':
         'rl':     ['(n\\n)/(s/np)', '(n\\n)/(np\\s)'],
     }
 
-    from exam import con, pres
+    pnLinks.count = 0
+    noprodLinks.count = 0
+
     for con, pres in deAbbr(con, pres, abbr):
-        pnLinks(con, pres)
-        # noprodLinks(con, pres)
+        pnLinks.count += pnLinks(con, pres)
+        # noprodLinks.count += noprodLinks(con, pres)
+
+    if not (pnLinks.count or noprodLinks.count):
+        print('Total : 0\n')
