@@ -216,7 +216,7 @@ def selfTest():
          (((('~s', Tensor, 's'), Par, ('~s', Par, 's')), Tensor, '~q'), Par, 'p'))
     pn = ProofNet(fm)
     pn.buildProofs()
-    print(pp.pformat(pn.fm))
+    print(pp.pformat(pn.fm) + '\n')
     pn.printProofLinks()
     print('Total: %d\n' % pn.proofCount)
 
@@ -224,7 +224,7 @@ def selfTest():
     con, *pres = 's_0', 's_1/(np_2\\s_3)', '(np_4\\s_5)/np_6', '(s_7/np_8)\\s_9'
     pn = ProofNet.fromLambekSeq(con, pres)
     pn.buildProofs()
-    print(pp.pformat(pn.fm))
+    print(pp.pformat(pn.fm) + '\n')
     pn.printProofLinks()
     print('Total: %d\n' % pn.proofCount)
 
