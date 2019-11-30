@@ -122,7 +122,6 @@ class ProofNet:
             if not symbolOnly: print(parse)
             s = sorted('(%s, %s)' % a(x, y) for x, y in parse.links)
             print(', '.join(s), end='\n' if symbolOnly else '\n\n')
-        
         if symbolOnly: print()
 
     @staticmethod
