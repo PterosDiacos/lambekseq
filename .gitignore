@@ -1,5 +1,8 @@
+# folders
 __pycache__
 .vscode
 
-exam.py
+# files
+out
 *.txt
+*.json

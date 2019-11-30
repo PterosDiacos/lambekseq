@@ -1,3 +1,4 @@
+import json
 from cindex import indexToken, idx2depthDict, depthtag
 from cmll import ProofNet
 from noprodall import findproof, parseProof
@@ -41,16 +42,8 @@ def deAbbr(con: str, pres: list, abbr: dict):
 
 
 if __name__ == '__main__':
-    from exam import con, pres
-    abbr = {
-        'qt':     ['(s/(np\\s))/n', '((s/np)\\s)/n'],
-        'qnp':    ['s/(np\\s)', '(s/np)\\s'],
-        'vt':     ['(np\\s)/np'],
-        'vp':     ['np\\s'],
-        'inv':    ['((np\\s)\\(np\\s))/np', '(s\\s)/np'],
-        'inn':    ['(n\\n)/np'],
-        'rl':     ['(n\\n)/(s/np)', '(n\\n)/(np\\s)'],
-    }
+    con, *pres = json.load(open('input.json'))[0]
+    abbr = json.load(open('abbr.json'))
 
     pnLinks.count = 0
     noprodLinks.count = 0
