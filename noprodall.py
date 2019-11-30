@@ -1,7 +1,6 @@
 '''Lambek sequent calculus without products in conclusion. 
 This script finds the axioms of every proof.
 '''
-import re
 from itertools import product
 from functools import reduce
 from operator import concat
@@ -117,7 +116,7 @@ def makeTree(s):
         return (conn, [makeTree(t) for t in getTerms(s, conn)])
 
 
-def tree2links(tree, pattern=re.compile(r'(\w+)\s*->\s*(\w+)')):
+def tree2links(tree):
     if isinstance(tree, str):
         return {(tree,)}
     else:
