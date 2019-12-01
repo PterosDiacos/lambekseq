@@ -43,7 +43,7 @@ def divOrdTag(s: str, divOrder=0):
         return (*taggedleft, slash, *taggedright)
 
 
-def depthtag(s: str, rootdepth=0, chopcount=0):
+def depthTag(s: str, rootdepth=0, chopcount=0):
     '''Tag each atomic symbol with its depth. No top level comma.'''
     if isatomic(s):
         return ('%s:%d' % (s, rootdepth + chopcount), )
@@ -52,16 +52,16 @@ def depthtag(s: str, rootdepth=0, chopcount=0):
         taggedleft = taggedright = ()
         if slash == '/':
             for r in right:
-                taggedright += depthtag(r, rootdepth + chopcount + 1, 0)
+                taggedright += depthTag(r, rootdepth + chopcount + 1, 0)
             for l in left:
-                taggedleft += depthtag(l, rootdepth, 0) if isatomic(l) \
-                                                        else depthtag(l, rootdepth, chopcount + 1)
+                taggedleft += depthTag(l, rootdepth, 0) if isatomic(l) \
+                                                        else depthTag(l, rootdepth, chopcount + 1)
         else:
             for l in left:
-                taggedleft += depthtag(l, rootdepth + chopcount + 1, 0)
+                taggedleft += depthTag(l, rootdepth + chopcount + 1, 0)
             for r in right:
-                taggedright += depthtag(r, rootdepth, 0) if isatomic(r) \
-                                                         else depthtag(r, rootdepth, chopcount + 1)
+                taggedright += depthTag(r, rootdepth, 0) if isatomic(r) \
+                                                         else depthTag(r, rootdepth, chopcount + 1)
         return (*taggedleft, slash, *taggedright)
 
 
@@ -90,14 +90,32 @@ def addIndex(s, natom):
 
 def indexToken(con: str, pres: list):
     '''Return tokens in `con` + `pres` with indices added to atoms.
-    Return also a dictionary that maps an atom index to the token number.'''
+    Return also three maps from atom indices:
+     - to the token number;
+     - to the atom's depth;
+     - to the atom's divisor order.
+    '''
     natom = 0
     alltokens = []
-    idx2TokenNum = {}
+    idx2Token = {}
+    idx2Depth = {}
+    idx2Order = {}
 
     for n, s in enumerate([con] + pres):
         s, natom1 = addIndex(s, natom)
         alltokens.append(s)
-        for idx in range(natom, natom1): idx2TokenNum[idx] = n
-        natom = natom1        
-    return alltokens, idx2TokenNum
+
+        for idx in range(natom, natom1): 
+            idx2Token[str(idx)] = str(n)
+        idx2Depth.update(idx2depthDict(depthTag(s)))
+        idx2Order.update(idx2ordDict(divOrdTag(s)))
+
+        natom = natom1
+
+    class C:
+        def __init__(self, toToken, toDepth, toOrder):
+            self.toToken = toToken
+            self.toDepth = toDepth
+            self.toOrder = toOrder
+
+    return alltokens, C(idx2Token, idx2Depth, idx2Order) 
