@@ -117,5 +117,10 @@ def indexToken(con: str, pres: list):
             self.toToken = toToken
             self.toDepth = toDepth
             self.toOrder = toOrder
+        
+        def __str__(self):
+            return dict(toToken=self.toToken,
+                        toDepth=self.toDepth,
+                        toOrder=self.toOrder)
 
     return alltokens, C(idx2Token, idx2Depth, idx2Order) 
