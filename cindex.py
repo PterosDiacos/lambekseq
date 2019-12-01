@@ -113,15 +113,13 @@ def indexToken(con: str, pres: list):
 
         natom = natom1
 
-    class C:
-        def __init__(self, toToken, toDepth, toOrder):
-            self.toToken = toToken
-            self.toDepth = toDepth
-            self.toOrder = toOrder
-        
+    class FromIndex:
+        toToken = idx2Token
+        toDepth = idx2Depth
+        toOrder = idx2Order
         def __str__(self):
             return pp.pformat(dict(toToken=self.toToken,
                                    toDepth=self.toDepth,
                                    toOrder=self.toOrder))
 
-    return alltokens, C(idx2Token, idx2Depth, idx2Order) 
+    return alltokens, FromIndex()
