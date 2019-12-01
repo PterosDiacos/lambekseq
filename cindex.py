@@ -19,6 +19,30 @@ def corder(s: str):
         return max(maxLeft, maxRight)
 
 
+def divOrdTag(s: str, divOrder=0):
+    '''Tag each atomic symbol with the order of its divisor.'''
+    if isatomic(s):
+        return ('%s#%d' % (s, divOrder), )
+    else:
+        slash, left, right = bipart(s)
+        taggedleft = taggedright = ()
+        if slash == '/':
+            rightOrder = (max(corder(r) for r in right)
+                          + 2 * (min(len(right), 2) - 1))
+            for l in left:
+                taggedleft += divOrdTag(l, rightOrder)
+            for r in right:
+                taggedright += divOrdTag(r)
+        else:
+            leftOrder = (max(corder(l) for l in left)
+                         + 2 * (min(len(left), 2) - 1))
+            for r in right:
+                taggedright += divOrdTag(r, leftOrder)
+            for l in left:
+                taggedleft += divOrdTag(l)
+        return (*taggedleft, slash, *taggedright)
+
+
 def depthtag(s: str, rootdepth=0, chopcount=0):
     '''Tag each atomic symbol with its depth. No top level comma.'''
     if isatomic(s):
