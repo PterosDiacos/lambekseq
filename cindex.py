@@ -70,6 +70,10 @@ def idx2depthDict(tagged, pattern=re.compile(r'_(\d+):(\d+)')):
         for x in tagged if x not in {'/', '\\'}})
 
 
+def idx2ordDict(tagged, pattern=re.compile(r'_(\d+)#(\d+)')):
+    return idx2depthDict(tagged, pattern=pattern)
+
+
 def addIndex(s, natom):
     if isatomic(s):
         return '%s_%d' % (s, natom), natom + 1
