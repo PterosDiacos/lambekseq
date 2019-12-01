@@ -1,5 +1,5 @@
 import json
-from cindex import indexToken, idx2depthDict, depthtag
+from cindex import indexToken
 from cmll import ProofNet
 from noprodall import findproof, parseProof
 
