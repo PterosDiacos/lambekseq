@@ -2,6 +2,23 @@ import re
 from parentheses import isatomic, bipart
 
 
+def corder(s: str):
+    '''Category order per (Pentus, 2010).'''
+    if isatomic(s):
+        return 0
+    else:
+        slash, left, right = bipart(s)
+        if slash == '/':
+            maxRight = max(corder(r) for r in right) + 1
+            maxLeft = (max(corder(l) for l in left) 
+                       + 2 * (min(len(left), 2) - 1))
+        else:
+            maxLeft = max(corder(l) for l in left) + 1
+            maxRight = (max(corder(r) for r in right) 
+                        + 2 * (min(len(right), 2) - 1))
+        return max(maxLeft, maxRight)
+
+
 def depthtag(s: str, rootdepth=0, chopcount=0):
     '''Tag each atomic symbol with its depth. No top level comma.'''
     if isatomic(s):
