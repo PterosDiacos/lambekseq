@@ -1,4 +1,5 @@
 import re
+import pprint as pp
 from parentheses import isatomic, bipart
 
 
@@ -119,8 +120,8 @@ def indexToken(con: str, pres: list):
             self.toOrder = toOrder
         
         def __str__(self):
-            return dict(toToken=self.toToken,
-                        toDepth=self.toDepth,
-                        toOrder=self.toOrder)
+            return pp.pformat(dict(toToken=self.toToken,
+                                   toDepth=self.toDepth,
+                                   toOrder=self.toOrder))
 
     return alltokens, C(idx2Token, idx2Depth, idx2Order) 
