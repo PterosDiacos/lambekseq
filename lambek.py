@@ -6,6 +6,35 @@ import sys
 from parentheses import bipart, isatomic
 
 
+def idxpair2set(x_i, y_i):
+    if x_i and y_i:
+        return {tuple(sorted({x_i, y_i}))}
+    else:
+        return set()
+
+
+def catIden(x:str, y:str, 
+    pattern=re.compile(r'([a-zA-Z]+)_?(\d*)')
+    ) -> (bool, set):    
+    if isatomic(x) and isatomic(y):
+        x, x_i = pattern.search(x).groups()
+        y, y_i = pattern.search(y).groups()
+        return x == y, idxpair2set(x_i, y_i)
+    
+    if not isatomic(x) and not isatomic(y):
+        xslash, xleft, xright = bipart(x)
+        xleft, xright = xleft[0], xright[0]
+        yslash, yleft, yright = bipart(y)
+        yleft, yright = yleft[0], yright[0]
+        
+        if xslash == yslash:
+            leftIden, leftPairs = catIden(xleft, yleft)
+            rightIden, rightPairs = catIden(xright, yright)
+            return leftIden and rightIden, leftPairs | rightPairs
+
+    return False, set()
+
+
 def atomicIden(x: str, y: str, pattern=re.compile(r'([a-zA-Z]+)_?(\d*)'), 
                                indexIden=False):
     '''Check if `x` equals `y` (up to indexation).'''
