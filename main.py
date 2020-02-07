@@ -1,7 +1,9 @@
 import json
+import sys
 from cindex import indexToken
 from cmll import ProofNet
 from noprodall import findproof, parseProof
+from cntccg import Cntccg
 
 
 def pnLinks(con: str, pres: list):
@@ -14,6 +16,18 @@ def pnLinks(con: str, pres: list):
         print('Total: %d\n' % pn.proofCount)
     
     return pn.proofCount
+
+
+def ccgLinks(con, pres):
+    (con, *pres), _ = indexToken(con, pres)
+    ccg = Cntccg(pres)
+    ccg.parse()
+    if ccg.proofCount(con):
+        print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
+        ccg.printProofs(con)
+        print('Total: %d\n' % ccg.proofCount(con))
+    
+    return ccg.proofCount(con)
 
 
 def noprodLinks(con, pres):
@@ -45,12 +59,11 @@ if __name__ == '__main__':
     con, *pres = json.load(open('input.json'))[0]
     abbr = json.load(open('abbr.json'))
 
-    pnLinks.count = 0
-    noprodLinks.count = 0
-
+    n = int(sys.argv[1]) if len(sys.argv) > 1 else 0
+    f = [pnLinks, noprodLinks, ccgLinks][n]
+    f.count = 0
     for con, pres in deAbbr(con, pres, abbr):
-        pnLinks.count += pnLinks(con, pres)
-        # noprodLinks.count += noprodLinks(con, pres)
+        f.count += f(con, pres)
 
-    if not (pnLinks.count or noprodLinks.count):
+    if not f.count:
         print('Total: 0\n')
