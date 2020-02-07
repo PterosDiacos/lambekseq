@@ -102,8 +102,8 @@ def combine(x:Result, y:Result) -> {Result}:
 
 
 class Cntccg:
-    def __init__(self, seq):
-        self.seq = [self._toTower(x) for x in seq]
+    def __init__(self, pres):
+        self.pres = [self._toTower(x) for x in pres]
 
     @staticmethod
     def _toTower(s):
@@ -118,22 +118,26 @@ class Cntccg:
             return (s,)
 
     def __len__(self):
-        return len(self.seq)
+        return len(self.pres)
 
-    @property
-    def proofCount(self):
-        return len(self.proofs)
+    def proofCount(self, con=None):
+        pool = list(filter(lambda r: catIden(r[0], con)[0], 
+                    self.proofs)) if con else self.proofs
+        return len(pool)
 
-    def printProofs(self):
-        for r in self.proofs:
+    def printProofs(self, con=None):
+        pool = list(filter(lambda r: catIden(r[0], con)[0], 
+                    self.proofs)) if con else self.proofs
+        for r in pool:
+            if con: r.links |= catIden(r[0], con)[1]
             s = sorted('(%s, %s)' % (i, j) for i, j in r.links)
-            print('%-8s' % r[0], ', '.join(s))
+            print(', '.join(s))
 
     def parse(self):
         '''CYK parsing.'''
         span = defaultdict(set)
         for i in range(len(self)):
-            span[i, i] = {Result(self.seq[i])}
+            span[i, i] = {Result(self.pres[i])}
 
         for step in range(1, len(self)):
             for i in range(len(self) - step):
@@ -150,9 +154,9 @@ class Cntccg:
 def selfTest():
     from cindex import indexToken
 
-    (_, *seq), _ = indexToken(
+    (_, *pres), _ = indexToken(
         's', ['s/(np\\s)', '(np\\s)/np', 's/(np\\s)', '(s\\s)/np', 's/(np\\s)'])
-    cntccg = Cntccg(seq)
+    cntccg = Cntccg(pres)
     cntccg.parse()
     cntccg.printProofs()
     print('Total:', cntccg.proofCount)
