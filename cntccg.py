@@ -103,7 +103,19 @@ def combine(x:Result, y:Result) -> {Result}:
 
 class Cntccg:
     def __init__(self, seq):
-        self.seq = list(seq)
+        self.seq = [self._toTower(x) for x in seq]
+
+    @staticmethod
+    def _toTower(s):
+        if catIden('s/(np\\s)', s)[0] or catIden('(s/np)\\s', s)[0]:
+            slash, left, right = bipart(s)
+            if slash == '/':
+                _, np, right = bipart(right[0])
+            else:
+                _, left, np = bipart(left[0])    
+            return (np[0], (left[0], right[0]))
+        else:
+            return (s,)
 
     def __len__(self):
         return len(self.seq)
@@ -136,30 +148,10 @@ class Cntccg:
 
 
 def selfTest():
-    # [every boy] walked [most dogs] in [every park]
-    seq = [
-        ('np_0', ('s_1', 's_2')),
-        ('(np_3\\s_4)/np_5',),
-        ('np_6', ('s_7', 's_8')),
-        ('((np_9\\s_10)\\(np_11\\s_12))/np_13',),
-        # ('(s_10\\s_12)/np_13',),
-        ('np_14', ('s_15', 's_16'))
-    ]
-    cntccg = Cntccg(seq)
-    cntccg.parse()
-    cntccg.printProofs()
-    print('Total:', cntccg.proofCount)
+    from cindex import indexToken
 
-    print('\n' + '-' * 10 + '\n')
-
-    # hypothetical 4-place predicate
-    seq = [
-        ('(((s_0/np_1)/np_2)/np_3)/np_4',),
-        ('np_5', ('s_6', 's_7')),
-        ('np_8', ('s_9', 's_10')),
-        ('np_11', ('s_12', 's_13')),
-        ('np_14', ('s_15', 's_16'))
-    ]
+    (_, *seq), _ = indexToken(
+        's', ['s/(np\\s)', '(np\\s)/np', 's/(np\\s)', '(s\\s)/np', 's/(np\\s)'])
     cntccg = Cntccg(seq)
     cntccg.parse()
     cntccg.printProofs()
