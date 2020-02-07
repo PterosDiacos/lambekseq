@@ -1,8 +1,41 @@
-'''Continuized CCG with application, composition, Lifting and Lowering.
+'''Continuized CCG with generalized application, lifting and lowering.
 '''
 from collections import defaultdict
 from lambek import catIden
 from parentheses import bipart, isatomic
+
+
+class ReductionError(Exception): pass
+
+
+def reduce(x:str, y:str) -> str:
+    xslash = yslash = None    
+    
+    if not isatomic(x):
+        xslash, xleft, xright = bipart(x)
+        xleft, xright = xleft[0], xright[0]
+
+    if not isatomic(y):
+        yslash, yleft, yright = bipart(y)
+        yleft, yright = yleft[0], yright[0]
+
+    if xslash == '/':
+        iden, pairs = catIden(xright, y)
+        if iden: return xleft, pairs
+    
+    if yslash == '\\':
+        iden, pairs = catIden(x, yleft)
+        if iden: return yright, pairs
+    
+    if yslash == '/':
+        res, pairs = reduce(x, yleft)
+        return '(%s)/(%s)' % (res, yright), pairs
+
+    elif yslash == '\\':
+        res, pairs = reduce(x, yright)
+        return '(%s)\\(%s)' % (yleft, res), pairs
+
+    raise ReductionError
 
 
 class Result:
@@ -46,50 +79,15 @@ class Result:
             else: break
 
 
-def baseCombine(x: Result, y: Result) -> {Result}:
-    xslash = yslash = None
-
-    if not isatomic(x[0]):
-        xslash, xleft, xright = bipart(x[0])
-        xleft, xright = xleft[0], xright[0]
-    
-    if not isatomic(y[0]):
-        yslash, yleft, yright = bipart(y[0])
-        yleft, yright = yleft[0], yright[0]
-        
-    if xslash == '/':
-        iden, pairs = catIden(xright, y[0])
-        if iden:
-            # forward application
-            resCat = xleft
-
-        elif yslash == '/':
-            iden, pairs = catIden(xright, yleft)
-            if iden: 
-                # forward composition
-                resCat = '(%s)/(%s)' % (xleft, yright)    
-    elif yslash == '\\':
-        iden, pairs = catIden(x[0], yleft)
-        if iden:
-            # backward application
-            resCat = yright
-
-        elif xslash == '\\':
-            iden, pairs = catIden(xright, yleft)
-            if iden:
-                # backward composition
-                resCat = '(%s)\\(%s)' % (xleft, yright)
-
-    try:
-        return {Result(cat=(resCat,), 
-                       links=x.links | y.links | pairs)}
-    except NameError:
-        return set()
-
-
 def combine(x:Result, y:Result) -> {Result}:
     if x.isPlain() and y.isPlain():
-        res = baseCombine(x, y)
+        try:
+            resCat, pairs = reduce(x[0], y[0])
+        except ReductionError:
+            return set()
+        else:
+            return {Result(cat=(resCat,), 
+                        links=x.links | y.links | pairs)}        
     else:
         res = set()
         if not x.isPlain():
