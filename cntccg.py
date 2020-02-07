@@ -79,7 +79,7 @@ class Result:
             else: break
 
     @staticmethod
-    def __combine(x, y):
+    def _combine(x, y):
         if x.isPlain() and y.isPlain():
             try:
                 resCat, pairs = reduce(x[0], y[0])
@@ -92,14 +92,14 @@ class Result:
             res = set()
             if not x.isPlain():
                 res |= {Result(cat=r.cat + x.lastLevel, links=r.links) 
-                        for r in Result.__combine(x.interior(), y)}
+                        for r in Result._combine(x.interior(), y)}
             if not y.isPlain():
                 res |= {Result(cat=r.cat + y.lastLevel, links=r.links) 
-                        for r in Result.__combine(x, y.interior())}
+                        for r in Result._combine(x, y.interior())}
         return res
 
     def __add__(self, others):
-        return self.__combine(self, others)
+        return self._combine(self, others)
 
 
 class Cntccg:
