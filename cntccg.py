@@ -62,7 +62,7 @@ class Result:
     def isPlain(self):
         return len(self.cat) == 1
 
-    def reduceLevel(self):
+    def interior(self):
         return Result(cat=self[:-1], links=self.links)
     
     @property
@@ -78,25 +78,28 @@ class Result:
                 self.cat = (self[1][0],) + self[2:]
             else: break
 
-
-def combine(x:Result, y:Result) -> {Result}:
-    if x.isPlain() and y.isPlain():
-        try:
-            resCat, pairs = reduce(x[0], y[0])
-        except ReductionError:
-            return set()
+    @staticmethod
+    def __combine(x, y):
+        if x.isPlain() and y.isPlain():
+            try:
+                resCat, pairs = reduce(x[0], y[0])
+            except ReductionError:
+                return set()
+            else:
+                return {Result(cat=(resCat,), 
+                            links=x.links | y.links | pairs)}        
         else:
-            return {Result(cat=(resCat,), 
-                        links=x.links | y.links | pairs)}        
-    else:
-        res = set()
-        if not x.isPlain():
-            res |= {Result(cat=r.cat + x.lastLevel, links=r.links) 
-                    for r in combine(x.reduceLevel(), y)}
-        if not y.isPlain():
-            res |= {Result(cat=r.cat + y.lastLevel, links=r.links) 
-                    for r in combine(x, y.reduceLevel())}
-    return res
+            res = set()
+            if not x.isPlain():
+                res |= {Result(cat=r.cat + x.lastLevel, links=r.links) 
+                        for r in Result.__combine(x.interior(), y)}
+            if not y.isPlain():
+                res |= {Result(cat=r.cat + y.lastLevel, links=r.links) 
+                        for r in Result.__combine(x, y.interior())}
+        return res
+
+    def __add__(self, others):
+        return self.__combine(self, others)
 
 
 class Cntccg:
@@ -143,7 +146,7 @@ class Cntccg:
                 for j in range(i + 1, k + 1):
                     for x in span[i, j - 1]:
                         for y in span[j, k]:
-                            span[i, k] |= combine(x, y)
+                            span[i, k] |= x + y
         
         self.proofs = span[0, len(self) - 1]
         for r in self.proofs: r.collapse()
