@@ -159,7 +159,7 @@ def selfTest():
     cntccg = Cntccg(pres)
     cntccg.parse()
     cntccg.printProofs()
-    print('Total:', cntccg.proofCount)
+    print('Total:', cntccg.proofCount())
 
 
 if __name__ == '__main__':
