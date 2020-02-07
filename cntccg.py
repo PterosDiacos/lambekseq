@@ -92,16 +92,12 @@ def combine(x:Result, y:Result) -> {Result}:
         res = baseCombine(x, y)
     else:
         res = set()
-
         if not x.isPlain():
-            reducedres = combine(x.reduceLevel(), y)
             res |= {Result(cat=r.cat + x.lastLevel, links=r.links) 
-                    for r in reducedres}
-
+                    for r in combine(x.reduceLevel(), y)}
         if not y.isPlain():
-            reducedres = combine(x, y.reduceLevel())
             res |= {Result(cat=r.cat + y.lastLevel, links=r.links) 
-                    for r in reducedres}
+                    for r in combine(x, y.reduceLevel())}
     return res
 
 
