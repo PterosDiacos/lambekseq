@@ -30,20 +30,19 @@ class Result:
         return len(self.cat) == 1
 
     def reduceLevel(self):
-        return Result(cat=self.cat[:-1], 
-                      links=self.links)
+        return Result(cat=self[:-1], links=self.links)
     
     @property
     def lastLevel(self):
-        return (self.cat[-1],)
+        return (self[-1],)
 
     def collapse(self):
         '''Recursive lowering.'''
         while not self.isPlain():
-            iden, pairs = catIden(self.cat[0], self.cat[1][1])
+            iden, pairs = catIden(self[0], self[1][1])
             if iden:
                 self.links |= pairs
-                self.cat = (self.cat[1][0],) + self.cat[2:]
+                self.cat = (self[1][0],) + self[2:]
             else: break
 
 
@@ -120,7 +119,7 @@ class Cntccg:
     def printProofs(self):
         for r in self.proofs:
             s = sorted('(%s, %s)' % (i, j) for i, j in r.links)
-            print('%-8s' % r.cat[0], ', '.join(s))
+            print('%-8s' % r[0], ', '.join(s))
 
     def parse(self):
         '''CYK parsing.'''
