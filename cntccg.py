@@ -97,21 +97,21 @@ class Result:
         if x.isPlain() and y.isPlain():
             try:
                 resCat, pairs = reduce(x[0], y[0])
-                
             except ReductionError:
                 return set()
-
             else:
                 return {Result(cat=(resCat,), 
                             links=x.links | y.links | pairs)}        
         else:
             res = set()
+            # lifting
             if not x.isPlain():
                 res |= {Result(cat=r.cat + x.lastLevel, links=r.links) 
                         for r in Result._combine(x.interior(), y)}
             if not y.isPlain():
                 res |= {Result(cat=r.cat + y.lastLevel, links=r.links) 
                         for r in Result._combine(x, y.interior())}
+
         return res
 
     def isPlain(self):
