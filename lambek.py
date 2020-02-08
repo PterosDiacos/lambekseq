@@ -22,11 +22,15 @@ def unslash(x:str):
 
 def addHypo(x, slash, hypo):
     if slash is None:
-        return x    
+        return x
+
+    x = x if isatomic(x) else '(%s)' % x
+    hypo = hypo if isatomic(hypo) else '(%s)' % hypo
+
     if slash == '/':
-        return '(%s)/(%s)' % (x, hypo)
+        return '%s/%s' % (x, hypo)
     else:
-        return '(%s)\\(%s)' % (hypo, x)
+        return '%s\\%s' % (hypo, x)
 
 
 def catIden(x:str, y:str) -> (bool, set):
