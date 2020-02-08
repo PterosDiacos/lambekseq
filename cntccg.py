@@ -7,33 +7,63 @@ from parentheses import bipart, isatomic
 
 class ReductionError(Exception): pass
 
+def unslash(x:str):
+    xlist = [(x, None, None)]
 
-def reduce(x:str, y:str) -> str:
-    xslash = yslash = None    
-    
-    if not isatomic(x):
-        xslash, xleft, xright = bipart(x)
+    while not isatomic(xlist[-1][0]):
+        xslash, xleft, xright = bipart(xlist[-1][0])
         xleft, xright = xleft[0], xright[0]
+        if xslash == '/':
+            xlist.append((xleft, '/', xright))
+        else:
+            xlist.append((xright, '\\', xleft))
 
-    if not isatomic(y):
-        yslash, yleft, yright = bipart(y)
-        yleft, yright = yleft[0], yright[0]
+    return xlist
 
-    if xslash == '/':
-        iden, pairs = catIden(xright, y)
-        if iden: return xleft, pairs
+def addHypo(x, slash, hypo):
+    if slash is None: return x
     
-    if yslash == '\\':
-        iden, pairs = catIden(x, yleft)
-        if iden: return yright, pairs
+    if not isatomic(x): x = '(%s)' % x
+    if not isatomic(hypo): hypo = '(%s)' % hypo
+    if slash == '/': return '%s/%s' % (x, hypo)
+    else: return '%s\\%s' % (hypo, x)
     
-    if yslash == '/':
-        res, pairs = reduce(x, yleft)
-        return '(%s)/(%s)' % (res, yright), pairs
+            
+def reduce(x:str, y:str) -> str:
+    xlist, ylist = unslash(x), unslash(y)
+    
+    for s in range(len(xlist) + len(ylist) - 1):
+        for i in range(s, -1, -1):
+            j  = s - i
 
-    elif yslash == '\\':
-        res, pairs = reduce(x, yright)
-        return '(%s)\\(%s)' % (yleft, res), pairs
+            # only the 1st row & the 1st column of the reduction table
+            if i * j: continue
+
+            try:
+                if xlist[i + 1][1] == '/':
+                    iden, pairs = catIden(xlist[i + 1][2], ylist[j][0])
+                    if iden:
+                        resCat = xlist[i + 1][0]                        
+                        for k in range(j, -1, -1):
+                            resCat = addHypo(resCat, *ylist[k][1:])
+                        for k in range(i, -1, -1):
+                            resCat = addHypo(resCat, *xlist[k][1:])                            
+                        return resCat, pairs
+            except IndexError:
+                pass
+            
+            try:    
+                if ylist[j + 1][1] == '\\':
+                    iden, pairs = catIden(xlist[i][0], ylist[j + 1][2])
+                    if iden:
+                        resCat = ylist[j + 1][0]
+                        for k in range(j, -1, -1):
+                            resCat = addHypo(resCat, *ylist[k][1:])
+                        for k in range(i, -1, -1):
+                            resCat = addHypo(resCat, *xlist[k][1:])
+                        return resCat, pairs            
+            except IndexError:
+                pass
 
     raise ReductionError
 
@@ -59,6 +89,31 @@ class Result:
     def __getitem__(self, idx):
         return self.cat[idx]
 
+    def __add__(self, others):
+        return self._combine(self, others)
+
+    @staticmethod
+    def _combine(x, y):
+        if x.isPlain() and y.isPlain():
+            try:
+                resCat, pairs = reduce(x[0], y[0])
+                
+            except ReductionError:
+                return set()
+
+            else:
+                return {Result(cat=(resCat,), 
+                            links=x.links | y.links | pairs)}        
+        else:
+            res = set()
+            if not x.isPlain():
+                res |= {Result(cat=r.cat + x.lastLevel, links=r.links) 
+                        for r in Result._combine(x.interior(), y)}
+            if not y.isPlain():
+                res |= {Result(cat=r.cat + y.lastLevel, links=r.links) 
+                        for r in Result._combine(x, y.interior())}
+        return res
+
     def isPlain(self):
         return len(self.cat) == 1
 
@@ -77,29 +132,6 @@ class Result:
                 self.links |= pairs
                 self.cat = (self[1][0],) + self[2:]
             else: break
-
-    @staticmethod
-    def _combine(x, y):
-        if x.isPlain() and y.isPlain():
-            try:
-                resCat, pairs = reduce(x[0], y[0])
-            except ReductionError:
-                return set()
-            else:
-                return {Result(cat=(resCat,), 
-                            links=x.links | y.links | pairs)}        
-        else:
-            res = set()
-            if not x.isPlain():
-                res |= {Result(cat=r.cat + x.lastLevel, links=r.links) 
-                        for r in Result._combine(x.interior(), y)}
-            if not y.isPlain():
-                res |= {Result(cat=r.cat + y.lastLevel, links=r.links) 
-                        for r in Result._combine(x, y.interior())}
-        return res
-
-    def __add__(self, others):
-        return self._combine(self, others)
 
 
 class Cntccg:
