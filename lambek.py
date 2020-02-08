@@ -6,22 +6,35 @@ import sys
 from parentheses import bipart, isatomic
 
 
-def idxpair2set(x_i, y_i):
-    if x_i and y_i:
-        return {tuple(sorted({x_i, y_i}))}
+def unslash(x:str):
+    xlist = [(x, None, None)]
+
+    while not isatomic(xlist[-1][0]):
+        xslash, xleft, xright = bipart(xlist[-1][0])
+        xleft, xright = xleft[0], xright[0]
+        if xslash == '/':
+            xlist.append((xleft, '/', xright))
+        else:
+            xlist.append((xright, '\\', xleft))
+
+    return xlist
+
+
+def addHypo(x, slash, hypo):
+    if slash is None:
+        return x    
+    if slash == '/':
+        return '(%s)/(%s)' % (x, hypo)
     else:
-        return set()
+        return '(%s)\\(%s)' % (hypo, x)
 
 
-def catIden(x:str, y:str, 
-    pattern=re.compile(r'([a-zA-Z]+)_?(\d*)')
-    ) -> (bool, set):    
-    if isatomic(x) and isatomic(y):
-        x, x_i = pattern.search(x).groups()
-        y, y_i = pattern.search(y).groups()
-        return x == y, idxpair2set(x_i, y_i)
-    
-    if not isatomic(x) and not isatomic(y):
+def catIden(x:str, y:str) -> (bool, set):
+    atomCount = int(isatomic(x)) + int(isatomic(y))    
+    if atomCount == 2:
+        return atomicIden(x, y), {tuple(sorted({x, y}))}
+         
+    elif atomCount == 0:
         xslash, xleft, xright = bipart(x)
         xleft, xright = xleft[0], xright[0]
         yslash, yleft, yright = bipart(y)
@@ -35,8 +48,9 @@ def catIden(x:str, y:str,
     return False, set()
 
 
-def atomicIden(x: str, y: str, pattern=re.compile(r'([a-zA-Z]+)_?(\d*)'), 
-                               indexIden=False):
+def atomicIden(x: str, y: str, 
+               pattern=re.compile(r'(?:\A|\()(?:\W*)([a-zA-Z]+)_?(\d*)(?:\Z|\))'), 
+               indexIden=False):
     '''Check if `x` equals `y` (up to indexation).'''
     x, x_i = pattern.search(x).groups()
     y, y_i = pattern.search(y).groups()

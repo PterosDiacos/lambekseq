@@ -1,33 +1,11 @@
 '''Continuized CCG with generalized application, lifting and lowering.
 '''
 from collections import defaultdict
-from lambek import catIden
+from lambek import catIden, unslash, addHypo
 from parentheses import bipart, isatomic
 
 
 class ReductionError(Exception): pass
-
-def unslash(x:str):
-    xlist = [(x, None, None)]
-
-    while not isatomic(xlist[-1][0]):
-        xslash, xleft, xright = bipart(xlist[-1][0])
-        xleft, xright = xleft[0], xright[0]
-        if xslash == '/':
-            xlist.append((xleft, '/', xright))
-        else:
-            xlist.append((xright, '\\', xleft))
-
-    return xlist
-
-def addHypo(x, slash, hypo):
-    if slash is None: return x
-    
-    if not isatomic(x): x = '(%s)' % x
-    if not isatomic(hypo): hypo = '(%s)' % hypo
-    if slash == '/': return '%s/%s' % (x, hypo)
-    else: return '%s\\%s' % (hypo, x)
-    
             
 def reduce(x:str, y:str) -> str:
     xlist, ylist = unslash(x), unslash(y)
