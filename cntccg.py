@@ -79,22 +79,23 @@ class Result:
                 return set()
             else:
                 return {Result(cat=(resCat,), 
-                            links=x.links | y.links | pairs)}        
+                               links=x.links | y.links | pairs)}        
         else:
             res = set()
             # lifting
             if not x.isPlain():
                 res |= {Result(cat=r.cat + x.lastLevel, links=r.links) 
-                        for r in Result._combine(x.interior(), y)}
+                        for r in Result._combine(x.interior, y)}
             if not y.isPlain():
                 res |= {Result(cat=r.cat + y.lastLevel, links=r.links) 
-                        for r in Result._combine(x, y.interior())}
+                        for r in Result._combine(x, y.interior)}
 
         return res
 
     def isPlain(self):
         return len(self.cat) == 1
 
+    @property
     def interior(self):
         return Result(cat=self[:-1], links=self.links)
     
