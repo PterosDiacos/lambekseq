@@ -2,9 +2,10 @@ import json
 import sys
 from cindex import indexToken
 from cmll import ProofNet
-from noprodall import findproof, parseProof
 from cntccg import Cntccg
 import displace as dsp
+import noprodall as npr
+from noprodall import parseProof
 
 
 LinkSearch = []
@@ -29,7 +30,7 @@ def pnLinks(con: str, pres: list):
 @registerLinkSearch
 def noprodLinks(con, pres):
     (con, *pres), _ = indexToken(con, pres)
-    proofs = findproof(con, *pres)
+    proofs = npr.findproof(con, *pres)
     links = parseProof(proofs)
     if links:
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
