@@ -81,8 +81,8 @@ def addIndex(s, natom):
     else:
         slash, left, right = bipart(s)
         left, right = left.pop(), right.pop()
-        sleft, natomLeft = addIndex(left, natom)
-        sright, natomRight = addIndex(right, natomLeft)
+        sleft, natomLeft = addIndex(left, natom, connectives=connectives)
+        sright, natomRight = addIndex(right, natomLeft, connectives=connectives)
 
         if not isatomic(sleft): sleft = '(%s)' % sleft
         if not isatomic(sright): sright = '(%s)' % sright        
