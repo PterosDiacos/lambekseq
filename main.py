@@ -84,6 +84,8 @@ if __name__ == '__main__':
 
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 2
     f = LinkSearch[n]
+    print(f)
+
     f.count = 0
     for con, pres in deAbbr(con, pres, abbr):
         f.count += f(con, pres)
