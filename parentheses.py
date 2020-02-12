@@ -1,6 +1,6 @@
-def isatomic(s: str):
-    '''Check if `s` contains slashes.'''
-    return not ('/' in s or '\\' in s)
+def isatomic(s: str, connectives={'/', '\\'}):
+    '''Check if `s` contains connectives.'''
+    return not any(c in s for c in connectives)
 
 
 def commaSplit(s: str):
