@@ -10,11 +10,15 @@ def pairFormat(raw):
         yield(x)
 
 
-raw = open('scope_raw').read().strip()
-output = pairFormat(raw)
 config = json.load(open('scope_config.json'))
 qdict = config['qdict']
 prep = config['prep']
+raw = open('scope_raw').read().strip()
+if config['format'] == 'arrow':
+    output = arrowFormat(raw)
+else:
+    output = pairFormat(raw)
+
 
 def check(x, y):
     if y in {v[0] for v in qdict.values()}: 
