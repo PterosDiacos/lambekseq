@@ -75,7 +75,7 @@ def idx2ordDict(tagged, pattern=re.compile(r'_(\d+)#(\d+)')):
     return idx2depthDict(tagged, pattern=pattern)
 
 
-def addIndex(s, natom):
+def addIndex(s, natom, connectives={'/', '\\'}):
     if isatomic(s):
         return '%s_%d' % (s, natom), natom + 1
     else:
