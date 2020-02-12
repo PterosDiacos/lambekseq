@@ -82,7 +82,7 @@ if __name__ == '__main__':
     con, *pres = json.load(open('input.json'))[0]
     abbr = json.load(open('abbr.json'))
 
-    n = int(sys.argv[1]) if len(sys.argv) > 1 else 3
+    n = int(sys.argv[1]) if len(sys.argv) > 1 else 2
     f = LinkSearch[n]
     f.count = 0
     for con, pres in deAbbr(con, pres, abbr):

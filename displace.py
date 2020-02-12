@@ -56,11 +56,12 @@ def find_diffUT(con, pres, cut, left, right):
 
 def find_extract(con, pres, cut, left, right):
     alts = []
-    rightproof = findproof(con, right)
-    if rightproof:        
-        leftproof = findproof(left, *pres[:cut], Gap, *pres[cut + 1:])
-        if leftproof:
-            alts.append(' [ %s AND %s ] ' % (leftproof, rightproof))
+    if not pres.count(Gap):
+        rightproof = findproof(con, right)
+        if rightproof:        
+            leftproof = findproof(left, *pres[:cut], Gap, *pres[cut + 1:])
+            if leftproof:
+                alts.append(' [ %s AND %s ] ' % (leftproof, rightproof))
     return alts
 
 
@@ -71,7 +72,7 @@ def findproof(con, *pres):
     if not isatomic(con):
         conn, left, right = bipart(con)
         if conn == '/':
-            return findproof(left, *pres, right)
+            return findproof(left, *pres, right)        
         elif conn == '\\':
             return findproof(right, left, *pres)
         elif conn == '^':
@@ -83,7 +84,9 @@ def findproof(con, *pres):
                     alts.append(findproof(con, *pres[:i], Gap, *pres[i:]))
                 return ' [ %s ] ' % ' OR '.join(filter(None, alts))
             else:
+                assert pres.count(Gap) == 1
                 return findproof(left, *pres[:cut], right, *pres[cut + 1:])
+                
         elif conn == '!':
             return ' [ %s OR %s ] ' % (
                 findproof(right, left, *pres),
