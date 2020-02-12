@@ -79,13 +79,13 @@ def addIndex(s, natom, connectives={'/', '\\'}):
     if isatomic(s):
         return '%s_%d' % (s, natom), natom + 1
     else:
-        slash, left, right = bipart(s)
+        slash, left, right = bipart(s, connectives=connectives)
         left, right = left.pop(), right.pop()
         sleft, natomLeft = addIndex(left, natom, connectives=connectives)
         sright, natomRight = addIndex(right, natomLeft, connectives=connectives)
 
-        if not isatomic(sleft): sleft = '(%s)' % sleft
-        if not isatomic(sright): sright = '(%s)' % sright        
+        if not isatomic(sleft, connectives=connectives): sleft = '(%s)' % sleft
+        if not isatomic(sright, connectives=connectives): sright = '(%s)' % sright        
         return sleft + slash + sright, natomRight
 
 
