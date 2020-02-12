@@ -123,9 +123,10 @@ class Cntccg:
             slash, left, right = bipart(s)
             if slash == '/':
                 _, np, right = bipart(right[0])
+                return (np[0], (left[0], right[0]))
             else:
-                _, left, np = bipart(left[0])    
-            return (np[0], (left[0], right[0]))
+                _, left, np = bipart(left[0])
+                return (np[0], (right[0], left[0]))    
         else:
             return (s,)
 
