@@ -80,9 +80,8 @@ def findproof(con, *pres):
             except ValueError:
                 alts = []
                 for i in range(len(pres) + 1):
-                    gapProof = findproof(con, *pres[:i], Gap, *pres[i:])
-                    if gapProof: alts.append(gapProof)
-                return ' [ %s ] ' % ' OR '.join(alts)
+                    alts.append(findproof(con, *pres[:i], Gap, *pres[i:]))
+                return ' [ %s ] ' % ' OR '.join(filter(None, alts))
             else:
                 return findproof(left, *pres[:cut], right, *pres[cut + 1:])
         elif conn == '!':
