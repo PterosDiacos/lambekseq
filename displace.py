@@ -77,6 +77,10 @@ def findproof(con, *pres):
             return findproof(left, *pres, right)        
         elif conn == '\\':
             return findproof(right, left, *pres)
+        elif conn == '!':
+            return ' [ %s OR %s ] ' % (
+                findproof(right, left, *pres),
+                findproof(right, *pres, left))
         elif conn == '^':
             try:
                 assert pres.count(Gap) <= 1
@@ -90,12 +94,7 @@ def findproof(con, *pres):
                 return ' [ %s ] ' % ' OR '.join(filter(None, alts))
             else:
                 return findproof(left, *pres[:cut], right, *pres[cut + 1:])
-                
-        elif conn == '!':
-            return ' [ %s OR %s ] ' % (
-                findproof(right, left, *pres),
-                findproof(right, *pres, left))
-    
+                    
     # when the conclusion is atomic
     else:
         if len(pres) == 0:
@@ -111,11 +110,11 @@ def findproof(con, *pres):
                         altBranches.extend(find_diffTV(con, pres, i, left, right))
                     elif conn == '\\':
                         altBranches.extend(find_diffUT(con, pres, i, left, right))
+                    elif conn == '!':
+                        altBranches.extend(find_extract(con, pres, i, left, right))
                     elif conn == '^':
                         altBranches.extend(find_diffTV(con, pres, i, left, right))
                         altBranches.extend(find_diffUT(con, pres, i, right, left))
-                    elif conn == '!':
-                        altBranches.extend(find_extract(con, pres, i, left, right))
 
             if hit_nonatomic:
                 if altBranches:
