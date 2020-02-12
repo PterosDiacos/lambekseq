@@ -56,12 +56,14 @@ def find_diffUT(con, pres, cut, left, right):
 
 def find_extract(con, pres, cut, left, right):
     alts = []
-    if not pres.count(Gap):
-        rightproof = findproof(con, right)
-        if rightproof:        
-            leftproof = findproof(left, *pres[:cut], Gap, *pres[cut + 1:])
-            if leftproof:
-                alts.append(' [ %s AND %s ] ' % (leftproof, rightproof))
+    for i in range(cut, -1, -1):
+        for j in range(cut, len(pres)):
+            if not pres[i:j + 1].count(Gap):
+                rightproof = findproof(con, *pres[:i], right, *pres[j + 1:])
+                if rightproof:
+                    leftproof = findproof(left, *pres[i:cut], Gap, *pres[cut + 1:j + 1])
+                    if leftproof:
+                        alts.append(' [ %s AND %s ] ' % (leftproof, rightproof))
     return alts
 
 
@@ -77,14 +79,16 @@ def findproof(con, *pres):
             return findproof(right, left, *pres)
         elif conn == '^':
             try:
+                assert pres.count(Gap) <= 1
                 cut = pres.index(Gap)
+            except AssertionError:
+                return ''
             except ValueError:
                 alts = []
                 for i in range(len(pres) + 1):
                     alts.append(findproof(con, *pres[:i], Gap, *pres[i:]))
                 return ' [ %s ] ' % ' OR '.join(filter(None, alts))
             else:
-                assert pres.count(Gap) == 1
                 return findproof(left, *pres[:cut], right, *pres[cut + 1:])
                 
         elif conn == '!':
