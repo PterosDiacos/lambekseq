@@ -3,6 +3,7 @@ __pycache__
 .vscode
 
 # files
+scripts/scope_raw
 out
 *.txt
 *.json
