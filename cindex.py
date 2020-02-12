@@ -76,7 +76,7 @@ def idx2ordDict(tagged, pattern=re.compile(r'_(\d+)#(\d+)')):
 
 
 def addIndex(s, natom, connectives={'/', '\\'}):
-    if isatomic(s):
+    if isatomic(s, connectives=connectives):
         return '%s_%d' % (s, natom), natom + 1
     else:
         slash, left, right = bipart(s, connectives=connectives)
