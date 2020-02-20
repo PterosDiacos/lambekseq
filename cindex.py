@@ -47,7 +47,7 @@ def divOrdTag(s: str, divOrder=0):
 def depthTag(s: str, rootdepth=0, chopcount=0):
     '''Tag each atomic symbol with its depth. No top level comma.'''
     if isatomic(s):
-        return ('%s:%d' % (s, rootdepth + chopcount), )
+        return ('%s:%d' % (s, rootdepth), )
     else:
         slash, left, right = bipart(s)
         taggedleft = taggedright = ()
