@@ -55,14 +55,12 @@ def depthTag(s: str, rootdepth=0, chopcount=0):
             for r in right:
                 taggedright += depthTag(r, rootdepth + chopcount + 1, 0)
             for l in left:
-                taggedleft += depthTag(l, rootdepth, 0) if isatomic(l) \
-                                                        else depthTag(l, rootdepth, chopcount + 1)
+                taggedleft += depthTag(l, rootdepth, chopcount + 1)
         else:
             for l in left:
                 taggedleft += depthTag(l, rootdepth + chopcount + 1, 0)
             for r in right:
-                taggedright += depthTag(r, rootdepth, 0) if isatomic(r) \
-                                                         else depthTag(r, rootdepth, chopcount + 1)
+                taggedright += depthTag(r, rootdepth, chopcount + 1)
         return (*taggedleft, slash, *taggedright)
 
 
