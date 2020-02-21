@@ -55,7 +55,7 @@ def ccgLinks(con, pres):
 
 @registerLinkSearch
 def dspLinks(con, pres):
-    con, *pres = dsp.indexTokens(con, pres)
+    (con, *pres), _ = indexSeq(con, pres)
     proofs = dsp.findproof(con, *pres)
     links = parseProof(proofs)
     if links:

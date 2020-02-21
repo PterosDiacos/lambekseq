@@ -126,20 +126,21 @@ def findproof(con, *pres):
                 else:
                     return ''
 
-def indexTokens(con:str, pres:list):
-    natom = 0
-    alltokens = []
-    for s in [con] + pres:
-        if s != Gap:
-            s, natom = addIndex(s, natom, conn={'/', '\\', '^', '!'})
-        alltokens.append(s)    
-    return alltokens
+# def indexTokens(con:str, pres:list):
+#     natom = 0
+#     alltokens = []
+#     for s in [con] + pres:
+#         if s != Gap:
+#             s, natom = addIndex(s, natom, conn={'/', '\\', '^', '!'})
+#         alltokens.append(s)    
+#     return alltokens
 
 
 def selfTest():
     from lbnoprod import parseProof
+    from cindex import indexSeq    
     con, *pres = 's', '(s^np)!s', '(np\\s)/np', '(s^np)!s'
-    con, *pres = indexTokens(con, pres)
+    (con, *pres), _ = indexSeq(con, pres)
     proofs = findproof(con, *pres)
     links = parseProof(proofs)
     print('\n%s <= %s\n' % (con, ' '.join(pres)))
