@@ -118,14 +118,12 @@ class Cntccg:
 
     @staticmethod
     def _toTower(s):
-        if catIden('s/(np\\s)', s)[0] or catIden('(s/np)\\s', s)[0]:
-            slash, left, right = bipart(s)
-            if slash == '/':
-                _, np, right = bipart(right[0])
-                return (np[0], (left[0], right[0]))
-            else:
-                _, left, np = bipart(left[0])
-                return (np[0], (right[0], left[0]))    
+        if '^' in s and '!' in s:
+            sl1, l, a = bipart(s, conn={'^', '!'}, noComma=True)
+            assert sl1 == '!'
+            sl2, b, x = bipart(l, conn={'^', '!'}, noComma=True)
+            assert sl2 == '^' and not ('^' in x or '!' in x)
+            return (x, (a, b))
         else:
             return (s,)
 
@@ -166,11 +164,11 @@ class Cntccg:
 def selfTest():
     from cindex import indexSeq
 
-    (_, *pres), _ = indexSeq(
-        's', ['s/(np\\s)', '(np\\s)/np', 's/(np\\s)', '(s\\s)/np', 's/(np\\s)'])
+    con, *pres = 's', '(s^np)!s', '(np\\s)/np', '(s^np)!s', '(s\\s)/np', '(s^np)!s'
+    (con, *pres), _ = indexSeq(con, pres)        
     cntccg = Cntccg(pres)
     cntccg.parse()
-    cntccg.printProofs()
+    cntccg.printProofs(con)
     print('Total:', cntccg.proofCount())
 
 
