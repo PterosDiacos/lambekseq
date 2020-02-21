@@ -73,17 +73,17 @@ def idx2ordDict(tagged, pattern=re.compile(r'_(\d+)#(\d+)')):
     return idx2depthDict(tagged, pattern=pattern)
 
 
-def addIndex(s, natom, connectives={'/', '\\'}):
-    if isatomic(s, connectives=connectives):
+def addIndex(s, natom, conn={'/', '\\'}):
+    if isatomic(s, conn=conn):
         return '%s_%d' % (s, natom), natom + 1
     else:
-        slash, left, right = bipart(s, connectives=connectives)
+        slash, left, right = bipart(s, conn=conn)
         left, right = left.pop(), right.pop()
-        sleft, natomLeft = addIndex(left, natom, connectives=connectives)
-        sright, natomRight = addIndex(right, natomLeft, connectives=connectives)
+        sleft, natomLeft = addIndex(left, natom, conn=conn)
+        sright, natomRight = addIndex(right, natomLeft, conn=conn)
 
-        if not isatomic(sleft, connectives=connectives): sleft = '(%s)' % sleft
-        if not isatomic(sright, connectives=connectives): sright = '(%s)' % sright        
+        if not isatomic(sleft, conn=conn): sleft = '(%s)' % sleft
+        if not isatomic(sright, conn=conn): sright = '(%s)' % sright        
         return sleft + slash + sright, natomRight
 
 

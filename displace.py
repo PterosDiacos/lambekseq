@@ -20,12 +20,12 @@ def atomicIden(x, y):
 
 def bipart(s: str):
     conn, left, right = _bipart(s, 
-        connectives={'/', '\\', '^', '!'})
+        conn={'/', '\\', '^', '!'})
     return conn, left.pop(), right.pop()
 
 
 def isatomic(s: str):
-    return _isatomic(s, connectives={'/', '\\', '^', '!'})
+    return _isatomic(s, conn={'/', '\\', '^', '!'})
 
 
 def find_diffTV(con, pres, cut, left, right):
@@ -132,7 +132,7 @@ def indexTokens(con:str, pres:list):
     alltokens = []
     for s in [con] + pres:
         if s != Gap:
-            s, natom = addIndex(s, natom, connectives={'/', '\\', '^', '!'})
+            s, natom = addIndex(s, natom, conn={'/', '\\', '^', '!'})
         alltokens.append(s)    
     return alltokens
 

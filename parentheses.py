@@ -1,6 +1,6 @@
-def isatomic(s: str, connectives={'/', '\\'}):
+def isatomic(s: str, conn={'/', '\\'}):
     '''Check if `s` contains connectives.'''
-    return not any(c in s for c in connectives)
+    return not any(c in s for c in conn)
 
 
 def commaSplit(s: str):
@@ -33,7 +33,7 @@ def stripparentheses(s: str, leftPr='(', rightPr=')'):
 
 def bipart(s: str, 
            leftPr='(', rightPr=')',
-           connectives={'/', '\\'}):
+           conn={'/', '\\'}):
     '''Break a non-atomic `s` into slashes, the left and right components. 
     The latter two are lists.'''
     s = stripparentheses(s)
@@ -41,7 +41,7 @@ def bipart(s: str,
     for i in range(len(s)):
         if s[i] == leftPr: count += 1
         elif s[i] == rightPr: count -= 1
-        elif count == 0 and s[i] in connectives:
+        elif count == 0 and s[i] in conn:
             left, right = stripparentheses(s[:i]), stripparentheses(s[i + 1:]) 
             left, right = commaSplit(left), commaSplit(right)
             return s[i], left, right
