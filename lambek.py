@@ -37,7 +37,7 @@ def catIden(x:str, y:str) -> (bool, set):
     '''No commas in `x` and `y`.'''
     atomCount = int(isatomic(x)) + int(isatomic(y))    
     if atomCount == 2:
-        return atomicIden(x, y), {x, y}
+        return atomicIden(x, y), {tuple(sorted({x, y}))}
          
     elif atomCount == 0:
         xslash, xleft, xright = bipart(x, noComma=True)
