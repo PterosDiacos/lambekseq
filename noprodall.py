@@ -4,8 +4,7 @@ This script finds the axioms of every proof.
 from itertools import product
 from functools import reduce
 from operator import concat
-from parentheses import stripparentheses, isatomic, bipart
-from lambek import atomicIden
+from parentheses import stripparentheses, isatomic, bipart, atomicIden
 
 
 def find_diffTV(con, pres, cut, left, right):

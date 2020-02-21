@@ -1,8 +1,7 @@
 '''Continuized CCG with generalized application, lifting and lowering.
 '''
 from collections import defaultdict
-from lambek import catIden, unslash, addHypo
-from parentheses import bipart, isatomic
+from parentheses import bipart, catIden, unslash, addHypo
 
 
 class ReductionError(Exception): pass

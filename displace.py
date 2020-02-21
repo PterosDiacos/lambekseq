@@ -3,7 +3,7 @@ This script finds the axioms of every proof.
 Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 '''
 from cindex import addIndex
-from lambek import atomicIden as _atomicIden
+from parentheses import atomicIden as _atomicIden
 from parentheses import bipart as _bipart
 from parentheses import isatomic as _isatomic
 

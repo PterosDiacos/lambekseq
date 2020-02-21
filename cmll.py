@@ -2,8 +2,7 @@
 '''
 from collections import defaultdict
 
-from lambek import atomicIden
-from parentheses import bipart, isatomic
+from parentheses import bipart, isatomic, atomicIden
 from porder import PartialOrder
 
 

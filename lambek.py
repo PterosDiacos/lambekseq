@@ -1,63 +1,8 @@
 '''Lambek sequent calculus with products in conclusion.
 This script finds one proof with all inferential steps.
 '''
-import re
 import sys
-from parentheses import bipart, isatomic
-
-
-def unslash(x:str):
-    '''No commas in `x`.'''
-    xlist = [(x, None, None)]
-
-    while not isatomic(xlist[-1][0]):
-        xslash, xleft, xright = bipart(xlist[-1][0], noComma=True)
-        if xslash == '/':
-            xlist.append((xleft, '/', xright))
-        else:
-            xlist.append((xright, '\\', xleft))
-
-    return xlist
-
-
-def addHypo(x, slash, hypo):
-    if slash is None:
-        return x
-
-    x = x if isatomic(x) else '(%s)' % x
-    hypo = hypo if isatomic(hypo) else '(%s)' % hypo
-
-    if slash == '/':
-        return '%s/%s' % (x, hypo)
-    else:
-        return '%s\\%s' % (hypo, x)
-
-
-def catIden(x:str, y:str) -> (bool, set):
-    '''No commas in `x` and `y`.'''
-    atomCount = int(isatomic(x)) + int(isatomic(y))    
-    if atomCount == 2:
-        return atomicIden(x, y), {tuple(sorted({x, y}))}
-         
-    elif atomCount == 0:
-        xslash, xleft, xright = bipart(x, noComma=True)
-        yslash, yleft, yright = bipart(y, noComma=True)
-        
-        if xslash == yslash:
-            leftIden, leftPairs = catIden(xleft, yleft)
-            rightIden, rightPairs = catIden(xright, yright)
-            return leftIden and rightIden, leftPairs | rightPairs
-
-    return False, set()
-
-
-def atomicIden(x: str, y: str, 
-               pattern=re.compile(r'(?:\A|\()(?:\W*)([a-zA-Z]+)_?(\d*)(?:\Z|\))'), 
-               indexIden=False):
-    '''Check if `x` equals `y` (up to indexation).'''
-    x, x_i = pattern.search(x).groups()
-    y, y_i = pattern.search(y).groups()
-    return x == y and (not indexIden or x_i == y_i)
+from parentheses import bipart, isatomic, atomicIden
 
 
 def errorReport(con: str, pres: tuple, depth: int, *, fstream=sys.stdout):
