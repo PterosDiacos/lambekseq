@@ -1,11 +1,11 @@
 import json
 import sys
-from cindex import indexSeq
+import displace as dsp
+import lbnoprod as npr
+from lbnoprod import parseProof
 from cmll import ProofNet
 from cntccg import Cntccg
-import displace as dsp
-import noprodall as npr
-from noprodall import parseProof
+from cindex import indexSeq
 
 
 LinkSearch = []

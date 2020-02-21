@@ -1,4 +1,4 @@
-'''Lambek sequent calculus without products in conclusion. 
+'''Product-free Lambek sequent calculus. 
 This script finds the axioms of every proof.
 '''
 from itertools import product

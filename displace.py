@@ -137,7 +137,7 @@ def indexTokens(con:str, pres:list):
 
 
 def selfTest():
-    from noprodall import parseProof
+    from lbnoprod import parseProof
     con, *pres = 's', '(s^np)!s', '(np\\s)/np', '(s^np)!s'
     con, *pres = indexTokens(con, pres)
     proofs = findproof(con, *pres)
