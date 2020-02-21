@@ -19,9 +19,8 @@ def atomicIden(x, y):
 
 
 def bipart(s: str):
-    conn, left, right = _bipart(s, 
-        conn={'/', '\\', '^', '!'})
-    return conn, left.pop(), right.pop()
+    conn, left, right = _bipart(s, conn={'/', '\\', '^', '!'}, noComma=True)
+    return conn, left, right
 
 
 def isatomic(s: str):

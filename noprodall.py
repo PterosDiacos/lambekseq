@@ -4,14 +4,8 @@ This script finds the axioms of every proof.
 from itertools import product
 from functools import reduce
 from operator import concat
-from parentheses import stripparentheses, isatomic, bipart as _bipart
+from parentheses import stripparentheses, isatomic, bipart
 from lambek import atomicIden
-
-
-def bipart(s: str):
-    '''Break a non-atomic `s` into slashes and the left and right components.'''
-    slash, left, right = _bipart(s)
-    return slash, left.pop(), right.pop()
 
 
 def find_diffTV(con, pres, cut, left, right):
@@ -44,7 +38,7 @@ def findproof(con, *pres):
     '''Find proofs by showing the axiomatic premises.'''
     # when the conclusion is non-atomic
     if not isatomic(con):
-        slash, left, right = bipart(con)
+        slash, left, right = bipart(con, noComma=True)
         if slash == '/':
             return findproof(left, *pres, right)
         elif slash == '\\':
@@ -60,7 +54,7 @@ def findproof(con, *pres):
             for i in range(len(pres)):
                 if not isatomic(pres[i]):
                     hit_nonatomic = True
-                    slash, left, right = bipart(pres[i])
+                    slash, left, right = bipart(pres[i], noComma=True)
                     if slash == '/':
                         altBranches.extend(find_diffTV(con, pres, i, left, right))
                     elif slash == '\\':

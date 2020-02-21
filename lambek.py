@@ -7,11 +7,11 @@ from parentheses import bipart, isatomic
 
 
 def unslash(x:str):
+    '''No commas in `x`.'''
     xlist = [(x, None, None)]
 
     while not isatomic(xlist[-1][0]):
-        xslash, xleft, xright = bipart(xlist[-1][0])
-        xleft, xright = xleft[0], xright[0]
+        xslash, xleft, xright = bipart(xlist[-1][0], noComma=True)
         if xslash == '/':
             xlist.append((xleft, '/', xright))
         else:
@@ -34,15 +34,14 @@ def addHypo(x, slash, hypo):
 
 
 def catIden(x:str, y:str) -> (bool, set):
+    '''No commas in `x` and `y`.'''
     atomCount = int(isatomic(x)) + int(isatomic(y))    
     if atomCount == 2:
-        return atomicIden(x, y), {tuple(sorted({x, y}))}
+        return atomicIden(x, y), {x, y}
          
     elif atomCount == 0:
-        xslash, xleft, xright = bipart(x)
-        xleft, xright = xleft[0], xright[0]
-        yslash, yleft, yright = bipart(y)
-        yleft, yright = yleft[0], yright[0]
+        xslash, xleft, xright = bipart(x, noComma=True)
+        yslash, yleft, yright = bipart(y, noComma=True)
         
         if xslash == yslash:
             leftIden, leftPairs = catIden(xleft, yleft)

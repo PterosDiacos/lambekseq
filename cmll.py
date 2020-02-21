@@ -34,8 +34,7 @@ def cat2cmll(s: str):
     if isatomic(s):
         return s
     else:
-        slash, left, right = bipart(s)
-        left, right = left[0], right[0]
+        slash, left, right = bipart(s, noComma=True)
         if slash == '/':
             return (cat2cmll(left), Par, Neg(cat2cmll(right)))
         else:

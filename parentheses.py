@@ -33,9 +33,10 @@ def stripparentheses(s: str, leftPr='(', rightPr=')'):
 
 def bipart(s: str, 
            leftPr='(', rightPr=')',
-           conn={'/', '\\'}):
+           conn={'/', '\\'},
+           noComma=False):
     '''Break a non-atomic `s` into slashes, the left and right components. 
-    The latter two are lists.'''
+    The latter two are lists if `noComma` is `False`.'''
     s = stripparentheses(s)
     count = 0
     for i in range(len(s)):
@@ -44,4 +45,6 @@ def bipart(s: str,
         elif count == 0 and s[i] in conn:
             left, right = stripparentheses(s[:i]), stripparentheses(s[i + 1:]) 
             left, right = commaSplit(left), commaSplit(right)
+            if noComma:
+                left, right = left.pop(), right.pop()
             return s[i], left, right
