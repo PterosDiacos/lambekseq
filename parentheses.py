@@ -56,7 +56,7 @@ def bipart(s: str, leftPr='(', rightPr=')',
                 smod = s[i + 1]
                 j = 2
             else:
-                smod = None
+                smod = ''
                 j = 1
 
             left, right = stripparentheses(s[:i]), stripparentheses(s[i + j:]) 

@@ -17,7 +17,7 @@ def depthTag(s: str, rootdepth=0, chopcount=0,
             conn=Conns, connMod=Modifiers, withMod=True)
         taggedleft = taggedright = ()
 
-        if smod is None:
+        if not smod:
             if slash in fdConn:
                 for l in left:
                     taggedleft += depthTag(l, rootdepth, chopcount + 1)
@@ -50,7 +50,8 @@ def addIndex(s, natom, conn=Conns):
         return '%s_%d' % (s, natom), natom + 1
 
     else:
-        slash, left, right = bipart(s, conn=conn)      
+        slash, smod, left, right = bipart(s, 
+            conn=conn, connMod=Modifiers, withMod=True)      
 
         sleft = []
         for l in left:
@@ -69,7 +70,7 @@ def addIndex(s, natom, conn=Conns):
         if not isatomic(sleft, conn=conn | {','}): sleft = '(%s)' % sleft
         if not isatomic(sright, conn=conn | {','}): sright = '(%s)' % sright
 
-        return sleft + slash + sright, natom
+        return sleft + slash + smod + sright, natom
 
 
 def indexSeq(con: str, pres: list):
