@@ -3,77 +3,49 @@ import pprint as pp
 from parentheses import isatomic, bipart
 
 
-def corder(s: str):
-    '''Category order per (Pentus, 2010).'''
-    if isatomic(s):
-        return 0
-    else:
-        slash, left, right = bipart(s)
-        if slash == '/':
-            maxRight = max(corder(r) for r in right) + 1
-            maxLeft = (max(corder(l) for l in left) 
-                       + 2 * (min(len(left), 2) - 1))
-        else:
-            maxLeft = max(corder(l) for l in left) + 1
-            maxRight = (max(corder(r) for r in right) 
-                        + 2 * (min(len(right), 2) - 1))
-        return max(maxLeft, maxRight)
+Conns = {'/', '\\', '^', '!'}
+Modifiers = {'$'}
 
 
-def divOrdTag(s: str, divOrder=0):
-    '''Tag each atomic symbol with the order of its divisor.'''
-    if isatomic(s):
-        return ('%s#%d' % (s, divOrder), )
-    else:
-        slash, left, right = bipart(s)
-        taggedleft = taggedright = ()
-        if slash == '/':
-            rightOrder = (max(corder(r) for r in right)
-                          + 2 * (min(len(right), 2) - 1))
-            for l in left:
-                taggedleft += divOrdTag(l, rightOrder)
-            for r in right:
-                taggedright += divOrdTag(r)
-        else:
-            leftOrder = (max(corder(l) for l in left)
-                         + 2 * (min(len(left), 2) - 1))
-            for r in right:
-                taggedright += divOrdTag(r, leftOrder)
-            for l in left:
-                taggedleft += divOrdTag(l)
-        return (*taggedleft, slash, *taggedright)
-
-
-def depthTag(s: str, rootdepth=0, chopcount=0):
+def depthTag(s: str, rootdepth=0, chopcount=0,
+             fdConn={'/', '^'}, bkConn={'\\', '!'}):
     '''Tag each atomic symbol with its depth. No top level comma.'''
-    if isatomic(s):
+    if isatomic(s, conn=Conns):
         return ('%s:%d' % (s, rootdepth), )
     else:
-        slash, left, right = bipart(s)
+        slash, smod, left, right = bipart(s, 
+            conn=Conns, connMod=Modifiers, withMod=True)
         taggedleft = taggedright = ()
-        if slash == '/':
-            for r in right:
-                taggedright += depthTag(r, rootdepth + chopcount + 1, 0)
+
+        if smod is None:
+            if slash in fdConn:
+                for l in left:
+                    taggedleft += depthTag(l, rootdepth, chopcount + 1)
+                for r in right:
+                    taggedright += depthTag(r, rootdepth + chopcount + 1, 0)
+            elif slash in bkConn:
+                for r in right:
+                    taggedright += depthTag(r, rootdepth, chopcount + 1)
+                for l in left:
+                    taggedleft += depthTag(l, rootdepth + chopcount + 1, 0)
+        
+        elif smod in Modifiers:
             for l in left:
-                taggedleft += depthTag(l, rootdepth, chopcount + 1)
-        else:
-            for l in left:
-                taggedleft += depthTag(l, rootdepth + chopcount + 1, 0)
+                taggedleft += depthTag(l, rootdepth, chopcount)
             for r in right:
-                taggedright += depthTag(r, rootdepth, chopcount + 1)
+                taggedright += depthTag(r, rootdepth, chopcount)
+        
         return (*taggedleft, slash, *taggedright)
 
 
-def idx2depthDict(tagged, pattern=re.compile(r'_(\d+):(\d+)')):
+def idx2depthDict(tagged, conn=Conns,
+                  pattern=re.compile(r'_(\d+):(\d+)')):    
     return dict({pattern.search(x).groups() 
-        for x in tagged if x not in {'/', '\\'}})
+        for x in tagged if x not in conn})
 
 
-def idx2ordDict(tagged, pattern=re.compile(r'_(\d+)#(\d+)')):
-    return idx2depthDict(tagged, pattern=pattern)
-
-
-def addIndex(s, natom, conn={'/', '\\'}):
+def addIndex(s, natom, conn=Conns):
+    '''Number atomic symbols from left to right. No top level comma.'''
     if isatomic(s, conn=conn):
         return '%s_%d' % (s, natom), natom + 1
 
@@ -102,16 +74,14 @@ def addIndex(s, natom, conn={'/', '\\'}):
 
 def indexSeq(con: str, pres: list):
     '''Return tokens in `con` + `pres` with indices added to atoms.
-    Return also three maps from atom indices:
+    Return also two maps from atom indices:
      - to the token number;
-     - to the atom's depth;
-     - to the atom's divisor order.
+     - to the atom's depth.
     '''
     natom = 0
     alltokens = []
     idx2Token = {}
     idx2Depth = {}
-    idx2Order = {}
 
     for n, s in enumerate([con] + pres):
         s, natom1 = addIndex(s, natom)
@@ -120,17 +90,14 @@ def indexSeq(con: str, pres: list):
         for idx in range(natom, natom1): 
             idx2Token[str(idx)] = str(n)
         idx2Depth.update(idx2depthDict(depthTag(s)))
-        idx2Order.update(idx2ordDict(divOrdTag(s)))
 
         natom = natom1
 
     class FromIndex:
         toToken = idx2Token
         toDepth = idx2Depth
-        toOrder = idx2Order
         def __str__(self):
             return pp.pformat(dict(toToken=self.toToken,
-                                   toDepth=self.toDepth,
-                                   toOrder=self.toOrder))
+                                   toDepth=self.toDepth))
 
     return alltokens, FromIndex()
