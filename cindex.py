@@ -76,18 +76,31 @@ def idx2ordDict(tagged, pattern=re.compile(r'_(\d+)#(\d+)')):
 def addIndex(s, natom, conn={'/', '\\'}):
     if isatomic(s, conn=conn):
         return '%s_%d' % (s, natom), natom + 1
+
     else:
-        slash, left, right = bipart(s, conn=conn)
-        left, right = left.pop(), right.pop()
-        sleft, natomLeft = addIndex(left, natom, conn=conn)
-        sright, natomRight = addIndex(right, natomLeft, conn=conn)
+        slash, left, right = bipart(s, conn=conn)      
 
-        if not isatomic(sleft, conn=conn): sleft = '(%s)' % sleft
-        if not isatomic(sright, conn=conn): sright = '(%s)' % sright        
-        return sleft + slash + sright, natomRight
+        sleft = []
+        for l in left:
+            s, natomL = addIndex(l, natom, conn=conn)
+            sleft.append(s)
+            natom = natomL
+        sleft = ','.join(sleft)
+
+        sright = []
+        for r in right:
+            s, natomR = addIndex(r, natom, conn=conn)
+            sright.append(s)
+            natom = natomR
+        sright = ','.join(sright)
+        
+        if not isatomic(sleft, conn=conn | {','}): sleft = '(%s)' % sleft
+        if not isatomic(sright, conn=conn | {','}): sright = '(%s)' % sright
+
+        return sleft + slash + sright, natom
 
 
-def indexToken(con: str, pres: list):
+def indexSeq(con: str, pres: list):
     '''Return tokens in `con` + `pres` with indices added to atoms.
     Return also three maps from atom indices:
      - to the token number;

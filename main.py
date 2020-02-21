@@ -1,6 +1,6 @@
 import json
 import sys
-from cindex import indexToken
+from cindex import indexSeq
 from cmll import ProofNet
 from cntccg import Cntccg
 import displace as dsp
@@ -16,7 +16,7 @@ def registerLinkSearch(f):
 
 @registerLinkSearch
 def pnLinks(con: str, pres: list):
-    (con, *pres), _ = indexToken(con, pres)
+    (con, *pres), _ = indexSeq(con, pres)
     pn = ProofNet.fromLambekSeq(con, pres)
     pn.buildProofs()
     if pn.proofCount:
@@ -29,7 +29,7 @@ def pnLinks(con: str, pres: list):
 
 @registerLinkSearch
 def noprodLinks(con, pres):
-    (con, *pres), _ = indexToken(con, pres)
+    (con, *pres), _ = indexSeq(con, pres)
     proofs = npr.findproof(con, *pres)
     links = parseProof(proofs)
     if links:
@@ -42,7 +42,7 @@ def noprodLinks(con, pres):
 
 @registerLinkSearch
 def ccgLinks(con, pres):
-    (con, *pres), _ = indexToken(con, pres)
+    (con, *pres), _ = indexSeq(con, pres)
     ccg = Cntccg(pres)
     ccg.parse()
     if ccg.proofCount(con):

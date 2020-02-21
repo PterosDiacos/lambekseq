@@ -165,9 +165,9 @@ class Cntccg:
 
 
 def selfTest():
-    from cindex import indexToken
+    from cindex import indexSeq
 
-    (_, *pres), _ = indexToken(
+    (_, *pres), _ = indexSeq(
         's', ['s/(np\\s)', '(np\\s)/np', 's/(np\\s)', '(s\\s)/np', 's/(np\\s)'])
     cntccg = Cntccg(pres)
     cntccg.parse()
