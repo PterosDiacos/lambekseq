@@ -119,10 +119,8 @@ class Cntccg:
     @staticmethod
     def _toTower(s):
         if '^' in s and '!' in s:
-            sl1, l, a = bipart(s, conn={'^', '!'}, noComma=True)
-            assert sl1 == '!'
-            sl2, b, x = bipart(l, conn={'^', '!'}, noComma=True)
-            assert sl2 == '^' and not ('^' in x or '!' in x)
+            _, l, a = bipart(s, conn={'!'}, noComma=True)
+            _, b, x = bipart(l, conn={'^'}, noComma=True)
             return (x, (a, b))
         else:
             return (s,)
@@ -142,6 +140,7 @@ class Cntccg:
             if con: r.links |= catIden(r[0], con)[1]
             s = sorted('(%s, %s)' % (i, j) for i, j in r.links)
             print(', '.join(s))
+        if pool: print()
 
     def parse(self):
         '''CYK parsing.'''
