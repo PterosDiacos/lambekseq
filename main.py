@@ -7,62 +7,34 @@ from cmll import ProofNet
 from cntccg import Cntccg
 
 
-LinkSearch = []
-def registerLinkSearch(f):
-    LinkSearch.append(f)
-    return f
+PaserDict = {0: ProofNet,
+             1: LambekProof,
+             2: Cntccg,
+             3: DisplaceProof}
 
 
-@registerLinkSearch
-def pnLinks(con: str, pres: list):
-    (con, *pres), _ = indexSeq(con, pres)
-    pn = ProofNet.fromLambekSeq(con, pres)
-    pn.parse()
-    if pn.proofCount:
-        print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
-        pn.printProofs(symbolOnly=True)
-        print('Total: %d\n' % pn.proofCount)
+def searchLinks(cls, con, pres):
+    (con, *pres), _ = indexSeq(con, pres)   
+    if cls == ProofNet:
+        agent = cls.fromLambekSeq(con, pres)
+    elif cls == Cntccg:
+        agent = cls(pres)
+    else:
+        agent = cls(con, pres)
+
+    agent.parse()
     
-    return pn.proofCount
-
-
-@registerLinkSearch
-def noprodLinks(con, pres):
-    (con, *pres), _ = indexSeq(con, pres)
-    lbk = LambekProof(con, pres)
-    lbk.parse()
-    if lbk.proofCount:
+    if agent.proofCount:
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
-        lbk.printProofs()
-        print('Total: %d\n' % lbk.proofCount)
+        if cls == ProofNet:
+            agent.printProofs(symbolOnly=True)
+        elif cls == Cntccg:
+            agent.printProofs(con)
+        else:
+            agent.printProofs()      
+        print('Total: %d\n' % agent.proofCount)
     
-    return lbk.proofCount
-
-
-@registerLinkSearch
-def ccgLinks(con, pres):
-    (con, *pres), _ = indexSeq(con, pres)
-    ccg = Cntccg(pres)
-    ccg.parse()
-    if ccg.proofCount(con):
-        print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
-        ccg.printProofs(con)
-        print('Total: %d\n' % ccg.proofCount(con))
-    
-    return ccg.proofCount(con)
-
-
-@registerLinkSearch
-def dspLinks(con, pres):
-    (con, *pres), _ = indexSeq(con, pres)
-    dsp = DisplaceProof(con, pres)
-    dsp.parse()
-    if dsp.proofCount:
-        print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
-        dsp.printProofs()
-        print('Total: %d\n' % dsp.proofCount)
-    
-    return dsp.proofCount    
+    return agent.proofCount
 
 
 def deAbbr(con: str, pres: list, abbr: dict):
@@ -82,14 +54,13 @@ if __name__ == '__main__':
     con, *pres = json.load(open('input.json'))[0]
     abbr = json.load(open('abbr.json'))
 
-    # defaults to ccgLinks
-    f = LinkSearch[int(sys.argv[1])] if len(sys.argv) > 1 \
-                                     else ccgLinks
+    # defaults to Cntccg
+    f = PaserDict[int(sys.argv[1])] if len(sys.argv) > 1 \
+                                    else Cntccg
     print(f)
 
-    f.count = 0
+    total = 0
     for con, pres in deAbbr(con, pres, abbr):
-        f.count += f(con, pres)
+        total += searchLinks(f, con, pres)
 
-    if not f.count:
-        print('Total: 0\n')
+    if not total: print('Total: 0\n')

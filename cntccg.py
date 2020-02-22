@@ -133,6 +133,7 @@ class Cntccg:
     def proofs(self):
         return self._proofSpan[0, len(self) - 1]
 
+    @property
     def proofCount(self, con=None):
         pool = list(filter(lambda r: catIden(r[0], con)[0], 
                     self.proofs)) if con else self.proofs
