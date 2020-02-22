@@ -108,15 +108,19 @@ class ProofNet:
         return cls(fm)
 
     @property
+    def proofs(self):
+        return self._proofSpan[0, self.natom - 1]
+
+    @property
     def proofCount(self):
-        return len(self.proofSpan[0, self.natom - 1])
+        return len(self.proofs)
 
     def printProofLinks(self, symbolOnly=False):
         a = lambda x, y: ((self.adict[x], self.adict[y])
                           if isNeg(self.adict[x]) else
                           (self.adict[y], self.adict[x]))
 
-        for parse in self.proofSpan[0, self.natom - 1]:
+        for parse in self.proofs:
             if not symbolOnly: print(parse)
             s = sorted('(%s, %s)' % a(x, y) for x, y in parse.links)
             print(', '.join(s), end='\n' if symbolOnly else '\n\n')
@@ -203,7 +207,7 @@ class ProofNet:
                                             else:
                                                 span[i, k].add(Parse(newPo, ends, links))
 
-        self.proofSpan = span
+        self._proofSpan = span
 
 
 def selfTest():

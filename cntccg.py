@@ -129,6 +129,10 @@ class Cntccg:
     def __len__(self):
         return len(self.pres)
 
+    @property
+    def proofs(self):
+        return self._proofSpan[0, len(self) - 1]
+
     def proofCount(self, con=None):
         pool = list(filter(lambda r: catIden(r[0], con)[0], 
                     self.proofs)) if con else self.proofs
@@ -157,8 +161,8 @@ class Cntccg:
                         for y in span[j, k]:
                             span[i, k] |= x + y
         
-        self.proofs = span[0, len(self) - 1]
-        for r in self.proofs: r.collapse()
+        for r in span[0, len(self) - 1]: r.collapse()
+        self._proofSpan = span
 
 
 def selfTest():
