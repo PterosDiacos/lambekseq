@@ -69,12 +69,12 @@ def hasProof(con: list, *pres, fstream=sys.stdout, depth=0, trace=True):
                                 and hasProof([con], *U, *right, *V, fstream=fstream, depth=depth + 1, trace=trace)):
                                     return True
                 else:
-                    if len(pres) == 1 and isatomic(pres[0]) and atomicIden(pres[0], con):
-                        return True
-                    else:
-                        if trace and not hitNonatomic: 
-                            errorReport(con, pres, depth, fstream=fstream)
-                        return False
+                    if not hitNonatomic:
+                        if len(pres) == 1 and atomicIden(pres[0], con):
+                            return True
+                        else:
+                            if trace: errorReport(con, pres, depth, fstream=fstream)                    
+                            return False
 
 
 def selfTest():
