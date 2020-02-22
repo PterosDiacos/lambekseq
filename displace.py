@@ -1,4 +1,4 @@
-'''Displacement sequent calculus without products.
+'''Product-free Basic Displacement sequent calculus.
 This script finds the axioms of every proof.
 Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 '''
@@ -126,23 +126,16 @@ def findproof(con, *pres):
                 else:
                     return ''
 
-# def indexTokens(con:str, pres:list):
-#     natom = 0
-#     alltokens = []
-#     for s in [con] + pres:
-#         if s != Gap:
-#             s, natom = addIndex(s, natom, conn={'/', '\\', '^', '!'})
-#         alltokens.append(s)    
-#     return alltokens
-
 
 def selfTest():
     from lbnoprod import parseProof
     from cindex import indexSeq    
+
     con, *pres = 's', '(s^np)!s', '(np\\s)/np', '(s^np)!s'
     (con, *pres), _ = indexSeq(con, pres)
     proofs = findproof(con, *pres)
     links = parseProof(proofs)
+
     print('\n%s <= %s\n' % (con, ' '.join(pres)))
     print(*links, sep='\n', end='\n\n')
     print('Total: %d\n' % len(links))    
