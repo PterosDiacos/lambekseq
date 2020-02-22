@@ -115,7 +115,7 @@ class ProofNet:
     def proofCount(self):
         return len(self.proofs)
 
-    def printProofLinks(self, symbolOnly=False):
+    def printProofs(self, symbolOnly=False):
         a = lambda x, y: ((self.adict[x], self.adict[y])
                           if isNeg(self.adict[x]) else
                           (self.adict[y], self.adict[x]))
@@ -137,7 +137,7 @@ class ProofNet:
         return ({c for c in conns if self.cdict[c] == Tensor}, 
                 {c for c in conns if self.cdict[c] == Par})
 
-    def buildProofs(self):
+    def parse(self):
         self.po = PartialOrder(set(self.cdict), self.po)
         span = defaultdict(set)
 
@@ -218,17 +218,17 @@ def selfTest():
     fm = (('~p', Tensor, ((('q', Par, ('~s', Tensor, 's')), Tensor, '~s'), Par, 's')), Par, 
          (((('~s', Tensor, 's'), Par, ('~s', Par, 's')), Tensor, '~q'), Par, 'p'))
     pn = ProofNet(fm)
-    pn.buildProofs()
+    pn.parse()
     print(pp.pformat(pn.fm) + '\n')
-    pn.printProofLinks()
+    pn.printProofs()
     print('Total: %d\n' % pn.proofCount)
 
     print(sep + 'Test 2' + sep)
     con, *pres = 's_0', 's_1/(np_2\\s_3)', '(np_4\\s_5)/np_6', '(s_7/np_8)\\s_9'
     pn = ProofNet.fromLambekSeq(con, pres)
-    pn.buildProofs()
+    pn.parse()
     print(pp.pformat(pn.fm) + '\n')
-    pn.printProofLinks()
+    pn.printProofs()
     print('Total: %d\n' % pn.proofCount)
 
 

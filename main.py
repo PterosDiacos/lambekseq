@@ -1,11 +1,10 @@
 import json
 import sys
-import displace as dsp
-import lbnoprod as npr
-from lbnoprod import parseProof
+from cindex import indexSeq
+from lbnoprod import LambekProof
+from displace import DisplaceProof
 from cmll import ProofNet
 from cntccg import Cntccg
-from cindex import indexSeq
 
 
 LinkSearch = []
@@ -18,10 +17,10 @@ def registerLinkSearch(f):
 def pnLinks(con: str, pres: list):
     (con, *pres), _ = indexSeq(con, pres)
     pn = ProofNet.fromLambekSeq(con, pres)
-    pn.buildProofs()
+    pn.parse()
     if pn.proofCount:
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
-        pn.printProofLinks(symbolOnly=True)
+        pn.printProofs(symbolOnly=True)
         print('Total: %d\n' % pn.proofCount)
     
     return pn.proofCount
@@ -30,14 +29,14 @@ def pnLinks(con: str, pres: list):
 @registerLinkSearch
 def noprodLinks(con, pres):
     (con, *pres), _ = indexSeq(con, pres)
-    proofs = npr.findproof(con, *pres)
-    links = parseProof(proofs)
-    if links:
+    lbk = LambekProof(con, pres)
+    lbk.parse()
+    if lbk.proofCount:
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
-        print(*links, sep='\n', end='\n\n')
-        print('Total: %d\n' % len(links))
+        lbk.printProofs()
+        print('Total: %d\n' % lbk.proofCount)
     
-    return len(links)
+    return lbk.proofCount
 
 
 @registerLinkSearch
@@ -56,14 +55,14 @@ def ccgLinks(con, pres):
 @registerLinkSearch
 def dspLinks(con, pres):
     (con, *pres), _ = indexSeq(con, pres)
-    proofs = dsp.findproof(con, *pres)
-    links = parseProof(proofs)
-    if links:
+    dsp = DisplaceProof(con, pres)
+    dsp.parse()
+    if dsp.proofCount:
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
-        print(*links, sep='\n', end='\n\n')
-        print('Total: %d\n' % len(links))
+        dsp.printProofs()
+        print('Total: %d\n' % dsp.proofCount)
     
-    return len(links)    
+    return dsp.proofCount    
 
 
 def deAbbr(con: str, pres: list, abbr: dict):
