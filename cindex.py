@@ -3,6 +3,7 @@ import pprint as pp
 from parentheses import isatomic, bipart
 
 
+StopAtoms = {'-'}
 Conns = {'/', '\\', '^', '!'}
 Modifiers = {'$'}
 
@@ -47,7 +48,10 @@ def idx2depthDict(tagged, conn=Conns,
 def addIndex(s, natom, conn=Conns):
     '''Number atomic symbols from left to right. No top level comma.'''
     if isatomic(s, conn=conn):
-        return '%s_%d' % (s, natom), natom + 1
+        if s in StopAtoms:
+            return s, natom
+        else:
+            return '%s_%d' % (s, natom), natom + 1
 
     else:
         slash, smod, left, right = bipart(s, 
@@ -80,6 +84,7 @@ def indexSeq(con: str, pres: list):
      - to the atom's depth.
     '''
     natom = 0
+    stopCount = 0
     alltokens = []
     idx2Token = {}
     idx2Depth = {}
@@ -89,8 +94,12 @@ def indexSeq(con: str, pres: list):
         alltokens.append(s)
 
         for idx in range(natom, natom1): 
-            idx2Token[str(idx)] = str(n)
-        idx2Depth.update(idx2depthDict(depthTag(s)))
+            idx2Token[str(idx)] = str(n - stopCount)
+
+        if s in StopAtoms:
+            stopCount += 1
+        else:
+            idx2Depth.update(idx2depthDict(depthTag(s)))
 
         natom = natom1
 
