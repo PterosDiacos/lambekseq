@@ -84,8 +84,8 @@ if __name__ == '__main__':
     abbr = json.load(open('abbr.json'))
 
     # defaults to ccgLinks
-    n = int(sys.argv[1]) if len(sys.argv) > 1 else 2
-    f = LinkSearch[n]
+    f = LinkSearch[int(sys.argv[1])] if len(sys.argv) > 1 \
+                                     else ccgLinks
     print(f)
 
     f.count = 0
