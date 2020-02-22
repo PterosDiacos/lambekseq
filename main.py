@@ -83,6 +83,7 @@ if __name__ == '__main__':
     con, *pres = json.load(open('input.json'))[0]
     abbr = json.load(open('abbr.json'))
 
+    # defaults to ccgLinks
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 2
     f = LinkSearch[n]
     print(f)
