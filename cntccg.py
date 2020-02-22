@@ -118,10 +118,11 @@ class Cntccg:
 
     @staticmethod
     def _toTower(s):
-        if '^' in s and '!' in s:
+        if '!' in s and '^' in s:
+            # s is of the shape (b^c)!a
             _, l, a = bipart(s, conn={'!'}, noComma=True)
-            _, b, x = bipart(l, conn={'^'}, noComma=True)
-            return (x, (a, b))
+            _, b, c = bipart(l, conn={'^'}, noComma=True)
+            return (c, (a, b))
         else:
             return (s,)
 
