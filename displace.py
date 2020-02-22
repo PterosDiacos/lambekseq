@@ -4,11 +4,12 @@ Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 '''
 from cindex import addIndex
 from parentheses import atomicIden as _atomicIden
-from parentheses import bipart as _bipart
-from parentheses import isatomic as _isatomic
+from parentheses import bipart, isatomic
+from lbnoprod import LambekProof as _LambekProof
 
 
 Gap = '-'
+Conns = {'/', '\\', '^', '!'}
 
 
 def atomicIden(x, y):
@@ -18,43 +19,36 @@ def atomicIden(x, y):
         return _atomicIden(x, y)
 
 
-def bipart(s: str):
-    conn, left, right = _bipart(s, conn={'/', '\\', '^', '!'}, noComma=True)
-    return conn, left, right
-
-
-def isatomic(s: str):
-    return _isatomic(s, conn={'/', '\\', '^', '!'})
-
-
 def find_diffTV(con, pres, cut, left, right):
     U = pres[:cut]
-    alts = []
+    alts = set()
     for j in range(cut + 1, len(pres) + 1):
         T, V = pres[cut + 1:j], pres[j:]
         rightproof = findproof(right, *T)
         if rightproof:
             leftproof = findproof(con, *U, left, *V)
             if leftproof:
-                alts.append(' [ %s AND %s ] ' % (rightproof, leftproof))
+                alts.update({r | l for r in rightproof 
+                                   for l in leftproof})
     return alts
 
 
 def find_diffUT(con, pres, cut, left, right):
     V = pres[cut + 1:]
-    alts = []
+    alts = set()
     for j in range(cut + 1):
         U, T = pres[:j], pres[j:cut]
         leftproof = findproof(left, *T)
         if leftproof:
             rightproof = findproof(con, *U, right, *V)
             if rightproof:
-                alts.append(' [ %s AND %s ] ' % (leftproof, rightproof))
+                alts.update({l | r for l in leftproof
+                                   for r in rightproof})
     return alts
 
 
 def find_extract(con, pres, cut, left, right):
-    alts = []
+    alts = set()
     for i in range(cut, -1, -1):
         for j in range(cut, len(pres)):
             if not pres[i:j + 1].count(Gap):
@@ -62,7 +56,8 @@ def find_extract(con, pres, cut, left, right):
                 if rightproof:
                     leftproof = findproof(left, *pres[i:cut], Gap, *pres[cut + 1:j + 1])
                     if leftproof:
-                        alts.append(' [ %s AND %s ] ' % (leftproof, rightproof))
+                        alts.update({l | r for l in leftproof
+                                           for r in rightproof})
     return alts
 
 
@@ -70,75 +65,72 @@ def findproof(con, *pres):
     pres = list(pres)
 
     # when the conclusion is non-atomic
-    if not isatomic(con):
-        conn, left, right = bipart(con)
+    if not isatomic(con, conn=Conns):
+        conn, left, right = bipart(con, conn=Conns, noComma=True)
         if conn == '/':
             return findproof(left, *pres, right)        
         elif conn == '\\':
             return findproof(right, left, *pres)
         elif conn == '!':
-            return ' [ %s OR %s ] ' % (
-                findproof(right, left, *pres),
-                findproof(right, *pres, left))
+            return findproof(right, left, *pres).union(
+                   findproof(right, *pres, left))
         elif conn == '^':
             try:
                 assert pres.count(Gap) <= 1
                 cut = pres.index(Gap)
             except AssertionError:
-                return ''
+                return set()
             except ValueError:
-                alts = []
+                alts = set()
                 for i in range(len(pres) + 1):
-                    alts.append(findproof(con, *pres[:i], Gap, *pres[i:]))
-                return ' [ %s ] ' % ' OR '.join(filter(None, alts))
+                    alts.update(findproof(con, *pres[:i], Gap, *pres[i:]))
+                return alts
             else:
                 return findproof(left, *pres[:cut], right, *pres[cut + 1:])
                     
     # when the conclusion is atomic
     else:
         if len(pres) == 0:
-            return ''
+            return set()
         else:
-            altBranches = []
+            altBranches = set()
             hit_nonatomic = False
             for i in range(len(pres)):
-                if not isatomic(pres[i]):
+                if not isatomic(pres[i], conn=Conns):
                     hit_nonatomic = True
-                    conn, left, right = bipart(pres[i])
+                    conn, left, right = bipart(pres[i], conn=Conns, noComma=True)
                     if conn == '/':
-                        altBranches.extend(find_diffTV(con, pres, i, left, right))
+                        altBranches.update(find_diffTV(con, pres, i, left, right))
                     elif conn == '\\':
-                        altBranches.extend(find_diffUT(con, pres, i, left, right))
+                        altBranches.update(find_diffUT(con, pres, i, left, right))
                     elif conn == '!':
-                        altBranches.extend(find_extract(con, pres, i, left, right))
+                        altBranches.update(find_extract(con, pres, i, left, right))
                     elif conn == '^':
-                        altBranches.extend(find_diffTV(con, pres, i, left, right))
-                        altBranches.extend(find_diffUT(con, pres, i, right, left))
+                        altBranches.update(find_diffTV(con, pres, i, left, right))
+                        altBranches.update(find_diffUT(con, pres, i, right, left))
 
             if hit_nonatomic:
-                if altBranches:
-                    return ' [ %s ] ' % ' OR '.join(altBranches)
-                else:
-                    return ''
+                return altBranches
             else:
                 if len(pres) == 1 and atomicIden(pres[0], con):
-                    return ' [ %s -> %s ] ' % (pres[0], con)
+                    return {frozenset({tuple(sorted({pres[0], con}))})}
                 else:
-                    return ''
+                    return set()
+
+
+class DisplaceProof(_LambekProof):
+    def parse(self):
+        self.proofs = findproof(self.con, *self.pres)
 
 
 def selfTest():
-    from lbnoprod import parseProof
-    from cindex import indexSeq    
+    from cindex import indexSeq
 
     con, *pres = 's', '(s^np)!s', '(np\\s)/np', '(s^np)!s'
     (con, *pres), _ = indexSeq(con, pres)
-    proofs = findproof(con, *pres)
-    links = parseProof(proofs)
-
-    print('\n%s <= %s\n' % (con, ' '.join(pres)))
-    print(*links, sep='\n', end='\n\n')
-    print('Total: %d\n' % len(links))    
+    dsp = DisplaceProof(con, pres)
+    dsp.parse()
+    dsp.printProofs()
 
 
 if __name__ == '__main__':

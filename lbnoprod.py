@@ -1,35 +1,34 @@
 '''Product-free Lambek sequent calculus. 
 This script finds the axioms of every proof.
 '''
-from itertools import product
-from functools import reduce
-from operator import concat
 from parentheses import stripparentheses, isatomic, bipart, atomicIden
 
 
 def find_diffTV(con, pres, cut, left, right):
     U = pres[:cut]
-    alts = []
+    alts = set()
     for j in range(cut + 1, len(pres) + 1):
         T, V = pres[cut + 1:j], pres[j:]
         rightproof = findproof(right, *T)
         if rightproof:
             leftproof = findproof(con, *U, left, *V)
             if leftproof:
-                alts.append(' [ %s AND %s ] ' % (rightproof, leftproof))
+                alts.update({r | l for r in rightproof 
+                                   for l in leftproof}) 
     return alts
 
 
 def find_diffUT(con, pres, cut, left, right):
     V = pres[cut + 1:]
-    alts = []
+    alts = set()
     for j in range(cut + 1):
         U, T = pres[:j], pres[j:cut]
         leftproof = findproof(left, *T)
         if leftproof:
             rightproof = findproof(con, *U, right, *V)
             if rightproof:
-                alts.append(' [ %s AND %s ] ' % (leftproof, rightproof))
+                alts.update({l | r for l in leftproof
+                                   for r in rightproof})
     return alts
 
 
@@ -46,84 +45,55 @@ def findproof(con, *pres):
     # when the conclusion is atomic
     else:
         if len(pres) == 0:
-            return ''
+            return set()
         else:
-            altBranches = []
+            altBranches = set()
             hit_nonatomic = False
             for i in range(len(pres)):
                 if not isatomic(pres[i]):
                     hit_nonatomic = True
                     slash, left, right = bipart(pres[i], noComma=True)
                     if slash == '/':
-                        altBranches.extend(find_diffTV(con, pres, i, left, right))
+                        altBranches.update(find_diffTV(con, pres, i, left, right))
                     elif slash == '\\':
-                        altBranches.extend(find_diffUT(con, pres, i, left, right))
+                        altBranches.update(find_diffUT(con, pres, i, left, right))
 
             if hit_nonatomic:
-                if altBranches:
-                    return ' [ %s ] ' % ' OR '.join(altBranches)
-                else:
-                    return ''
+                return altBranches
             else:
                 if len(pres) == 1 and atomicIden(pres[0], con):
-                    return ' [ %s -> %s ] ' % (pres[0], con)
+                    return {frozenset({tuple(sorted({pres[0], con}))})}
                 else:
-                    return ''
+                    return set()
 
 
-def getConn(s):
-    if 'OR' in s or 'AND' in s:
-        count = 0
-        for i in range(len(s)):
-            if s[i] == '[': count +=1
-            elif s[i] == ']': count -= 1
-            elif count == 0:
-                if s[i: i + 2] == 'OR': return 'OR'
-                elif s[i: i + 3] == 'AND': return 'AND'
-    else:
-        return None
+class LambekProof:
+    def __init__(self, con, pres):
+        self.con = con
+        self.pres = pres
+
+    def parse(self):
+        self.proofs = findproof(self.con, *self.pres)
+
+    @property
+    def proofCount(self):
+        return len(self.proofs)
+
+    def printProofs(self):
+        for p in self.proofs:
+            s = sorted('(%s, %s)' % (i, j) for (i, j) in p)
+            print(', '.join(s))        
+        if self.proofs: print()
 
 
-def getTerms(s, conn):
-    terms = []
-    count = 0
-    for i in range(len(s)):
-        if s[i] == '[':
-            count += 1
-            if count == 1: lastOpen = i
-        elif s[i] == ']':
-            count -= 1
-            if  count == 0 and conn not in s[i:]: 
-                terms.append(s[lastOpen:i + 1])
-        elif count == 0 and s[i:i + len(conn)] == conn:
-            terms.append(s[lastOpen:i])
-    return terms
+def selfTest():
+    from cindex import indexSeq
+    con, *pres = 's', 's/(np\\s)', '(np\\s)/np', '(s/np)\\s'
+    (con, *pres), _ = indexSeq(con, pres)
+    lbk = LambekProof(con, pres)
+    lbk.parse()
+    lbk.printProofs()
 
 
-def makeTree(s):
-    s = stripparentheses(s, leftPr='[', rightPr=']')
-    conn = getConn(s)
-    if not conn:
-        return stripparentheses(s, leftPr='[', rightPr=']')
-    else:
-        return (conn, [makeTree(t) for t in getTerms(s, conn)])
-
-
-def tree2links(tree):
-    if isinstance(tree, str):
-        return {(tree,)}
-    else:
-        if tree[0] == 'AND':
-            return {reduce(concat, x) for x in 
-                set(product(*(tree2links(b) for b in tree[1])))}
-        elif tree[0] == 'OR':
-            return set.union(*(tree2links(b) for b in tree[1]))
-
-
-def parseProof(s):
-    tree = makeTree(s)
-    if tree:
-        links = {frozenset(l) for l in tree2links(tree)}
-        return {tuple(sorted(l)) for l in links}
-    else:
-        return set()
+if __name__ == '__main__':
+    selfTest()
