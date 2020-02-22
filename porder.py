@@ -1,3 +1,6 @@
+'''Utilities for partial order objects.
+'''
+
 class PartialOrder:
     def __init__(self, nodes, edges):
         self.nodes = nodes.copy()
