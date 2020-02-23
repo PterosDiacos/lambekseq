@@ -19,14 +19,24 @@ def atomicIden(x, y):
         return _atomicIden(x, y)
 
 
+def cachedproof(*args):
+    if args in cachedproof._cache:
+        return cachedproof._cache[args]
+    else:
+        return cachedproof._cache.setdefault(args,
+            findproof(args[0], *args[1:]))
+
+cachedproof._cache = dict()
+
+
 def find_diffTV(con, pres, cut, left, right):
     U = pres[:cut]
     alts = set()
     for j in range(cut + 1, len(pres) + 1):
         T, V = pres[cut + 1:j], pres[j:]
-        rightproof = findproof(right, *T)
+        rightproof = cachedproof(right, *T)
         if rightproof:
-            leftproof = findproof(con, *U, left, *V)
+            leftproof = cachedproof(con, *U, left, *V)
             if leftproof:
                 alts.update({r | l for r in rightproof 
                                    for l in leftproof})
@@ -38,9 +48,9 @@ def find_diffUT(con, pres, cut, left, right):
     alts = set()
     for j in range(cut + 1):
         U, T = pres[:j], pres[j:cut]
-        leftproof = findproof(left, *T)
+        leftproof = cachedproof(left, *T)
         if leftproof:
-            rightproof = findproof(con, *U, right, *V)
+            rightproof = cachedproof(con, *U, right, *V)
             if rightproof:
                 alts.update({l | r for l in leftproof
                                    for r in rightproof})
@@ -52,9 +62,9 @@ def find_extract(con, pres, cut, left, right):
     for i in range(cut, -1, -1):
         for j in range(cut, len(pres)):
             if not pres[i:j + 1].count(Gap):
-                rightproof = findproof(con, *pres[:i], right, *pres[j + 1:])
+                rightproof = cachedproof(con, *pres[:i], right, *pres[j + 1:])
                 if rightproof:
-                    leftproof = findproof(left, *pres[i:cut], Gap, *pres[cut + 1:j + 1])
+                    leftproof = cachedproof(left, *pres[i:cut], Gap, *pres[cut + 1:j + 1])
                     if leftproof:
                         alts.update({l | r for l in leftproof
                                            for r in rightproof})
@@ -68,30 +78,30 @@ def findproof(con, *pres):
     if not isatomic(con, conn=Conns):
         conn, left, right = bipart(con, conn=Conns, noComma=True)
         if conn == '/':
-            return findproof(left, *pres, right)        
+            return cachedproof(left, *pres, right)        
         elif conn == '\\':
-            return findproof(right, left, *pres)
+            return cachedproof(right, left, *pres)
         elif conn == '!':
-            return findproof(right, left, *pres).union(
-                   findproof(right, *pres, left))
+            return cachedproof(right, left, *pres).union(
+                   cachedproof(right, *pres, left))
         elif conn == '^':
             try:
                 assert pres.count(Gap) <= 1
                 cut = pres.index(Gap)
             except AssertionError:
-                return set()
+                return frozenset()
             except ValueError:
                 alts = set()
                 for i in range(len(pres) + 1):
-                    alts.update(findproof(con, *pres[:i], Gap, *pres[i:]))
-                return alts
+                    alts.update(cachedproof(con, *pres[:i], Gap, *pres[i:]))
+                return frozenset(alts)
             else:
-                return findproof(left, *pres[:cut], right, *pres[cut + 1:])
+                return cachedproof(left, *pres[:cut], right, *pres[cut + 1:])
                     
     # when the conclusion is atomic
     else:
         if len(pres) == 0:
-            return set()
+            return frozenset()
         else:
             altBranches = set()
             hit_nonatomic = False
@@ -110,12 +120,12 @@ def findproof(con, *pres):
                         altBranches.update(find_diffUT(con, pres, i, right, left))
 
             if hit_nonatomic:
-                return altBranches
+                return frozenset(altBranches)
             else:
                 if len(pres) == 1 and atomicIden(pres[0], con):
-                    return {frozenset({tuple(sorted({pres[0], con}))})}
+                    return frozenset({frozenset({tuple(sorted({pres[0], con}))})})
                 else:
-                    return set()
+                    return frozenset()
 
 
 class DisplaceProof(_LambekProof):
