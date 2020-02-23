@@ -1,5 +1,6 @@
 import json
 import sys
+from parentheses import bipart, isatomic
 from cindex import indexSeq
 from lbnoprod import LambekProof
 from displace import DisplaceProof
@@ -37,11 +38,30 @@ def searchLinks(cls, con, pres):
     return agent.proofCount
 
 
-def deAbbr(con: str, pres: list, abbr: dict):
+def deAbbr(con: str, pres: list, abbr: dict, 
+           conn={'/', '\\', '^', '!'}):    
+    def zoomin(s):
+        if isatomic(s, conn=conn):
+            for opt in abbr.get(s, [s]):
+                if opt == s:
+                    yield opt
+                else:
+                    for opt1 in zoomin(opt):
+                        yield opt1
+        else:
+            slash, smod, l, r = bipart(s,
+                conn=conn, noComma=True, withMod=True)
+            for lopt in zoomin(l):
+                for ropt in zoomin(r):
+                    if not isatomic(lopt, conn=conn):
+                        lopt = '(%s)' % lopt
+                    if not isatomic(ropt, conn=conn):
+                        ropt = '(%s)' % ropt
+                    yield lopt + slash + smod + ropt
     def gen(L):
         if L:
             head, *tail = L
-            for hopt in abbr.get(head, [head]):
+            for hopt in zoomin(head):
                 for topt in gen(tail): 
                     yield [hopt] + topt
         else:
