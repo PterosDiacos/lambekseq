@@ -1,7 +1,5 @@
 import json
 
-def arrowFormat(raw):
-    return ( eval(x) for x in raw.split('\n') )
 
 def pairFormat(raw):
     for x in raw.split('\n'):
@@ -14,10 +12,7 @@ config = json.load(open('scope_config.json'))
 qdict = config['qdict']
 prep = config['prep']
 raw = open('scope_raw').read().strip()
-if config['format'] == 'arrow':
-    output = arrowFormat(raw)
-else:
-    output = pairFormat(raw)
+output = pairFormat(raw)
 
 
 def check(x, y):
