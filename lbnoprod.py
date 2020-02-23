@@ -4,14 +4,24 @@ This script finds the axioms of every proof.
 from parentheses import stripparentheses, isatomic, bipart, atomicIden
 
 
+def cachedproof(*args):
+    if args in cachedproof._cache:
+        return cachedproof._cache[args]
+    else:
+        return cachedproof._cache.setdefault(args,
+            findproof(args[0], *args[1:]))
+
+cachedproof._cache = dict()
+
+
 def find_diffTV(con, pres, cut, left, right):
     U = pres[:cut]
     alts = set()
     for j in range(cut + 1, len(pres) + 1):
         T, V = pres[cut + 1:j], pres[j:]
-        rightproof = findproof(right, *T)
+        rightproof = cachedproof(right, *T)
         if rightproof:
-            leftproof = findproof(con, *U, left, *V)
+            leftproof = cachedproof(con, *U, left, *V)
             if leftproof:
                 alts.update({r | l for r in rightproof 
                                    for l in leftproof}) 
@@ -23,9 +33,9 @@ def find_diffUT(con, pres, cut, left, right):
     alts = set()
     for j in range(cut + 1):
         U, T = pres[:j], pres[j:cut]
-        leftproof = findproof(left, *T)
+        leftproof = cachedproof(left, *T)
         if leftproof:
-            rightproof = findproof(con, *U, right, *V)
+            rightproof = cachedproof(con, *U, right, *V)
             if rightproof:
                 alts.update({l | r for l in leftproof
                                    for r in rightproof})
@@ -38,14 +48,14 @@ def findproof(con, *pres):
     if not isatomic(con):
         slash, left, right = bipart(con, noComma=True)
         if slash == '/':
-            return findproof(left, *pres, right)
+            return cachedproof(left, *pres, right)
         elif slash == '\\':
-            return findproof(right, left, *pres)
+            return cachedproof(right, left, *pres)
 
     # when the conclusion is atomic
     else:
         if len(pres) == 0:
-            return set()
+            return frozenset()
         else:
             altBranches = set()
             hit_nonatomic = False
@@ -59,12 +69,12 @@ def findproof(con, *pres):
                         altBranches.update(find_diffUT(con, pres, i, left, right))
 
             if hit_nonatomic:
-                return altBranches
+                return frozenset(altBranches)
             else:
                 if len(pres) == 1 and atomicIden(pres[0], con):
-                    return {frozenset({tuple(sorted({pres[0], con}))})}
+                    return frozenset({frozenset({tuple(sorted({pres[0], con}))})})
                 else:
-                    return set()
+                    return frozenset()
 
 
 class LambekProof:
