@@ -69,49 +69,51 @@ def bipart(s: str, leftPr='(', rightPr=')',
                 return s[i], left, right
 
 
-def addHypo(x, slash, hypo):
-    if slash is None:
-        return x
+def addHypo(x, slash, hypo, fwd={'/', '^'}, 
+                            bkd={'\\', '!'}):   
+    if slash is None: return x
 
-    x = x if isatomic(x) else '(%s)' % x
-    hypo = hypo if isatomic(hypo) else '(%s)' % hypo
+    x = x if isatomic(x, fwd | bkd) else '(%s)' % x
+    hypo = hypo if isatomic(hypo, fwd | bkd) else '(%s)' % hypo
 
-    if slash == '/':
-        return '%s/%s' % (x, hypo)
-    else:
-        return '%s\\%s' % (hypo, x)
+    if slash in fwd:
+        return '%s%s%s' % (x, slash, hypo)
+    elif slash in bkd:
+        return '%s%s%s' % (hypo, slash, x)
 
 
-def unslash(x:str):
-    '''No commas in `x`.'''
+def unslash(x:str, conn={'/', '\\', '^', '!'}) -> [('root', 'slash', 'div')]:
+    '''No commas in `x`. Recognize only `/` and `\\`.'''
     xlist = [(x, None, None)]
 
-    while not isatomic(xlist[-1][0]):
-        xslash, xleft, xright = bipart(xlist[-1][0], noComma=True)
+    while not isatomic(xlist[-1][0], conn=conn):
+        xslash, xleft, xright = bipart(xlist[-1][0], conn=conn, noComma=True)
         if xslash == '/':
             xlist.append((xleft, '/', xright))
-        else:
+        elif xslash == '\\':
             xlist.append((xright, '\\', xleft))
+        else:
+            break
 
     return xlist
 
 
-def catIden(x:str, y:str) -> (bool, set):
+def catIden(x:str, y:str, conn={'/', '\\', '^', '!'}) -> (bool, frozenset):
     '''No commas in `x` and `y`.'''
-    atomCount = int(isatomic(x)) + int(isatomic(y))    
+    atomCount = int(isatomic(x, conn=conn)) + int(isatomic(y, conn=conn))    
     if atomCount == 2:
-        return atomicIden(x, y), {tuple(sorted({x, y}))}
+        return atomicIden(x, y), frozenset({tuple(sorted({x, y}))}) 
          
     elif atomCount == 0:
-        xslash, xleft, xright = bipart(x, noComma=True)
-        yslash, yleft, yright = bipart(y, noComma=True)
+        xslash, xleft, xright = bipart(x, conn=conn, noComma=True)
+        yslash, yleft, yright = bipart(y, conn=conn, noComma=True)
         
         if xslash == yslash:
             leftIden, leftPairs = catIden(xleft, yleft)
             rightIden, rightPairs = catIden(xright, yright)
             return leftIden and rightIden, leftPairs | rightPairs
 
-    return False, set()
+    return False, frozenset()
 
 
 def atomicIden(x: str, y: str, 
