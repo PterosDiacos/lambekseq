@@ -18,8 +18,6 @@ def searchLinks(cls, con, pres):
     (con, *pres), _ = indexSeq(con, pres)   
     if cls == ProofNet:
         agent = cls.fromLambekSeq(con, pres)
-    elif cls == Cntccg:
-        agent = cls(pres)
     else:
         agent = cls(con, pres)
 
@@ -29,8 +27,6 @@ def searchLinks(cls, con, pres):
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
         if cls == ProofNet:
             agent.printProofs(symbolOnly=True)
-        elif cls == Cntccg:
-            agent.printProofs(con)
         else:
             agent.printProofs()      
         print('Total: %d\n' % agent.proofCount)
