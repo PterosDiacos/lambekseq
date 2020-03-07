@@ -49,6 +49,7 @@ class Result:
 
 
 def towerSplit(x:str, conn={'/', '\\', '^', '!'}):
+    '''Split a tower of `((b^c)!a)` into `(c, a, b)`.'''
     cache = towerSplit.cache
     
     if x in cache: 
@@ -75,9 +76,9 @@ def propogate(xlist, ylist, i, j, cat):
     return cat
 
 
-def cellXoverY(xlist, ylist, i, j):
+def cellAppl(xlist, ylist, i, j, slash):
     try:
-        if xlist[i + 1][1] == '/':
+        if xlist[i + 1][1] == slash:
             iden, pairs = catIden(xlist[i + 1][2], ylist[j][0])
             if iden:
                 cat = propogate(xlist, ylist, i, j, xlist[i + 1][0])  
@@ -88,35 +89,20 @@ def cellXoverY(xlist, ylist, i, j):
         if j == len(ylist) - 1:
             c, a, b = towerSplit(ylist[j][0])
             if a:
-                res = reduce(Result(xlist[i][0]), Result(c))
+                if slash == '/':
+                    res = reduce(Result(xlist[i][0]), Result(c))
+                elif slash == '\\':
+                    res = reduce(Result(c), Result(xlist[i][0]))
                 for r in res:
                     r.cat = propogate(xlist, ylist, i, j, r.cat)
-                    r.cat = addHypo(b, '^', r.cat)
-                    r.cat = addHypo(a, '!', r.cat)
-                return res
-    except IndexError:
-        pass
-    return set()
-
-
-def cellYoverX(xlist, ylist, i, j):
-    try:
-        if ylist[j + 1][1] == '\\':
-            iden, pairs = catIden(xlist[i][0], ylist[j + 1][2])
-            if iden:
-                cat = propogate(xlist, ylist, i, j, ylist[j + 1][0])
-                return {Result(cat, pairs)}
-    except IndexError:
-        pass
-    try: 
-        if i == len(xlist) - 1:
-            c, a, b = towerSplit(xlist[i][0])
-            if a:
-                res = reduce(Result(c), Result(ylist[j][0]))
-                for r in res:
-                    r.cat = propogate(xlist, ylist, i, j, r.cat)
-                    r.cat = addHypo(b, '^', r.cat)
-                    r.cat = addHypo(a, '!', r.cat)
+                    if r._earlyCollapse:
+                        iden, pairs = catIden(b, r.cat)
+                    if r._earlyCollapse and iden:
+                        r.links |= pairs
+                        r.cat = a
+                    else:
+                        r.cat = addHypo(b, '^', r.cat)
+                        r.cat = addHypo(a, '!', r.cat)
                 return res
     except IndexError:
         pass
@@ -133,8 +119,8 @@ def reduce(x:Result, y:Result) -> set:
             j  = s - i
             # 0-th Row and 0-th Col ONLY
             if i * j: continue            
-            res.update(cellXoverY(xlist, ylist, i, j))
-            res.update(cellYoverX(xlist, ylist, i, j))
+            res.update(cellAppl(xlist, ylist, i, j, '/'))
+            res.update(cellAppl(ylist, xlist, j, i, '\\'))
     
     res = set(list(res))
     for r in res:
@@ -143,8 +129,10 @@ def reduce(x:Result, y:Result) -> set:
 
 
 class Cntccg:
-    def __init__(self, pres):
+    def __init__(self, con:str, pres:list, earlyCollapse=True):
+        self.con = con
         self.pres = list(pres)
+        Result._earlyCollapse = earlyCollapse
 
     def __len__(self):
         return len(self.pres)
@@ -154,16 +142,18 @@ class Cntccg:
         return self._proofSpan[0, len(self) - 1]
 
     @property
-    def proofCount(self, con=None):
-        pool = list(filter(lambda r: catIden(r.cat, con)[0], 
-                    self.proofs)) if con else self.proofs
-        return len(pool)
+    def proofs4Con(self):
+        return list(filter(lambda r: catIden(r.cat, self.con)[0], 
+                    self.proofs))
 
-    def printProofs(self, con=None):
-        pool = list(filter(lambda r: catIden(r.cat, con)[0], 
-                    self.proofs)) if con else self.proofs
+    @property
+    def proofCount(self, matchCon=True):
+        return len(self.proofs4Con if matchCon else self.proofs)
+
+    def printProofs(self, matchCon=True):
+        pool = self.proofs4Con if matchCon else self.proofs
         for r in pool:
-            if con: r.links |= catIden(r.cat, con)[1]
+            if matchCon: r.links |= catIden(r.cat, self.con)[1]
             s = sorted('(%s, %s)' % (i, j) for i, j in r.links)
             print(', '.join(s))
         if pool: print()
@@ -182,7 +172,9 @@ class Cntccg:
                         for y in span[j, k]:
                             span[i, k] |= x + y
         
-        for r in span[0, len(self) - 1]: r.collapse()
+        if not Result._earlyCollapse:
+            for r in span[0, len(self) - 1]: r.collapse()
+        
         span[0, len(self) - 1] = set(list(span[0, len(self) - 1]))
         self._proofSpan = span
 
@@ -192,9 +184,9 @@ def selfTest():
 
     con, *pres = 's', '(s^np)!s', '(np\\s)/np', '(s^np)!s', '(s\\s)/np', '(s^np)!s'
     (con, *pres), _ = indexSeq(con, pres)        
-    cntccg = Cntccg(pres)
+    cntccg = Cntccg(con, pres, earlyCollapse=False)
     cntccg.parse()
-    cntccg.printProofs(con)
+    cntccg.printProofs()
     print('Total:', cntccg.proofCount)
 
 
