@@ -38,7 +38,7 @@ def stripparentheses(s: str, leftPr='(', rightPr=')'):
 
 def bipart(s: str, leftPr='(', rightPr=')',
            conn={'/', '\\'}, noComma=False,
-           connMod={'$'}, withMod=False):
+           connMod={'$', '&'}, withMod=False):
     '''Break a non-atomic `s` into slashes, the left and right components. 
     Both components are lists of strings if `noComma` is `False`.
     Slashes can be followed by a modal specifier in `connMod`.

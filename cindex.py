@@ -5,7 +5,7 @@ from parentheses import isatomic, bipart
 
 StopAtoms = {'-'}
 Conns = {'/', '\\', '^', '!'}
-Modifiers = {'$'}
+ConnModes = {'$', '&'}
 
 
 def depthTag(s: str, rootdepth=0, chopcount=0,
@@ -15,7 +15,7 @@ def depthTag(s: str, rootdepth=0, chopcount=0,
         return ('%s:%d' % (s, rootdepth), )
     else:
         slash, smod, left, right = bipart(s, 
-            conn=Conns, connMod=Modifiers, withMod=True)
+            conn=Conns, connMod=ConnModes, withMod=True)
         taggedleft = taggedright = ()
 
         if not smod:
@@ -30,11 +30,23 @@ def depthTag(s: str, rootdepth=0, chopcount=0,
                 for l in left:
                     taggedleft += depthTag(l, rootdepth + chopcount + 1, 0)
         
-        elif smod in Modifiers:
+        elif smod == '$':
             for l in left:
                 taggedleft += depthTag(l, rootdepth, chopcount)
             for r in right:
                 taggedright += depthTag(r, rootdepth, chopcount)
+
+        elif smod == '&':
+            if slash in fdConn:
+                for l in left:
+                    taggedleft += depthTag(l, rootdepth, chopcount + 1)
+                for r in right:
+                    taggedright += depthTag(r, rootdepth + chopcount + 1, 1 - chopcount)
+            elif slash in bkConn:
+                for r in right:
+                    taggedright += depthTag(r, rootdepth, chopcount + 1)
+                for l in left:
+                    taggedleft += depthTag(l, rootdepth + chopcount + 1, 1 - chopcount)
         
         return (*taggedleft, slash, *taggedright)
 
@@ -55,7 +67,7 @@ def addIndex(s, natom, conn=Conns):
 
     else:
         slash, smod, left, right = bipart(s, 
-            conn=conn, connMod=Modifiers, withMod=True)      
+            conn=conn, connMod=ConnModes, withMod=True)      
 
         sleft = []
         for l in left:
