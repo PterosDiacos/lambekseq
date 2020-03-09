@@ -5,11 +5,8 @@ from parentheses import stripparentheses, isatomic, bipart, atomicIden
 
 
 def cachedproof(*args):
-    if args in cachedproof._cache:
-        return cachedproof._cache[args]
-    else:
-        return cachedproof._cache.setdefault(args,
-            findproof(args[0], *args[1:]))
+    return cachedproof._cache.setdefault(args,
+        findproof(args[0], *args[1:]))
 
 cachedproof._cache = dict()
 
