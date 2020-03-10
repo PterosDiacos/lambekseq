@@ -12,6 +12,9 @@ class Result:
         self.cat = cat
         self.links = links
 
+    def __iter__(self):
+        return iter(self.links)
+
     def __eq__(self, other):
         return (self.cat == other.cat and
                 self.links == other.links)
@@ -24,7 +27,6 @@ class Result:
 
     def __add__(self, others):
         return reduce(self, others)
-
 
     @staticmethod
     def _lowering(s:str):

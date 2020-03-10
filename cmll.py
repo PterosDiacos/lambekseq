@@ -60,6 +60,9 @@ class Parse:
         self.ends = ends
         self.links = links
 
+    def __iter__(self):
+        return iter(self.links)
+
     def __eq__(self, other):
         return self.links == other.links
 
