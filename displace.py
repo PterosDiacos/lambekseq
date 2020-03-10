@@ -5,6 +5,7 @@ Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 from cindex import addIndex
 from parentheses import atomicIden as _atomicIden
 from parentheses import bipart, isatomic
+from lbnoprod import addcache
 from lbnoprod import LambekProof as _LambekProof
 
 
@@ -19,11 +20,11 @@ def atomicIden(x, y):
         return _atomicIden(x, y)
 
 
+@addcache
 def cachedproof(*args):
-    return cachedproof._cache.setdefault(args,
-        findproof(args[0], *args[1:]))
-
-cachedproof._cache = dict()
+    if args not in cachedproof._cache:
+        cachedproof._cache[args] = findproof(args[0], *args[1:])
+    return cachedproof._cache[args]
 
 
 def find_diffTV(con, pres, cut, left, right):

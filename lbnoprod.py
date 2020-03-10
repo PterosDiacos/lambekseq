@@ -4,11 +4,16 @@ This script finds the axioms of every proof.
 from parentheses import stripparentheses, isatomic, bipart, atomicIden
 
 
-def cachedproof(*args):
-    return cachedproof._cache.setdefault(args,
-        findproof(args[0], *args[1:]))
+def addcache(f):
+    f._cache = dict()
+    return f
 
-cachedproof._cache = dict()
+
+@addcache
+def cachedproof(*args):
+    if args not in cachedproof._cache:
+        cachedproof._cache[args] = findproof(args[0], *args[1:])
+    return cachedproof._cache[args]
 
 
 def find_diffTV(con, pres, cut, left, right):
