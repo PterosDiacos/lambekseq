@@ -59,7 +59,7 @@ class SemComp:
     
 
     def unify(self, con:str='s'):
-        self.result = []
+        self.results = []
 
         for x, y in self.xref:
             if 'x' in y: x, y = y, x
@@ -89,4 +89,4 @@ class SemComp:
                             if v in S: relabel[v] = 'i%s' % i
                     Gs.append(g.iso(relabel))
                 
-                self.result.append(compose_all(Gs))
+                self.results.append(compose_all(Gs))
