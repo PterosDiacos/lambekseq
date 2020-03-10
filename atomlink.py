@@ -10,6 +10,12 @@ from cindex import indexSeq
 from parentheses import bipart, isatomic
 
 
+CALC_DICT = dict(ccg=Cntccg,
+                 dsp=DisplaceProof,
+                 lb=LambekProof,
+                 pn=ProofNet)
+
+
 def deAbbr(con: str, pres: list, abbr: dict, 
            conn={'/', '\\', '^', '!'}):
 
@@ -44,8 +50,8 @@ def deAbbr(con: str, pres: list, abbr: dict,
 
 
 def searchLinks(cls, con, pres):
-    '''Return the parser and the index dictionary `idxDic`.
-    The parser has found the atom links.
+    '''Return the indexed `con`, `pres`,
+    the run parser and the index dictionary `idxDic`.
     `idxDic.toToken` maps indices to token numbers.
     `idxDic.toDepth` maps indices to atom depths.
     '''
@@ -56,10 +62,10 @@ def searchLinks(cls, con, pres):
         parser = cls(con, pres)
     
     parser.parse()
-    return parser, idxDic
+    return con, pres, parser, idxDic
 
 
-def printLinks(parser):
+def printLinks(con, pres, parser):
     if parser.proofCount:
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
         if isinstance(parser, ProofNet):
@@ -74,19 +80,22 @@ def initArgParser():
         description='CG based Atom Linker')
     ap.add_argument('-j', '--json', 
         default='input.json',
-        help='A json file that contains a list of lists, '
+        help='[default] "input.json". '
+             'A json file that contains a list of lists, '
              'the first of which serves as the input '
              'sequent.')
     ap.add_argument('-a', '--abbr',
         default='abbr.json',
-        help='A json file that contains a dictionary, '
+        help='[default] "abbr.json". '
+             'A json file that contains a dictionary, '
              'whose keys are abbreviated categories, '
              'whose values are lists of actual '
              'categories.'
     )
     ap.add_argument('-c', '--calc',
         default='dsp',
-        help='The calculus used to resolve atom links. '
+        help='[default] "dsp". '
+             'The calculus used to resolve atom links. '
              'ccg for continuized CCG; '
              'dsp for Displacement calculus; '
              'lb for classic Lambek calculus; '
@@ -100,17 +109,13 @@ if __name__ == '__main__':
 
     con, *pres = json.load(open(args.json))[0]
     abbr = json.load(open(args.abbr))
-    f = dict(ccg=Cntccg,
-             dsp=DisplaceProof,
-             lb=LambekProof,
-             pn=ProofNet
-    ).get(args.calc, DisplaceProof)
+    f = CALC_DICT.get(args.calc, DisplaceProof)
     print(f)
 
     total = 0
     for con, pres in deAbbr(con, pres, abbr):
-        parser, _ = searchLinks(f, con, pres)
+        con, pres, parser, _ = searchLinks(f, con, pres)
         total += parser.proofCount
-        printLinks(parser)
+        printLinks(con, pres, parser)
 
     if not total: print('Total: 0\n')

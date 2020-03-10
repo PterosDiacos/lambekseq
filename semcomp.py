@@ -2,12 +2,11 @@ import re
 import json
 from networkx import compose_all
 
-from cindex import indexSeq
-from displace import DisplaceProof as Resolver
-from atomlink import deAbbr
+import atomlink as al
 from semgraph import Semgraph
 
 
+VOCAB_SCHEMA_PATH = '../lambekseq/schema.json'
 ABBR_DICT_PATH = '../lambekseq/abbr.json'
 
 
@@ -48,38 +47,46 @@ def quotSet(proof, idxDic, xref, sorts):
     return dict(enumerate(qset))
 
 
-def unify(con, tokens, xref=[], 
-          abbr=json.load(open(ABBR_DICT_PATH))):
+class SemComp:
+    def __init__(self, tokens, xref=[], calc='dsp',
+                 abbr=json.load(open(ABBR_DICT_PATH)),
+                 vocab=json.load(open(VOCAB_SCHEMA_PATH))):
+        self.tokens = [Semgraph.from_dict(vocab[pos], lex, i + 1)
+                       for i, (lex, pos) in enumerate(tokens)]
+        self.xref = xref
+        self.calc = al.CALC_DICT.get(calc, al.DisplaceProof)
+        self.abbr = abbr
+    
 
-    for x, y in xref:
-        if 'x' in y: x, y = y, x
-        ntok, xsrc = xsourceSplit(x)
-        tokens[ntok - 1].add_xsource(xsrc)
+    def unify(self, con:str='s'):
+        self.result = []
 
-    pres = [g.cat for g in tokens]
-    sorts = [g.sort for g in tokens]
+        for x, y in self.xref:
+            if 'x' in y: x, y = y, x
+            ntok, xsrc = xsourceSplit(x)
+            self.tokens[ntok - 1].add_xsource(xsrc)
 
-    for con, pres in deAbbr(con, pres, abbr):
-        (con, *pres), idxDic = indexSeq(con, pres)
-        parse = Resolver(con, pres)
-        parse.parse()
+        pres = [g.cat for g in self.tokens]
+        sorts = [g.sort for g in self.tokens]
 
-        if parse.proofs:
-            _tokens = tokens.copy()
-            for i, g in enumerate(_tokens):
-                if _tokens[i].cat == 'conj':
-                    _tokens[i] = g.conj_expand(idxDic)
-                    sorts[i] = _tokens[i].sort
+        for con, pres in al.deAbbr(con, pres, self.abbr):
+            con, pres, parse, idxDic = al.searchLinks(self.calc, con, pres)
 
-        for p in parse.proofs:
-            qset = quotSet(p, idxDic, xref, sorts)
-            Gs = []
-            
-            for g in _tokens:
-                relabel = {}
-                for v in g.nodes:
-                    for i, S in qset.items():
-                        if v in S: relabel[v] = 'i%s' % i
-                Gs.append(g.iso(relabel))
-            
-            yield compose_all(Gs)
+            if parse.proofs:
+                _tokens = self.tokens.copy()
+                for i, g in enumerate(_tokens):
+                    if _tokens[i].cat == 'conj':
+                        _tokens[i] = g.conj_expand(idxDic)
+                        sorts[i] = _tokens[i].sort
+
+            for p in parse.proofs:
+                qset = quotSet(p, idxDic, self.xref, sorts)
+                Gs = []
+                for g in _tokens:
+                    relabel = {}
+                    for v in g.nodes:
+                        for i, S in qset.items():
+                            if v in S: relabel[v] = 'i%s' % i
+                    Gs.append(g.iso(relabel))
+                
+                self.result.append(compose_all(Gs))
