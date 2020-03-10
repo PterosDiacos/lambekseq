@@ -1,41 +1,18 @@
 import json
-import sys
-from parentheses import bipart, isatomic
-from cindex import indexSeq
+import argparse
+
 from lbnoprod import LambekProof
 from displace import DisplaceProof
 from cmll import ProofNet
 from cntccg import Cntccg
 
-
-PaserDict = {0: ProofNet,
-             1: LambekProof,
-             2: Cntccg,
-             3: DisplaceProof}
-
-
-def searchLinks(cls, con, pres):
-    (con, *pres), _ = indexSeq(con, pres)   
-    if cls == ProofNet:
-        agent = cls.fromLambekSeq(con, pres)
-    else:
-        agent = cls(con, pres)
-
-    agent.parse()
-    
-    if agent.proofCount:
-        print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
-        if cls == ProofNet:
-            agent.printProofs(symbolOnly=True)
-        else:
-            agent.printProofs()      
-        print('Total: %d\n' % agent.proofCount)
-    
-    return agent.proofCount
+from cindex import indexSeq
+from parentheses import bipart, isatomic
 
 
 def deAbbr(con: str, pres: list, abbr: dict, 
-           conn={'/', '\\', '^', '!'}):    
+           conn={'/', '\\', '^', '!'}):
+
     def zoomin(s):
         if isatomic(s, conn=conn):
             for opt in abbr.get(s, [s]):
@@ -66,17 +43,74 @@ def deAbbr(con: str, pres: list, abbr: dict,
         yield con, pres
 
 
-if __name__ == '__main__':
-    con, *pres = json.load(open('input.json'))[0]
-    abbr = json.load(open('abbr.json'))
+def searchLinks(cls, con, pres):
+    '''Return the parser and the index dictionary `idxDic`.
+    The parser has found the atom links.
+    `idxDic.toToken` maps indices to token numbers.
+    `idxDic.toDepth` maps indices to atom depths.
+    '''
+    (con, *pres), idxDic = indexSeq(con, pres)   
+    if cls == ProofNet:
+        parser = cls.fromLambekSeq(con, pres)
+    else:
+        parser = cls(con, pres)
+    
+    parser.parse()
+    return parser, idxDic
 
-    # defaults to Cntccg
-    f = PaserDict[int(sys.argv[1])] if len(sys.argv) > 1 \
-                                    else Cntccg
+
+def printLinks(parser):
+    if parser.proofCount:
+        print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
+        if isinstance(parser, ProofNet):
+            parser.printProofs(symbolOnly=True)
+        else:
+            parser.printProofs()      
+        print('Total: %d\n' % parser.proofCount)
+
+
+def initArgParser():
+    ap = argparse.ArgumentParser(
+        description='CG based Atom Linker')
+    ap.add_argument('-j', '--json', 
+        default='input.json',
+        help='A json file that contains a list of lists, '
+             'the first of which serves as the input '
+             'sequent.')
+    ap.add_argument('-a', '--abbr',
+        default='abbr.json',
+        help='A json file that contains a dictionary, '
+             'whose keys are abbreviated categories, '
+             'whose values are lists of actual '
+             'categories.'
+    )
+    ap.add_argument('-c', '--calc',
+        default='dsp',
+        help='The calculus used to resolve atom links. '
+             'ccg for continuized CCG; '
+             'dsp for Displacement calculus; '
+             'lb for classic Lambek calculus; '
+             'pn for Proofnet based Lambek calculus.'
+    )
+    return ap
+
+
+if __name__ == '__main__':
+    args = initArgParser().parse_args()
+
+    con, *pres = json.load(open(args.json))[0]
+    abbr = json.load(open(args.abbr))
+    f = dict(ccg=Cntccg,
+             dsp=DisplaceProof,
+             lb=LambekProof,
+             pn=ProofNet
+    ).get(args.calc, DisplaceProof)
     print(f)
 
     total = 0
     for con, pres in deAbbr(con, pres, abbr):
-        total += searchLinks(f, con, pres)
+        parser, _ = searchLinks(f, con, pres)
+        total += parser.proofCount
+        printLinks(parser)
 
     if not total: print('Total: 0\n')

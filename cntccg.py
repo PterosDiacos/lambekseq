@@ -174,8 +174,8 @@ class Cntccg:
         
         if not Result._earlyCollapse:
             for r in span[0, len(self) - 1]: r.collapse()
-            span[0, len(self) - 1] = set(list(span[0, len(self) - 1]))
-        
+
+        span[0, len(self) - 1] = set(list(span[0, len(self) - 1]))
         self._proofSpan = span
 
 
