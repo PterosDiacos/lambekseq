@@ -1,0 +1,35 @@
+[
+    ["s", "qpd", "vp/s", "qpd", "vp"],
+    ["s", "np", "vt", "np", "rl", "qpd", "vt"],
+    
+       
+    "----For Displacement Calculus----",
+    
+    ["s", "qpd", "negd", "vp"],
+    ["s", "v4", "qpd", "qpd", "qpd", "qpd"],
+    ["s", "qpd", "vt", "qpd", "inx", "qpd"],
+    ["s^np", "np", "vt", "-", "inx", "np"],
+    ["s", "qpd", "inn", "qpd", "rld", "-", "vp", "vt", "qpd"],
+
+
+    "----For Continuized CCG----",
+    
+    ["s/np", "np", "vt", "inx", "np"],
+    ["s", "qpd", "inn", "qpd", "rl", "vp", "vt", "qpd"],
+
+
+    "----For Lambek Calculus----",
+
+    "Argument Raising",
+        ["(qnp\\s)/np", "vt"],
+        ["vp/qnp", "vt"],
+
+    "Three quantifiers",
+        ["s", "qnp", "vt", "qnp", "inx", "qnp"],
+        ["vt", "vt", "qnp", "inx"],
+        
+    "Two quantifiers",
+        ["s", "qnp", "vt", "qnp"],
+
+    "----End----"
+]

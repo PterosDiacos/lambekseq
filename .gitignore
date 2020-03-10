@@ -1,10 +1,8 @@
 # folders
 __pycache__
 .vscode
+scripts
 
 # files
-scripts/scope_raw
-scripts/*.json
 out
 *.txt
-input.json
