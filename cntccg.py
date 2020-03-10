@@ -1,5 +1,6 @@
 '''Continuized CCG with generalized application, lifting and lowering.
 '''
+from lbnoprod import addcache
 from collections import defaultdict
 from parentheses import bipart, isatomic, catIden, unslash, addHypo
 
@@ -15,12 +16,14 @@ class Result:
     def __iter__(self):
         return iter(self.links)
 
+    def _key(self):
+        return (self.cat, self.links)
+
     def __eq__(self, other):
-        return (self.cat == other.cat and
-                self.links == other.links)
+        return self._key() == other._key()
 
     def __hash__(self):
-        return hash((self.cat, self.links))
+        return hash(self._key())
 
     def __repr__(self):
         return self.cat
@@ -50,9 +53,10 @@ class Result:
         self.links |= pairs
 
 
+@addcache
 def towerSplit(x:str, conn={'/', '\\', '^', '!'}):
     '''Split a tower of `((b^c)!a)` into `(c, a, b)`.'''
-    cache = towerSplit.cache
+    cache = towerSplit._cache
     
     if x in cache: 
         return cache[x]
@@ -65,8 +69,6 @@ def towerSplit(x:str, conn={'/', '\\', '^', '!'}):
         else:
             _, b, c = bipart(l, conn=conn, noComma=True)
             return cache.setdefault(x, (c, a, b))
-
-towerSplit.cache = dict()
 
 
 def propogate(xlist, ylist, i, j, cat):
@@ -112,21 +114,21 @@ def cellAppl(xlist, ylist, i, j, slash):
 
 
 def reduce(x:Result, y:Result) -> set:
+    '''Use only the 0-th row and 0-th column of the reduction table'''
     xlist, ylist = unslash(x.cat), unslash(y.cat)
     
-    res =set()
+    res = set()
     for s in range(len(xlist) + len(ylist) - 1):
-        if res: break
         for i in range(s, -1, -1):
             j  = s - i
-            # 0-th Row and 0-th Col ONLY
-            if i * j: continue            
+            if i and j: continue
             res.update(cellAppl(xlist, ylist, i, j, '/'))
             res.update(cellAppl(ylist, xlist, j, i, '\\'))
+
+        if res: break
     
-    res = set(list(res))
-    for r in res:
-        r.links |= x.links | y.links
+    xyLinks = x.links | y.links
+    for r in res: r.links |= xyLinks
     return res
 
 
@@ -140,20 +142,20 @@ class Cntccg:
         return len(self.pres)
 
     @property
-    def proofs(self):
+    def allProofs(self):
         return self._proofSpan[0, len(self) - 1]
 
     @property
-    def proofs4Con(self):
+    def proofs(self):
         return list(filter(lambda r: catIden(r.cat, self.con)[0], 
-                    self.proofs))
+                    self.allProofs))
 
     @property
     def proofCount(self, matchCon=True):
-        return len(self.proofs4Con if matchCon else self.proofs)
+        return len(self.proofs if matchCon else self.allProofs)
 
     def printProofs(self, matchCon=True):
-        pool = self.proofs4Con if matchCon else self.proofs
+        pool = self.proofs if matchCon else self.allProofs
         for r in pool:
             if matchCon: r.links |= catIden(r.cat, self.con)[1]
             s = sorted('(%s, %s)' % (i, j) for i, j in r.links)
@@ -172,12 +174,12 @@ class Cntccg:
                 for j in range(i + 1, k + 1):
                     for x in span[i, j - 1]:
                         for y in span[j, k]:
-                            span[i, k] |= x + y
-        
+                            span[i, k].update(x + y)
+                            span[i, k] = set(list(span[i, k]))
+
         if not Result._earlyCollapse:
             for r in span[0, len(self) - 1]: r.collapse()
 
-        span[0, len(self) - 1] = set(list(span[0, len(self) - 1]))
         self._proofSpan = span
 
 
