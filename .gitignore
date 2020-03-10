@@ -4,6 +4,7 @@ __pycache__
 
 # files
 scripts/scope_raw
+scripts/*.json
 out
 *.txt
-*.json
+input.json

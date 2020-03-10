@@ -1,0 +1,26 @@
+{
+    "qpd":    ["(s^np)!s"],  
+    "qnp":    ["s/(np\\s)", "(s/np)\\s"],
+        
+    "rl":     ["(np\\$np)/(s/np)", "(np\\$np)/vp"],
+    "rld":    ["(np\\$np)/(s^np)"],            
+
+    "inn":    ["(np\\$np)/np"],
+    "ins":    ["(s\\$s)/np"],
+    "inv":    ["(vp\\$vp)/np"],
+    "inx":    ["(vp\\$vp)/np", "(s\\$s)/np"],
+
+    "negd":   ["(s^(vp/$vp))!s", "(s^$(vp/$vp))!s"],
+
+    "vp":     ["np\\s"],
+    "vt":     ["vp/np"],
+    "v1":     ["s/np"],
+    "v2":     ["(s/np)/np"],
+    "v3":     ["v2/np"],
+    "v4":     ["v3/np"],
+
+    "conj":   ["(np\\&np)/&np", 
+               "(qpd\\&qpd)/&qpd",
+               "(vp\\&vp)/&vp",
+               "(v1\\&v1)/&v1" ]
+}
