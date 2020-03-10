@@ -57,7 +57,7 @@ def findproof(con, *pres):
     # when the conclusion is atomic
     else:
         if len(pres) == 0:
-            return frozenset()
+            return set()
         else:
             altBranches = set()
             hit_nonatomic = False
@@ -71,12 +71,12 @@ def findproof(con, *pres):
                         altBranches.update(find_diffUT(con, pres, i, left, right))
 
             if hit_nonatomic:
-                return frozenset(altBranches)
+                return altBranches
             else:
                 if len(pres) == 1 and atomicIden(pres[0], con):
-                    return frozenset({frozenset({tuple(sorted({pres[0], con}))})})
+                    return {frozenset({tuple(sorted({pres[0], con}))})}
                 else:
-                    return frozenset()
+                    return set()
 
 
 class LambekProof:

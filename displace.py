@@ -87,19 +87,19 @@ def findproof(con, *pres):
                 assert pres.count(Gap) <= 1
                 cut = pres.index(Gap)
             except AssertionError:
-                return frozenset()
+                return set()
             except ValueError:
                 alts = set()
                 for i in range(len(pres) + 1):
                     alts.update(cachedproof(con, *pres[:i], Gap, *pres[i:]))
-                return frozenset(alts)
+                return alts
             else:
                 return cachedproof(left, *pres[:cut], right, *pres[cut + 1:])
                     
     # when the conclusion is atomic
     else:
         if len(pres) == 0:
-            return frozenset()
+            return set()
         else:
             altBranches = set()
             hit_nonatomic = False
@@ -118,12 +118,12 @@ def findproof(con, *pres):
                         altBranches.update(find_diffUT(con, pres, i, right, left))
 
             if hit_nonatomic:
-                return frozenset(altBranches)
+                return altBranches
             else:
                 if len(pres) == 1 and atomicIden(pres[0], con):
-                    return frozenset({frozenset({tuple(sorted({pres[0], con}))})})
+                    return {frozenset({tuple(sorted({pres[0], con}))})}
                 else:
-                    return frozenset()
+                    return set()
 
 
 class DisplaceProof(_LambekProof):
