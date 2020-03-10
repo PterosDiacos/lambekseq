@@ -101,7 +101,7 @@ class Semgraph(nx.DiGraph):
     def add_named(self, node_for_adding, unary_label):
         '''Token numbers automatically prepended'''
         nd = 'g%s%s' % (self.toknum, node_for_adding)
-        ndu = 'g%su%s' % (self.toknum, node_for_adding)
+        ndu = 'g%su%s' % (self.toknum, node_for_adding[1:])
         self.add_node(nd, label='')
         self.add_node(ndu, label='',
                       width=0, height=0, 
