@@ -72,7 +72,7 @@ class Semgraph(nx.DiGraph):
         g = deepcopy(self)
         for i in range(conj_len - 1):
             g.add_anonym('a%d' % (i + g.sort))        
-        g.sort += i + 1
+        g.sort += conj_len - 1
         return g
 
 
