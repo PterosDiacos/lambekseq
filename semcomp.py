@@ -1,3 +1,7 @@
+'''Semantic composition module.
+Composing semgraphs based on atom links given by CG calculus and co-referencing
+and indefinite scoping.
+'''
 import re
 import json
 from networkx import compose_all
@@ -29,6 +33,9 @@ def updateQsetbyPair(qset, x, y):
 
 
 def quotSet(proof, idxDic, xref, sorts):
+    '''Find the quotient set of nodes based on atom links and 
+    co-referencing and scoping. Atom-node correspondence is given
+    by atom depths.'''
     qset = []
     for link in proof:
         x, y = map(atom2idx, link) 
@@ -48,6 +55,25 @@ def quotSet(proof, idxDic, xref, sorts):
 
 
 class SemComp:
+    '''`tokens`: a list of (WORD, POS) pairs.
+    POS is the key to lexical schemes in vocabulary. The constructor 
+    converts this list ino a list of semgraphs.
+
+    `xref`: a list of (SOURCE1, SOURCE2) manually encoded atom links 
+    given by co-referencing and indefinite-scoping.
+    SOURCE1 is of the form `gixj`, the j-th x-prefixed source of the 
+    i-th token; SOURCE2 is of the form `gka0`, the 0-th a-prefixed
+    source of the k-th token. In case of co-referencing, SOURCE2 is 
+    the antecedent of SOURCE1. In caes of scoping, SOURCE2 is the node 
+    before which SOURCE1 should be valued. 
+
+    `calc`: the CG calculus used to find atom links.
+
+    `abbr`: a dictionary that defines abbreviated syntactic categories.
+    See `atomlink` module.
+
+    `vocab`: a dictionary of lexical schemes. 
+    '''
     def __init__(self, tokens, xref=[], calc='dsp',
                  abbr=json.load(open(ABBR_DICT_PATH)),
                  vocab=json.load(open(VOCAB_SCHEMA_PATH))):

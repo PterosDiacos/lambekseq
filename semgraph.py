@@ -1,3 +1,4 @@
+'''Semantic Graphs (Semgraphs).'''
 import graphviz
 import networkx as nx
 from copy import deepcopy
