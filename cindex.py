@@ -8,6 +8,21 @@ Conns = {'/', '\\', '^', '!'}
 ConnModes = {'$', '&'}
 
 
+def cordshift(tagged:tuple, rootdepth, rate=1, conn=Conns,
+              pattern=re.compile(r'(.+):(\d+)')):
+    shift = (len(tagged) + 1) // 2 - 1
+    new = ()
+    for x in tagged:
+        if x in conn:
+            new +=  (x,)
+        else:
+            s, depth = pattern.search(x).groups()
+            shiftedDepth = int(depth) + shift * rate \
+                if int(depth) > rootdepth else rootdepth
+            new += ('%s:%d' % (s, shiftedDepth),)
+    return new
+
+
 def depthTag(s: str, rootdepth=0, chopcount=0,
              fdConn={'/', '^'}, bkConn={'\\', '!'}):
     '''Tag each atomic symbol with its depth. No top level comma.'''
@@ -41,12 +56,16 @@ def depthTag(s: str, rootdepth=0, chopcount=0,
                 for l in left:
                     taggedleft += depthTag(l, rootdepth, chopcount + 1)
                 for r in right:
-                    taggedright += depthTag(r, rootdepth + chopcount + 1, 1 - chopcount)
+                    taggedright += depthTag(r, rootdepth + chopcount + 1, 1)
             elif slash in bkConn:
                 for r in right:
-                    taggedright += depthTag(r, rootdepth, chopcount + 1)
+                    taggedright += cordshift(
+                        depthTag(r, rootdepth, chopcount + 1), 
+                        rootdepth, rate=2)
                 for l in left:
-                    taggedleft += depthTag(l, rootdepth + chopcount + 1, 1 - chopcount)
+                    taggedleft += cordshift(
+                        depthTag(l, rootdepth + chopcount + 1, 0), 
+                        rootdepth + chopcount + 1, rate=1)
         
         return (*taggedleft, slash, *taggedright)
 

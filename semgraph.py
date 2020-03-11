@@ -66,13 +66,19 @@ class Semgraph(nx.DiGraph):
     def conj_expand(self, idxDict):
         '''Add `a`-prefix-sources according to the expanded category of `self`.
         Return a new copy.'''
+        g = deepcopy(self)
         conj_len = len([i for i, t in idxDict.toToken.items() 
                           if int(t) == self.toknum]) // 3
 
-        g = deepcopy(self)
-        for i in range(conj_len - 1):
-            g.add_anonym('a%d' % (i + g.sort))        
-        g.sort += conj_len - 1
+        for i in range(1, conj_len):
+            nfrom1 = 'a%d' % (2 + i)
+            nfrom2 = 'a%d' % (1 + i + conj_len)
+            nto = 'a%d' % (i + 2 * conj_len)
+            g.add_anonyms_from([nfrom1, nfrom2, nto])
+            g.add_arrows_from([[nfrom1, nto, '='],
+                               [nfrom2, nto, '=']])
+        
+        g.sort += 3 * (conj_len - 1)
         return g
 
 
