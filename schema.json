@@ -139,6 +139,20 @@
         ]
     },
 
+    "adj": {
+        "example": "good",
+        "cat": "np\\$np",
+        "sort": 1,
+        "named":[
+            ["i0", ""]
+        ],
+        "anonyms":["a0"],
+        "arrows":[
+            ["a0", "i0", "λ"],
+            ["i0", "a0", "th"]
+        ]  
+    },
+
     "vi": {
         "example": "walk",
         "remark": "ergative intransitive",        
@@ -185,7 +199,7 @@
 
     "vts": {
         "example": "think",
-        "remark": "with sentential objects",
+        "remark": "vt with sentential objects",
         "cat": "(np\\s)/s",
         "sort": 3,
         "named":[
@@ -200,17 +214,85 @@
         ]
     },
 
-    "adj": {
-        "example": "good",
-        "cat": "np\\$np",
-        "sort": 1,
-        "named":[
-            ["i0", ""]
+    "vtt": {
+        "example": "want",
+        "cat": "(np\\s)/vp",
+        "sort": 3,
+        "named": [
+            ["a0", ""]
         ],
-        "anonyms":["a0"],
-        "arrows":[
-            ["a0", "i0", "λ"],
-            ["i0", "a0", "th"]
-        ]  
+        "anonyms": [
+            "a1", "a2"
+        ],
+        "arrows": [
+            ["a0", "a1", "κ"],
+            ["a0", "a2", "ag"]
+        ]
+    },
+
+    "vcs": {
+        "example": "promise",
+        "remark": "subject control verbs",
+        "cat": "(vp/vp)/np",
+        "sort": 4,
+        "named": [
+            ["a0", ""]
+        ],
+        "anonyms": [
+            "a1", "a2", "a3"
+        ],
+        "arrows": [
+            ["a0", "a2", "κ"],
+            ["a0", "a1", "th"],
+            ["a0", "a3", "ag"]
+        ]
+    },
+
+    "vco": {
+        "example": "ask",
+        "remark": "object control verbs",
+        "cat": "np\\((s/vp)/np)",
+        "sort": 5,
+        "named": [
+            ["a0", ""]
+        ],
+        "anonyms": [
+            "a1", "a2", "a3", "a4"
+        ],
+        "arrows": [
+            ["a0", "a3", "κ"],
+            ["a0", "a1", "ag"],
+            ["a0", "a2", "th"],
+            ["a2", "a4", "="]
+        ]
+    },    
+
+    "vce": {
+        "example": "believe",
+        "remark": "empty control (ECM) verbs",
+        "cat": "np\\((s/vp)/np)",
+        "sort": 5,
+        "named": [
+            ["a0", ""]
+        ],
+        "anonyms": [
+            "a1", "a2", "a3", "a4"
+        ],
+        "arrows": [
+            ["a0", "a3", "κ"],
+            ["a0", "a1", "ag"],
+            ["a0", "a2", "λ"],
+            ["a2", "a4", "="]
+        ]
+    },
+
+    "nonf": {
+        "example": "to",
+        "remark": "non-finite marker",
+        "cat": "vp/$vp",
+        "sort": 2,
+        "anonyms": [
+            "a0", "a1"
+        ]
     }
 }
