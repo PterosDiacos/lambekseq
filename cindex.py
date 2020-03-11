@@ -89,6 +89,17 @@ def addIndex(s, natom, conn=Conns):
         return sleft + slash + smod + sright, natom
 
 
+class FromIndex:
+    __slots__ = ['toToken', 'toDepth']
+    def __init__(self, idx2Token, idx2Depth):
+        self.toToken = idx2Token
+        self.toDepth = idx2Depth
+        
+    def __str__(self):
+        return pp.pformat(dict(toToken=self.toToken,
+                               toDepth=self.toDepth))
+
+
 def indexSeq(con: str, pres: list):
     '''Return tokens in `con` + `pres` with indices added to atoms.
     Return also two maps from atom indices:
@@ -115,11 +126,4 @@ def indexSeq(con: str, pres: list):
 
         natom = natom1
 
-    class FromIndex:
-        toToken = idx2Token
-        toDepth = idx2Depth
-        def __str__(self):
-            return pp.pformat(dict(toToken=self.toToken,
-                                   toDepth=self.toDepth))
-
-    return alltokens, FromIndex()
+    return alltokens, FromIndex(idx2Token, idx2Depth)
