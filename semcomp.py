@@ -45,6 +45,9 @@ def quotSet(proof, idxDic, xref, sorts):
         
         # conclusion is the 0-th token
         if xtok != '0' and ytok != '0':
+            # distinct nodes of the same token are not to be fused
+            if xtok == ytok and xdep != ydep: return dict()
+
             qset = updateQsetbyPair(qset, 'g%sa%s' % (xtok, xdep),
                                           'g%sa%s' % (ytok, ydep))
 
@@ -52,6 +55,17 @@ def quotSet(proof, idxDic, xref, sorts):
         qset = updateQsetbyPair(qset, x, y)
 
     return dict(enumerate(qset))
+
+
+class PackSyntax:
+    __slots__ = ['con', 'pres', 'links', 'idxDic', '__str']
+    def __init__(self, con, pres, links, idxDic):
+        self.con = con
+        self.pres = pres
+        self.idxDic = idxDic
+        self.links = links
+        self.__str = ', '.join(sorted('(%s, %s)' % (i, j) 
+                                        for (i, j) in links))
 
 
 class SemComp:
@@ -85,7 +99,8 @@ class SemComp:
     
 
     def unify(self, con:str='s'):
-        self.results = []
+        self.semantics = []
+        self.syntax = []
 
         for x, y in self.xref:
             if 'x' in y: x, y = y, x
@@ -115,4 +130,6 @@ class SemComp:
                             if v in S: relabel[v] = 'i%s' % i
                     Gs.append(g.iso(relabel))
                 
-                self.results.append(compose_all(Gs))
+                self.semantics.append(compose_all(Gs))
+                self.syntax.append(PackSyntax(
+                    con=con, pres=pres, links=p, idxDic=idxDic))
