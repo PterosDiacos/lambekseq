@@ -64,8 +64,6 @@ class PackSyntax:
         self.pres = pres
         self.idxDic = idxDic
         self.links = links
-        self.__str = ', '.join(sorted('(%s, %s)' % (i, j) 
-                                        for (i, j) in links))
 
 
 class SemComp:
