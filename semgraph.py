@@ -2,7 +2,7 @@
 import graphviz
 import networkx as nx
 from copy import deepcopy
-from lib.totikz import totikz
+from lambekseq.lib.totikz import totikz
 
 
 DEFAULT_STYLING = dict(graph_attr=dict(overlap='scale', layout='neato'),

@@ -1,9 +1,10 @@
 '''Continuized CCG with generalized application, lifting and lowering.
 '''
-from lbnoprod import addcache
 from collections import defaultdict
-from lib.parentheses import bipart, isatomic, catIden
-from lib.parentheses import unslash, addHypo
+
+from lambekseq.lbnoprod import addcache
+from lambekseq.lib.parentheses import bipart, isatomic, catIden
+from lambekseq.lib.parentheses import unslash, addHypo
 
 
 Conns = {'/', '\\', '^', '!'}
@@ -185,7 +186,7 @@ class Cntccg:
 
 
 def selfTest():
-    from lib.cindex import indexSeq
+    from lambekseq.lib.cindex import indexSeq
 
     con, *pres = 's', '(s^np)!s', '(np\\s)/np', '(s^np)!s', '(s\\s)/np', '(s^np)!s'
     (con, *pres), _ = indexSeq(con, pres)        

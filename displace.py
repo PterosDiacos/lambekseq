@@ -2,11 +2,11 @@
 This script finds the axioms of every proof.
 Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 '''
-from lib.cindex import addIndex
-from lib.parentheses import atomicIden as _atomicIden
-from lib.parentheses import bipart, isatomic
-from lbnoprod import addcache
-from lbnoprod import LambekProof as _LambekProof
+from lambekseq.lib.cindex import addIndex
+from lambekseq.lib.parentheses import atomicIden as _atomicIden
+from lambekseq.lib.parentheses import bipart, isatomic
+from lambekseq.lbnoprod import addcache
+from lambekseq.lbnoprod import LambekProof as _LambekProof
 
 
 Gap = '-'
@@ -132,7 +132,7 @@ class DisplaceProof(_LambekProof):
 
 
 def selfTest():
-    from lib.cindex import indexSeq
+    from lambekseq.lib.cindex import indexSeq
 
     con, *pres = 's', '(s^np)!s', '(np\\s)/np', '(s^np)!s'
     (con, *pres), _ = indexSeq(con, pres)

@@ -2,8 +2,8 @@
 '''
 from collections import defaultdict
 
-from lib.parentheses import bipart, isatomic, atomicIden
-from lib.porder import PartialOrder
+from lambekseq.lib.parentheses import bipart, isatomic, atomicIden
+from lambekseq.lib.porder import PartialOrder
 
 
 Par = 'P'
@@ -215,7 +215,7 @@ class ProofNet:
 
 def selfTest():
     import pprint as pp
-    from lib.cindex import indexSeq
+    from lambekseq.lib.cindex import indexSeq
 
     con, *pres = 's', 's/(np\\s)', '(np\\s)/np', '(s/np)\\s'
     (con, *pres), _ = indexSeq(con, pres)  

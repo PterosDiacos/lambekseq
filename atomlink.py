@@ -1,13 +1,13 @@
 import json
 import argparse
 
-from lbnoprod import LambekProof
-from displace import DisplaceProof
-from cmll import ProofNet
-from cntccg import Cntccg
+from lambekseq.lbnoprod import LambekProof
+from lambekseq.displace import DisplaceProof
+from lambekseq.cmll import ProofNet
+from lambekseq.cntccg import Cntccg
 
-from lib.cindex import indexSeq
-from lib.parentheses import bipart, isatomic
+from lambekseq.lib.cindex import indexSeq
+from lambekseq.lib.parentheses import bipart, isatomic
 
 
 CALC_DICT = dict(ccg=Cntccg,

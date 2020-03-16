@@ -6,8 +6,8 @@ import re
 import json
 from networkx import compose_all
 
-import atomlink as al
-from semgraph import Semgraph
+import lambekseq.atomlink as al
+from lambekseq.semgraph import Semgraph
 
 
 VOCAB_SCHEMA_PATH = 'schema.json'
