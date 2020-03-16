@@ -6,8 +6,8 @@ from displace import DisplaceProof
 from cmll import ProofNet
 from cntccg import Cntccg
 
-from cindex import indexSeq
-from parentheses import bipart, isatomic
+from lib.cindex import indexSeq
+from lib.parentheses import bipart, isatomic
 
 
 CALC_DICT = dict(ccg=Cntccg,

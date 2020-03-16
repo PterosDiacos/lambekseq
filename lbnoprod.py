@@ -1,7 +1,7 @@
 '''Product-free Lambek sequent calculus. 
 This script finds the axioms of every proof.
 '''
-from parentheses import stripparentheses, isatomic, bipart, atomicIden
+from lib.parentheses import isatomic, bipart, atomicIden
 
 
 def addcache(f):
@@ -99,7 +99,7 @@ class LambekProof:
 
 
 def selfTest():
-    from cindex import indexSeq
+    from lib.cindex import indexSeq
     con, *pres = 's', 's/(np\\s)', '(np\\s)/np', '(s/np)\\s'
     (con, *pres), _ = indexSeq(con, pres)
     lbk = LambekProof(con, pres)

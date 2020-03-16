@@ -2,7 +2,8 @@
 '''
 from lbnoprod import addcache
 from collections import defaultdict
-from parentheses import bipart, isatomic, catIden, unslash, addHypo
+from lib.parentheses import bipart, isatomic, catIden
+from lib.parentheses import unslash, addHypo
 
 
 Conns = {'/', '\\', '^', '!'}
@@ -184,7 +185,7 @@ class Cntccg:
 
 
 def selfTest():
-    from cindex import indexSeq
+    from lib.cindex import indexSeq
 
     con, *pres = 's', '(s^np)!s', '(np\\s)/np', '(s^np)!s', '(s\\s)/np', '(s^np)!s'
     (con, *pres), _ = indexSeq(con, pres)        
