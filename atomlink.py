@@ -17,6 +17,7 @@ CALC_DICT = dict(ccg=Cntccg,
 
 
 def deAbbr(con: str, pres: list, abbr: dict, 
+           calc=DisplaceProof,
            conn={'/', '\\', '^', '!'}):
 
     def zoomin(s):
@@ -37,6 +38,7 @@ def deAbbr(con: str, pres: list, abbr: dict,
                     if not isatomic(ropt, conn=conn):
                         ropt = '(%s)' % ropt
                     yield lopt + slash + smod + ropt
+
     def gen(L):
         if L:
             head, *tail = L
@@ -45,8 +47,16 @@ def deAbbr(con: str, pres: list, abbr: dict,
                     yield [hopt] + topt
         else:
             yield []
+
+    def slashOnly(con, pres):
+        f = lambda x: '^' in x or '!' in x
+        return not any(f(x) for x in [con, *pres])
+
     for con, *pres in gen([con] + pres):
-        yield con, pres
+        if calc in {DisplaceProof, Cntccg}:
+            yield con, pres
+        elif slashOnly(con, pres):
+            yield con, pres
 
 
 def searchLinks(cls, con, pres):
@@ -109,12 +119,12 @@ if __name__ == '__main__':
 
     con, *pres = json.load(open(args.json))[0]
     abbr = json.load(open(args.abbr))
-    f = CALC_DICT.get(args.calc, DisplaceProof)
-    print(f)
+    calc = CALC_DICT.get(args.calc, DisplaceProof)
+    print(calc)
 
     total = 0
-    for con, pres in deAbbr(con, pres, abbr):
-        con, pres, parser, _ = searchLinks(f, con, pres)
+    for con, pres in deAbbr(con, pres, abbr, calc):
+        con, pres, parser, _ = searchLinks(calc, con, pres)
         total += parser.proofCount
         printLinks(con, pres, parser)
 

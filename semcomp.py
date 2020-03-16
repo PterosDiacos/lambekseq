@@ -112,7 +112,7 @@ class SemComp:
         pres = [g.cat for g in self.tokens]
         sorts = [g.sort for g in self.tokens]
 
-        for con, pres in al.deAbbr(con, pres, self.abbr):
+        for con, pres in al.deAbbr(con, pres, self.abbr, self.calc):
             con, pres, parse, idxDic = al.searchLinks(self.calc, con, pres)
 
             if parse.proofs:
