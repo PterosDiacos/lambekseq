@@ -10,8 +10,8 @@ import atomlink as al
 from semgraph import Semgraph
 
 
-VOCAB_SCHEMA_PATH = '../lambekseq/schema.json'
-ABBR_DICT_PATH = '../lambekseq/abbr.json'
+VOCAB_SCHEMA_PATH = 'schema.json'
+ABBR_DICT_PATH = 'abbr.json'
 
 
 def atom2idx(x, pattern=re.compile(r'_(\d+)')):
@@ -80,21 +80,25 @@ class SemComp:
     before which SOURCE1 should be valued. 
 
     `calc`: the CG calculus used to find atom links.
-
-    `abbr`: a dictionary that defines abbreviated syntactic categories.
-    See `atomlink` module.
-
-    `vocab`: a dictionary of lexical schemes. 
     '''
-    def __init__(self, tokens, xref=[], calc='dsp',
-                 abbr=json.load(open(ABBR_DICT_PATH)),
-                 vocab=json.load(open(VOCAB_SCHEMA_PATH))):
-        self.tokens = [Semgraph.from_dict(vocab[pos], lex, i + 1)
-                       for i, (lex, pos) in enumerate(tokens)]
+    def __init__(self, tokens, xref=[], calc='dsp'):
         self.xref = xref
         self.calc = al.CALC_DICT.get(calc, al.DisplaceProof)
-        self.abbr = abbr
-    
+        self.tokens = [Semgraph.from_dict(self.vocab[pos], lex, i + 1)
+                       for i, (lex, pos) in enumerate(tokens)]
+
+
+    @classmethod
+    def load_lexicon(cls, abbr_path=ABBR_DICT_PATH,
+                          vocab_path=VOCAB_SCHEMA_PATH):    
+        '''`abbr`: a dictionary that defines abbreviated syntactic categories.
+        See `atomlink` module.
+
+        `vocab`: a dictionary of lexical schemes.
+        '''
+        cls.abbr = json.load(open(abbr_path))
+        cls.vocab = json.load(open(vocab_path))
+
 
     def unify(self, con:str='s'):
         self.semantics = []
