@@ -1,3 +1,5 @@
+'''Utilities for indexing and computing depths of atoms in syntactic categories.
+'''
 import re
 import pprint as pp
 from parentheses import isatomic, bipart
