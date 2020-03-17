@@ -4,6 +4,8 @@ This package is for proving theorems in Categorial grammars (CG) and constructin
 
 Three CG calculuses are supported here (see below). A "proof" is simply a set of atom links, abstracting away from derivaiton details.
 
+
+
 ## Requirements
 Add the path to the package to `PYTHONPATH`. None of the below packages is needed to use the theorem proving facility.
 
@@ -16,7 +18,10 @@ For graph visualization we use
 - [python-graphviz](https://github.com/xflr6/graphviz)
 - [dot2tex](https://dot2tex.readthedocs.io)
 
+
+
 ## Background
+This package is used for the author's PhD thesis in progress.
 
 ### Categorial grammars:
 - Associative Lambek Calculus Allowing Empty Premises ([Lambek 1958](https://www.cs.cmu.edu/~fp/courses/15816-f16/misc/Lambek58.pdf))
@@ -31,7 +36,7 @@ see also https://github.com/amrisi/amr-guidelines/blob/master/amr.md)
 
 
 ## Theorem Proving
-To prove a theorem, use `atomlink` module. For example, using Lambek Calculus to prove `s np\s -> s`.
+To prove a theorem, use `atomlink` module. For example, using Lambek Calculus to prove `np np\s -> s`.
 ```
 >>> import lambekseq.atomlink as al
 
@@ -41,6 +46,7 @@ To prove a theorem, use `atomlink` module. For example, using Lambek Calculus to
 ```
 This outputs
 ```
+----------
 s_0 <= np_1 np_2\s_3
 
 (np_1, np_2), (s_0, s_3)
@@ -48,12 +54,51 @@ s_0 <= np_1 np_2\s_3
 Total: 1
 ```
 
-You can run `atomlink` in command line. The following finds proofs for the **first** themorem in `input.json`, using abbreviation definitions in `abbr.json` and Basic Displacement Calculus.
+You can run `atomlink` in command line. The following finds proofs for the **first** themorem in `input.json`, using abbreviation definitions in `abbr.json` and Contintuized CCG.
 
 ```
-$ python atomlink.py -j input.json -a abbr.json -c dsp
+$ python atomlink.py -j input.json -a abbr.json -c ccg
+```
+Theorem `["s", "qpd", "vp/s", "qpd", "vp"]` (the first item is the **conclusion**, the rest the **premises**) is thus proved as follows:
+```
+<class 'lambekseq.cntccg.Cntccg'>
+----------
+s_0 <= (s_1^np_2)!s_3 (np_4\s_5)/s_6 (s_7^np_8)!s_9 np_10\s_11
+
+(np_10, np_8), (np_2, np_4), (s_0, s_3), (s_1, s_5), (s_11, s_7), (s_6, s_9)
+
+Total: 1
 ```
 
 Run `python atomlink.py --help` for details.
 
 ## Semantic Parsing
+Use `semcomp` module for semantic parsing. You need to define graph schemata for parts of speech as in `schema.json`.
+```
+>>> from lambekseq.semcomp import SemComp
+>>> SemComp.load_lexicon(abbr_path='abbr.json',
+                         vocab_path='schema.json')
+>>> ex = [('a', 'ind'), ('boy', 'n'), 
+          ('walked', 'vt'), ('a', 'ind'), ('dog', 'n')]
+>>> sc = SemComp(ex, calc='dsp')
+>>> sc.unify('s')
+```
+
+Use `graphviz`'s `Source` to see the semgraphs constructed from the input:
+```
+>>> from graphviz import Source
+>>> Source(sc.semantics[0].dot_styled)
+```
+This outputs  
+![a boy walked a dog](demo/img-0.svg)
+
+You can inspect the syntax behind this parse:
+```
+>>> sc.syntax[0].con, sc.syntax[0].pres
+('s_0', ['np_1/n_2', 'n_3', '(np_4\\s_5)/np_6', 'np_7/n_8', 'n_9'])
+
+>>> sc.syntax[0].links
+frozenset({('n_2', 'n_3'), ('s_0', 's_5'), ('np_1', 'np_4'), ('np_6', 'np_7'), ('n_8', 'n_9')}) 
+```
+
+See [`demo/demo.ipynb`](demo/demo.ipynb) for more examples.
