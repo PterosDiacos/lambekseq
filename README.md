@@ -60,7 +60,7 @@ s_0 <= np_1 np_2\s_3
 Total: 1
 ```
 
-You can run `atomlink` in command line. The following finds proofs for the **first** themorem in `input.json`, using abbreviation definitions in `abbr.json` and Contintuized CCG.
+You can run `atomlink` in command line. The following finds proofs for the **first** themorem in [`input.json`](input.json), using abbreviation definitions in [`abbr.json`](abbr.json) and Contintuized CCG.
 
 ```
 $ python atomlink.py -j input.json -a abbr.json -c ccg
@@ -79,7 +79,7 @@ Total: 1
 Run `python atomlink.py --help` for details.
 
 ## Semantic Parsing
-Use `semcomp` module for semantic parsing. You need to define graph schemata for parts of speech as in `schema.json`.
+Use `semcomp` module for semantic parsing. You need to define graph schemata for parts of speech as in [`schema.json`](schema.json).
 ```
 >>> from lambekseq.semcomp import SemComp
 >>> SemComp.load_lexicon(abbr_path='abbr.json',
@@ -109,7 +109,7 @@ frozenset({('n_2', 'n_3'), ('s_0', 's_5'), ('np_1', 'np_4'), ('np_6', 'np_7'), (
 
 See [`demo/demo.ipynb`](demo/demo.ipynb) for more examples.
 
-You can export semgraphs to `tikz` code that can be visually edited by [TikZit](https://tikzit.github.io/)
+You can export semgraphs to `tikz` code that can be visually edited by [TikZit](https://tikzit.github.io/).
 
 <img src="demo/img-tikz-0.png" alt="a boy walked a dog" width="220"/>
 
