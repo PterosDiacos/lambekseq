@@ -2,7 +2,7 @@
 
 <img src="demo/img-cover.png" alt="semgraph" width="270"/>
 
-<font face="Times New Roman" size="3"><i>"Everyone who failed Greek or Latin hates it." </i></font>
+_"Everyone who failed Greek or Latin hates it."_
 
 <br>
 
