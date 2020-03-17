@@ -1,5 +1,7 @@
 # Lambekseq
 
+<img src="demo/img-cover.png" alt="semgraph" width="320"/>
+
 This package is for proving theorems in Categorial grammars (CG) and constructing semantic graphs, i.e., semgraphs on top of that.  
 
 Three CG calculuses are supported here (see below). A "proof" is simply a set of atom links, abstracting away from derivaiton details.
@@ -105,7 +107,7 @@ See [`demo/demo.ipynb`](demo/demo.ipynb) for more examples.
 
 You can export semgraphs to `tikz` code that can be visually edited by [TikZit](https://tikzit.github.io/)
 
-<img src="demo/img-tikz-0.png" alt="a boy walked a dog" width="250"/>
+<img src="demo/img-tikz-0.png" alt="a boy walked a dog" width="220"/>
 
 ```
 >>> print(sc.semantics[0].tikz)
