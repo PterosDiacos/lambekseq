@@ -1,6 +1,10 @@
 # Lambekseq
 
-<img src="demo/img-cover.png" alt="semgraph" width="320"/>
+<img src="demo/img-cover.png" alt="semgraph" width="270"/>
+
+<font face="Times" size="3"><i>"Everyone who failed Greek or Latin hates it." </i></font>
+
+<br>
 
 This package is for proving theorems in Categorial grammars (CG) and constructing semantic graphs, i.e., semgraphs on top of that.  
 
