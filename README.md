@@ -102,3 +102,32 @@ frozenset({('n_2', 'n_3'), ('s_0', 's_5'), ('np_1', 'np_4'), ('np_6', 'np_7'), (
 ```
 
 See [`demo/demo.ipynb`](demo/demo.ipynb) for more examples.
+
+You can export semgraphs to `tikz` code that can be visually edited by [TikZit](https://tikzit.github.io/)
+
+<img src="demo/img-tikz-0.png" alt="a boy walked a dog" width="250"/>
+
+```
+>>> print(sc.semantics[0].dot)
+\begin{tikzpicture}
+\begin{pgfonlayer}{nodelayer}
+    \node [style=node] (i0) at (-1.88,2.13) {};
+    \node [style=none] (g2u0) at (-2.99,3.07) {};
+    \node [style=node] (i1) at (0.99,-2.68) {};
+    \node [style=none] (g5u0) at (1.09,-4.13) {};
+    \node [style=node] (g3a0) at (0.74,0.43) {};
+    \node [style=none] (g3u0) at (2.05,1.19) {};
+    \node [style=none] (0) at (-3.04,2.89) {boy};
+    \node [style=none] (1) at (0.61,-4.00) {dog};
+    \node [style=none] (2) at (-0.66,0.72) {ag};
+    \node [style=none] (4) at (2.42,1.09) {walked};
+\end{pgfonlayer}
+\begin{pgfonlayer}{edgelayer}
+    \draw [style=arrow] (i0) to (g2u0.center);
+    \draw [style=arrow] (i1) to (g5u0.center);
+    \draw [style=arrow] (g3a0) to (i0);
+    \draw [style=arrow] (g3a0) to (i1);
+    \draw [style=arrow] (g3a0) to (g3u0.center);
+\end{pgfonlayer}
+\end{tikzpicture}
+```
