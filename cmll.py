@@ -2,7 +2,7 @@
 '''
 from collections import defaultdict
 
-from lambekseq.lib.parentheses import bipart, isatomic, atomicIden
+from lambekseq.lib.cterm import bipart, isatomic, atomicIden
 from lambekseq.lib.porder import PartialOrder
 
 

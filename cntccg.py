@@ -3,8 +3,8 @@
 from collections import defaultdict
 
 from lambekseq.lbnoprod import addcache
-from lambekseq.lib.parentheses import bipart, isatomic, catIden
-from lambekseq.lib.parentheses import unslash, addHypo
+from lambekseq.lib.cterm import bipart, isatomic, catIden
+from lambekseq.lib.cterm import unslash, addHypo
 
 
 Conns = {'/', '\\', '^', '!'}

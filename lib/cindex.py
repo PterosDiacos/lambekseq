@@ -2,7 +2,7 @@
 '''
 import re
 import pprint as pp
-from .parentheses import isatomic, bipart
+from .cterm import isatomic, bipart
 
 
 StopAtoms = {'-'}

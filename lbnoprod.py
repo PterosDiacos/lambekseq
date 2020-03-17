@@ -1,7 +1,7 @@
 '''Product-free Lambek sequent calculus. 
 This script finds the axioms of every proof.
 '''
-from lambekseq.lib.parentheses import isatomic, bipart, atomicIden
+from lambekseq.lib.cterm import isatomic, bipart, atomicIden
 
 
 def addcache(f):

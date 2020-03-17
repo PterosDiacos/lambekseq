@@ -7,7 +7,7 @@ from lambekseq.cmll import ProofNet
 from lambekseq.cntccg import Cntccg
 
 from lambekseq.lib.cindex import indexSeq
-from lambekseq.lib.parentheses import bipart, isatomic
+from lambekseq.lib.cterm import bipart, isatomic
 
 
 CALC_DICT = dict(ccg=Cntccg,
