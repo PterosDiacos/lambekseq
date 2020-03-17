@@ -83,13 +83,13 @@ def in_frame(node_lines, edge_lines, template=
                       '\n'.join(edge_lines))
 
 
-def totikz(dot_input:str, math_symbol_map=MATH_SYMBOL_MAP, 
+def totikz(dot_input:str, math_trans=make_math_trans(), 
                           coef=BP_TO_CM) -> str:
     '''Translate a dot-string into `tikz` code editable by Tikzit.'''
     raw = d2t.dot2tex(dot_input, format='tikz', 
                       prog='neato', codeonly='True')
 
-    code = make_math_trans(math_symbol_map)(raw).split('\n')
+    code = math_trans(raw).split('\n')
     label_count = 0
     node_lines, edge_lines = [], []
 

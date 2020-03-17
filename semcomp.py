@@ -58,7 +58,7 @@ def quotSet(proof, idxDic, xref, sorts):
 
 
 class PackSyntax:
-    __slots__ = ['con', 'pres', 'links', 'idxDic', '__str']
+    __slots__ = ['con', 'pres', 'links', 'idxDic']
     def __init__(self, con, pres, links, idxDic):
         self.con = con
         self.pres = pres
