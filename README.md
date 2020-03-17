@@ -84,7 +84,7 @@ Use `semcomp` module for semantic parsing. You need to define graph schemata for
 >>> sc.unify('s')
 ```
 
-Use `graphviz`'s `Source` to see the semgraphs constructed from the input:
+Use `graphviz`'s `Source` to display the semgraphs constructed from the input:
 ```
 >>> from graphviz import Source
 >>> Source(sc.semantics[0].dot_styled)
