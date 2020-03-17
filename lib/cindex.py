@@ -73,9 +73,10 @@ def depthTag(s: str, rootdepth=0, chopcount=0,
 
 
 def idx2depthDict(tagged, conn=Conns,
-                  pattern=re.compile(r'_(\d+):(\d+)')):    
-    return dict({pattern.search(x).groups() 
-        for x in tagged if x not in conn})
+                  pattern=re.compile(r'_(\d+):(\d+)')):
+    f = lambda p: (p[0], int(p[1]))
+    return dict({ f(pattern.search(x).groups())
+                  for x in tagged if x not in conn })
 
 
 def addIndex(s, natom, conn=Conns):
@@ -138,7 +139,7 @@ def indexSeq(con: str, pres: list):
         alltokens.append(s)
 
         for idx in range(natom, natom1): 
-            idx2Token[str(idx)] = str(n - stopCount)
+            idx2Token[str(idx)] = n - stopCount
 
         if s in StopAtoms:
             stopCount += 1

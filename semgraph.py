@@ -68,7 +68,7 @@ class Semgraph(nx.DiGraph):
         Return a new copy.'''
         g = deepcopy(self)
         conj_len = len([i for i, t in idxDict.toToken.items() 
-                          if int(t) == self.toknum]) // 3
+                          if t == self.toknum]) // 3
 
         for i in range(1, conj_len):
             nfrom1 = 'a%d' % (2 + i)

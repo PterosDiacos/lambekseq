@@ -40,11 +40,11 @@ def quotSet(proof, idxDic, xref, sorts):
     for link in proof:
         x, y = map(atom2idx, link) 
         xtok, ytok = idxDic.toToken[x], idxDic.toToken[y]
-        xdep = int(idxDic.toDepth[x]) % sorts[int(xtok) - 1]
-        ydep = int(idxDic.toDepth[y]) % sorts[int(ytok) - 1]        
+        xdep = idxDic.toDepth[x] % sorts[xtok - 1]
+        ydep = idxDic.toDepth[y] % sorts[ytok - 1]        
         
         # conclusion is the 0-th token
-        if xtok != '0' and ytok != '0':
+        if xtok > 0 and ytok > 0:
             # distinct nodes of the same token are not to be fused
             if xtok == ytok and xdep != ydep: return dict()
 
