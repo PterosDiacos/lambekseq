@@ -10,19 +10,10 @@ Conns = {'/', '\\', '^', '!'}
 ConnModes = {'$', '&'}
 
 
-def cordshift(tagged:tuple, rootdepth, rate=1, conn=Conns,
-              pattern=re.compile(r'(.+):(\d+)')):
-    shift = (len(tagged) + 1) // 2 - 1
-    new = ()
-    for x in tagged:
-        if x in conn:
-            new +=  (x,)
-        else:
-            s, depth = pattern.search(x).groups()
-            shiftedDepth = int(depth) + shift * rate \
-                if int(depth) > rootdepth else rootdepth
-            new += ('%s:%d' % (s, shiftedDepth),)
-    return new
+def aLen(s: str, 
+    pattern=re.compile(r'[()%s]+' % ''.join(Conns | ConnModes))):
+    '''Return the number of atoms in `s` minus one.'''
+    return len(list(filter(None, pattern.split(s)))) - 1
 
 
 def depthTag(s: str, rootdepth=0, chopcount=0,
@@ -61,13 +52,11 @@ def depthTag(s: str, rootdepth=0, chopcount=0,
                     taggedright += depthTag(r, rootdepth + chopcount + 1, 1)
             elif slash in bkConn:
                 for r in right:
-                    taggedright += cordshift(
-                        depthTag(r, rootdepth, chopcount + 1), 
-                        rootdepth, rate=2)
+                    taggedright += depthTag(r, 
+                        rootdepth, chopcount + 1 + 2 * aLen(r))
                 for l in left:
-                    taggedleft += cordshift(
-                        depthTag(l, rootdepth + chopcount + 1, 0), 
-                        rootdepth + chopcount + 1, rate=1)
+                    taggedleft += depthTag(l, 
+                        rootdepth + chopcount + 1, aLen(l))
         
         return (*taggedleft, slash, *taggedright)
 
