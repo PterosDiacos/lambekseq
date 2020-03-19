@@ -38,6 +38,13 @@ sc = SemComp(ex1b, calc='ccg')
 sc.unify()
 
 # %%
+ex1c = [('most', 'qnt'), ('voters', 'n'),
+        ('from', 'pn'), ('every', 'qnt'), ('state', 'n'),
+        ('who', 'rl'), ('voted', 'vi'), ('complained', 'vi')]
+sc = SemComp(ex1c)
+sc.unify()
+
+# %%
 ex2 = [('every', 'qnt'), ('boy', 'n'), 
       ('who', 'rl'), ('walk', 'vt'), ('a', 'ind'), ('dog', 'n'),
       ('fed', 'vt'), ('it', 'pro')]
