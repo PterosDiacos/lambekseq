@@ -11,7 +11,7 @@ ConnModes = {'$', '&'}
 
 
 def aLen(s: str, 
-    pattern=re.compile(r'[()%s]+' % ''.join(Conns | ConnModes))):
+    pattern=re.compile(r'[()/\\^!$&]+')):
     '''Return the number of atoms in `s` minus one.'''
     return len(list(filter(None, pattern.split(s)))) - 1
 

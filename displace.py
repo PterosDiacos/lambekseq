@@ -2,7 +2,6 @@
 This script finds the axioms of every proof.
 Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 '''
-from lambekseq.lib.cindex import addIndex
 from lambekseq.lib.cterm import atomicIden as _atomicIden
 from lambekseq.lib.cterm import bipart, isatomic
 from lambekseq.lbnoprod import addcache
