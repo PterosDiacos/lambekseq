@@ -4,16 +4,14 @@ This script finds the axioms of every proof.
 from lambekseq.lib.cterm import isatomic, bipart, atomicIden
 
 
-def addcache(f):
-    f._cache = dict()
-    return f
-
-
-@addcache
-def cachedproof(*args):
-    if args not in cachedproof._cache:
-        cachedproof._cache[args] = findproof(args[0], *args[1:])
-    return cachedproof._cache[args]
+def usecache(func):
+    def onCall(*args, **kwargs):
+        if args not in onCall.cache:
+            onCall.cache[args] = func(*args, **kwargs)
+        return onCall.cache[args]
+    
+    onCall.cache = dict()
+    return onCall
 
 
 def find_diffTV(con, pres, cut, left, right):
@@ -21,9 +19,9 @@ def find_diffTV(con, pres, cut, left, right):
     alts = set()
     for j in range(cut + 1, len(pres) + 1):
         T, V = pres[cut + 1:j], pres[j:]
-        rightproof = cachedproof(right, *T)
+        rightproof = findproof(right, *T)
         if rightproof:
-            leftproof = cachedproof(con, *U, left, *V)
+            leftproof = findproof(con, *U, left, *V)
             if leftproof:
                 alts.update({r | l for r in rightproof 
                                    for l in leftproof}) 
@@ -35,24 +33,25 @@ def find_diffUT(con, pres, cut, left, right):
     alts = set()
     for j in range(cut + 1):
         U, T = pres[:j], pres[j:cut]
-        leftproof = cachedproof(left, *T)
+        leftproof = findproof(left, *T)
         if leftproof:
-            rightproof = cachedproof(con, *U, right, *V)
+            rightproof = findproof(con, *U, right, *V)
             if rightproof:
                 alts.update({l | r for l in leftproof
                                    for r in rightproof})
     return alts
 
 
+@usecache
 def findproof(con, *pres):
     '''Find proofs by showing the axiomatic premises.'''
     # when the conclusion is non-atomic
     if not isatomic(con):
         slash, left, right = bipart(con, noComma=True)
         if slash == '/':
-            return cachedproof(left, *pres, right)
+            return findproof(left, *pres, right)
         elif slash == '\\':
-            return cachedproof(right, left, *pres)
+            return findproof(right, left, *pres)
 
     # when the conclusion is atomic
     else:

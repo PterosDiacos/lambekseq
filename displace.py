@@ -4,7 +4,7 @@ Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 '''
 from lambekseq.lib.cterm import atomicIden as _atomicIden
 from lambekseq.lib.cterm import bipart, isatomic
-from lambekseq.lbnoprod import addcache
+from lambekseq.lbnoprod import usecache
 from lambekseq.lbnoprod import LambekProof as _LambekProof
 
 
@@ -19,21 +19,14 @@ def atomicIden(x, y):
         return _atomicIden(x, y)
 
 
-@addcache
-def cachedproof(*args):
-    if args not in cachedproof._cache:
-        cachedproof._cache[args] = findproof(args[0], *args[1:])
-    return cachedproof._cache[args]
-
-
 def find_diffTV(con, pres, cut, left, right):
     U = pres[:cut]
     alts = set()
     for j in range(cut + 1, len(pres) + 1):
         T, V = pres[cut + 1:j], pres[j:]
-        rightproof = cachedproof(right, *T)
+        rightproof = findproof(right, *T)
         if rightproof:
-            leftproof = cachedproof(con, *U, left, *V)
+            leftproof = findproof(con, *U, left, *V)
             if leftproof:
                 alts.update({r | l for r in rightproof 
                                    for l in leftproof})
@@ -45,9 +38,9 @@ def find_diffUT(con, pres, cut, left, right):
     alts = set()
     for j in range(cut + 1):
         U, T = pres[:j], pres[j:cut]
-        leftproof = cachedproof(left, *T)
+        leftproof = findproof(left, *T)
         if leftproof:
-            rightproof = cachedproof(con, *U, right, *V)
+            rightproof = findproof(con, *U, right, *V)
             if rightproof:
                 alts.update({l | r for l in leftproof
                                    for r in rightproof})
@@ -59,15 +52,16 @@ def find_extract(con, pres, cut, left, right):
     for i in range(cut, -1, -1):
         for j in range(cut, len(pres)):
             if not pres[i:j + 1].count(Gap):
-                rightproof = cachedproof(con, *pres[:i], right, *pres[j + 1:])
+                rightproof = findproof(con, *pres[:i], right, *pres[j + 1:])
                 if rightproof:
-                    leftproof = cachedproof(left, *pres[i:cut], Gap, *pres[cut + 1:j + 1])
+                    leftproof = findproof(left, *pres[i:cut], Gap, *pres[cut + 1:j + 1])
                     if leftproof:
                         alts.update({l | r for l in leftproof
                                            for r in rightproof})
     return alts
 
 
+@usecache
 def findproof(con, *pres):
     pres = list(pres)
 
@@ -75,12 +69,12 @@ def findproof(con, *pres):
     if not isatomic(con, conn=Conns):
         conn, left, right = bipart(con, conn=Conns, noComma=True)
         if conn == '/':
-            return cachedproof(left, *pres, right)        
+            return findproof(left, *pres, right)        
         elif conn == '\\':
-            return cachedproof(right, left, *pres)
+            return findproof(right, left, *pres)
         elif conn == '!':
-            return cachedproof(right, left, *pres).union(
-                   cachedproof(right, *pres, left))
+            return findproof(right, left, *pres).union(
+                   findproof(right, *pres, left))
         elif conn == '^':
             try:
                 assert pres.count(Gap) <= 1
@@ -90,10 +84,10 @@ def findproof(con, *pres):
             except ValueError:
                 alts = set()
                 for i in range(len(pres) + 1):
-                    alts.update(cachedproof(con, *pres[:i], Gap, *pres[i:]))
+                    alts.update(findproof(con, *pres[:i], Gap, *pres[i:]))
                 return alts
             else:
-                return cachedproof(left, *pres[:cut], right, *pres[cut + 1:])
+                return findproof(left, *pres[:cut], right, *pres[cut + 1:])
                     
     # when the conclusion is atomic
     else:

@@ -2,7 +2,7 @@
 '''
 from collections import defaultdict
 
-from lambekseq.lbnoprod import addcache
+from lambekseq.lbnoprod import usecache
 from lambekseq.lib.cterm import bipart, isatomic, catIden
 from lambekseq.lib.cterm import unslash, addHypo
 
@@ -55,22 +55,18 @@ class Result:
         self.links |= pairs
 
 
-@addcache
+@usecache
 def towerSplit(x:str, conn={'/', '\\', '^', '!'}):
     '''Split a tower of `((b^c)!a)` into `(c, a, b)`.'''
-    cache = towerSplit._cache
-    
-    if x in cache: 
-        return cache[x]
     if isatomic(x, conn=conn):
-        return cache.setdefault(x, (x, None, None)) 
+        return (x, None, None)
     else:
         _, l, a = bipart(x, conn=conn, noComma=True)
         if _ in {'/', '\\'}:
-            return cache.setdefault(x, (x, None, None))
+            return (x, None, None)
         else:
             _, b, c = bipart(l, conn=conn, noComma=True)
-            return cache.setdefault(x, (c, a, b))
+            return (c, a, b)
 
 
 def propogate(xlist, ylist, i, j, cat):
