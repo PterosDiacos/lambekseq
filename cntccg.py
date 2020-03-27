@@ -173,7 +173,7 @@ class Cntccg:
                     for x in span[i, j - 1]:
                         for y in span[j, k]:
                             span[i, k].update(x + y)
-                            span[i, k] = set(list(span[i, k]))
+                span[i, k] = set(list(span[i, k]))
 
         if not Result._earlyCollapse:
             for r in span[0, len(self) - 1]: r.collapse()
