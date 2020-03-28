@@ -76,19 +76,18 @@ def findproof(con, *pres):
             return findproof(right, left, *pres).union(
                    findproof(right, *pres, left))
         elif conn == '^':
-            try:
-                assert pres.count(Gap) <= 1
-                cut = pres.index(Gap)
-            except AssertionError:
+            ngaps = pres.count(Gap)
+            if ngaps > 1:
                 return set()
-            except ValueError:
+            elif ngaps == 0:
                 alts = set()
                 for i in range(len(pres) + 1):
                     alts.update(findproof(con, *pres[:i], Gap, *pres[i:]))
                 return alts
             else:
+                cut = pres.index(Gap)
                 return findproof(left, *pres[:cut], right, *pres[cut + 1:])
-                    
+
     # when the conclusion is atomic
     else:
         if len(pres) == 0:
