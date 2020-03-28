@@ -18,14 +18,12 @@ class Result:
     def __iter__(self):
         return iter(self.links)
 
-    def _key(self):
-        return (self.cat, self.links)
-
     def __eq__(self, other):
-        return self._key() == other._key()
+        return (self.cat == other.cat
+            and self.links == other.links)
 
     def __hash__(self):
-        return hash(self._key())
+        return hash((self.cat, self.links))
 
     def __repr__(self):
         return self.cat
@@ -87,6 +85,7 @@ def cellAppl(xlist, ylist, i, j, slash):
                 return {Result(cat, pairs)}
     except IndexError:
         pass
+    
     try:
         if j == len(ylist) - 1:
             c, a, b = towerSplit(ylist[j][0])
@@ -94,11 +93,12 @@ def cellAppl(xlist, ylist, i, j, slash):
                 if slash == '/':
                     res = reduce(Result(xlist[i][0]), Result(c))
                 elif slash == '\\':
-                    res = reduce(Result(c), Result(xlist[i][0]))
+                    res = reduce(Result(c), Result(xlist[i][0]))                
                 for r in res:
+                    iden = False
                     if r._earlyCollapse:
                         iden, pairs = catIden(b, r.cat)
-                    if r._earlyCollapse and iden:
+                    if iden:
                         r.links |= pairs
                         r.cat = a
                     else:
@@ -108,6 +108,7 @@ def cellAppl(xlist, ylist, i, j, slash):
                 return {r for r in res}
     except IndexError:
         pass
+    
     return set()
 
 
