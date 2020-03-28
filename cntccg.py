@@ -45,7 +45,7 @@ class Result:
                 return d, pairs | more
             else:
                 s = addHypo(e, '^', c)
-                s = addHypo(a, '!', s)
+                s = addHypo(d, '!', s)
                 return s, pairs
 
     def collapse(self):
@@ -96,7 +96,6 @@ def cellAppl(xlist, ylist, i, j, slash):
                 elif slash == '\\':
                     res = reduce(Result(c), Result(xlist[i][0]))
                 for r in res:
-                    r.cat = propogate(xlist, ylist, i, j, r.cat)
                     if r._earlyCollapse:
                         iden, pairs = catIden(b, r.cat)
                     if r._earlyCollapse and iden:
@@ -105,7 +104,8 @@ def cellAppl(xlist, ylist, i, j, slash):
                     else:
                         r.cat = addHypo(b, '^', r.cat)
                         r.cat = addHypo(a, '!', r.cat)
-                return res
+                    r.cat = propogate(xlist, ylist, i, j, r.cat)
+                return {r for r in res}
     except IndexError:
         pass
     return set()
@@ -127,7 +127,7 @@ def reduce(x:Result, y:Result) -> set:
     
     xyLinks = x.links | y.links
     for r in res: r.links |= xyLinks
-    return res
+    return {r for r in res}
 
 
 class Cntccg:
@@ -173,12 +173,11 @@ class Cntccg:
                     for x in span[i, j - 1]:
                         for y in span[j, k]:
                             span[i, k].update(x + y)
-                
-                # otherwise, unclear why duplicates exist
-                span[i, k] = {r for r in span[i, k]}
 
         if not Result._earlyCollapse:
-            for r in span[0, len(self) - 1]: r.collapse()
+            res = span[0, len(self) - 1]
+            for r in res: r.collapse()
+            res = {r for r in res}
 
         self._proofSpan = span
 
