@@ -42,15 +42,16 @@ class Result:
             if iden:
                 return d, pairs | more
             else:
-                s = addHypo(e, '^', c)
-                s = addHypo(d, '!', s)
-                return s, pairs
+                c = addHypo(e, '^', c)
+                c = addHypo(d, '!', c)
+                return c, pairs
 
     def collapse(self):
         '''Recursive lowering.'''
         cat, pairs = self._lowering(self.cat)
         self.cat = cat
         self.links |= pairs
+        return self
 
 
 @usecache
@@ -95,15 +96,9 @@ def cellAppl(xlist, ylist, i, j, slash):
                 elif slash == '\\':
                     res = reduce(Result(c), Result(xlist[i][0]))                
                 for r in res:
-                    iden = False
-                    if r._earlyCollapse:
-                        iden, pairs = catIden(b, r.cat)
-                    if iden:
-                        r.links |= pairs
-                        r.cat = a
-                    else:
-                        r.cat = addHypo(b, '^', r.cat)
-                        r.cat = addHypo(a, '!', r.cat)
+                    r.cat = addHypo(b, '^', r.cat)
+                    r.cat = addHypo(a, '!', r.cat)
+                    if r._earlyCollapse: r.collapse()
                     r.cat = propogate(xlist, ylist, i, j, r.cat)
                 return {r for r in res}
     except IndexError:
@@ -176,9 +171,8 @@ class Cntccg:
                             span[i, k].update(x + y)
 
         if not Result._earlyCollapse:
-            res = span[0, len(self) - 1]
-            for r in res: r.collapse()
-            res = {r for r in res}
+            span[0, len(self) - 1] = {r.collapse()
+                for r in span[0, len(self) - 1]}
 
         self._proofSpan = span
 
