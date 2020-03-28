@@ -78,31 +78,26 @@ def propogate(xlist, ylist, i, j, cat):
 
 
 def cellAppl(xlist, ylist, i, j, slash):
-    try:
+    if i < len(xlist) - 1:
         if xlist[i + 1][1] == slash:
             iden, pairs = catIden(xlist[i + 1][2], ylist[j][0])
             if iden:
                 cat = propogate(xlist, ylist, i, j, xlist[i + 1][0])  
                 return {Result(cat, pairs)}
-    except IndexError:
-        pass
     
-    try:
-        if j == len(ylist) - 1:
-            c, a, b = towerSplit(ylist[j][0])
-            if a:
-                if slash == '/':
-                    res = reduce(Result(xlist[i][0]), Result(c))
-                elif slash == '\\':
-                    res = reduce(Result(c), Result(xlist[i][0]))                
-                for r in res:
-                    r.cat = addHypo(b, '^', r.cat)
-                    r.cat = addHypo(a, '!', r.cat)
-                    if r._earlyCollapse: r.collapse()
-                    r.cat = propogate(xlist, ylist, i, j, r.cat)
-                return {r for r in res}
-    except IndexError:
-        pass
+    if j == len(ylist) - 1:
+        c, a, b = towerSplit(ylist[j][0])
+        if a:
+            if slash == '/':
+                res = reduce(Result(xlist[i][0]), Result(c))
+            elif slash == '\\':
+                res = reduce(Result(c), Result(xlist[i][0]))                
+            for r in res:
+                r.cat = addHypo(b, '^', r.cat)
+                r.cat = addHypo(a, '!', r.cat)
+                if r._earlyCollapse: r.collapse()
+                r.cat = propogate(xlist, ylist, i, j, r.cat)
+            return {r for r in res}
     
     return set()
 
@@ -115,7 +110,8 @@ def reduce(x:Result, y:Result) -> set:
     for s in range(len(xlist) + len(ylist) - 1):
         for i in range(s, -1, -1):
             j  = s - i
-            if i and j: continue
+            if (i and j or i >= len(xlist)
+                        or j >= len(ylist)): continue
             res.update(cellAppl(xlist, ylist, i, j, '/'))
             res.update(cellAppl(ylist, xlist, j, i, '\\'))
 
