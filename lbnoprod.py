@@ -55,27 +55,24 @@ def findproof(con, *pres):
 
     # when the conclusion is atomic
     else:
-        if len(pres) == 0:
-            return set()
-        else:
-            altBranches = set()
-            hit_nonatomic = False
-            for i in range(len(pres)):
-                if not isatomic(pres[i]):
-                    hit_nonatomic = True
-                    slash, left, right = bipart(pres[i], noComma=True)
-                    if slash == '/':
-                        altBranches.update(find_diffTV(con, pres, i, left, right))
-                    elif slash == '\\':
-                        altBranches.update(find_diffUT(con, pres, i, left, right))
+        altBranches = set()
+        hit_nonatomic = False
+        for i in range(len(pres)):
+            if not isatomic(pres[i]):
+                hit_nonatomic = True
+                slash, left, right = bipart(pres[i], noComma=True)
+                if slash == '/':
+                    altBranches.update(find_diffTV(con, pres, i, left, right))
+                elif slash == '\\':
+                    altBranches.update(find_diffUT(con, pres, i, left, right))
 
-            if hit_nonatomic:
-                return altBranches
+        if hit_nonatomic:
+            return altBranches
+        else:
+            if len(pres) == 1 and atomicIden(pres[0], con):
+                return {frozenset({tuple(sorted({pres[0], con}))})}
             else:
-                if len(pres) == 1 and atomicIden(pres[0], con):
-                    return {frozenset({tuple(sorted({pres[0], con}))})}
-                else:
-                    return set()
+                return set()
 
 
 class LambekProof:
