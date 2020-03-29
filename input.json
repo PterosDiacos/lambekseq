@@ -1,8 +1,13 @@
 [
     ["s", "qpd", "vp/s", "qpd", "vp"],
     ["s", "np", "vt", "np", "rl", "qpd", "vt"],
+
+    "----Control----",
     
-       
+    ["s", "np", "vp/vp", "vt", "qpd"],
+    ["s", "np", "(vp/vp)/np", "np", "vt", "qpd"],
+    
+    
     "----For Displacement Calculus----",
     
     ["s", "qpd", "negd", "vp"],
