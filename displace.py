@@ -2,13 +2,21 @@
 This script finds the axioms of every proof.
 Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 '''
-from lambekseq.lib.cterm import bipart, isatomic, atomicIden
+from lambekseq.lib.cterm import bipart, isatomic, atomicIden, catIden
 from lambekseq.lbnoprod import usecache
 from lambekseq.lbnoprod import LambekProof as _LambekProof
 
 
 Gap = '-'
 Conns = {'/', '\\', '^', '!'}
+Islands = {'s', 's^np'}
+
+
+def islandDiv(slash, left, right, islands=Islands):
+    if slash == '/':
+        return any(catIden(right, i)[0] for i in islands)
+    elif slash == '\\':
+        return any(catIden(left, i)[0] for i in islands)
 
 
 def find_diffTV(con, pres, cut, left, right):
@@ -83,26 +91,35 @@ def findproof(con, *pres):
     # when the conclusion is atomic
     else:
         altBranches = set()
-        nonatoms = []
-        naconns = []
+        nonatomPlain = []
+        nonatomIsland = []
         for i in range(len(pres)):
             if not isatomic(pres[i], conn=Conns):
                 conn, left, right = bipart(pres[i], conn=Conns, noComma=True)
-                nonatoms.append((i, left, right))
-                naconns.append(conn)
+                if islandDiv(conn, left, right):
+                    nonatomIsland.append((i, conn, left, right))
+                else:
+                    nonatomPlain.append((i, conn, left, right))
 
-        for (i, left, right), conn in zip(nonatoms, naconns):
+        for i, conn, left, right in nonatomIsland:
             if conn == '/':
                 altBranches.update(find_diffTV(con, pres, i, left, right))
             elif conn == '\\':
                 altBranches.update(find_diffUT(con, pres, i, left, right))
-            elif conn == '!':
-                altBranches.update(find_extract(con, pres, i, left, right))
-            elif conn == '^':
-                altBranches.update(find_diffTV(con, pres, i, left, right))
-                altBranches.update(find_diffUT(con, pres, i, right, left))
 
-        if nonatoms:
+        if not DisplaceProof._islandFirst or not nonatomIsland:
+            for i, conn, left, right in nonatomPlain:
+                if conn == '/':
+                    altBranches.update(find_diffTV(con, pres, i, left, right))
+                elif conn == '\\':
+                    altBranches.update(find_diffUT(con, pres, i, left, right))
+                elif conn == '!':
+                    altBranches.update(find_extract(con, pres, i, left, right))
+                elif conn == '^':
+                    altBranches.update(find_diffTV(con, pres, i, left, right))
+                    altBranches.update(find_diffUT(con, pres, i, right, left))
+
+        if nonatomIsland or nonatomPlain:
             return altBranches
         else:
             if len(pres) == 1 and atomicIden(pres[0], con):
@@ -114,8 +131,6 @@ def findproof(con, *pres):
 class DisplaceProof(_LambekProof):
     def __init__(self, con, pres, *, islandFirst=False, **kwargs):
         _LambekProof.__init__(self, con, pres, **kwargs)
-
-        # TODO: add island-first processing options
         DisplaceProof._islandFirst = islandFirst
 
     def parse(self):
