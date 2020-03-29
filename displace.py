@@ -2,21 +2,13 @@
 This script finds the axioms of every proof.
 Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 '''
-from lambekseq.lib.cterm import atomicIden as _atomicIden
-from lambekseq.lib.cterm import bipart, isatomic
+from lambekseq.lib.cterm import bipart, isatomic, atomicIden
 from lambekseq.lbnoprod import usecache
 from lambekseq.lbnoprod import LambekProof as _LambekProof
 
 
 Gap = '-'
 Conns = {'/', '\\', '^', '!'}
-
-
-def atomicIden(x, y):
-    if Gap in {x, y}:
-        return x == y
-    else:
-        return _atomicIden(x, y)
 
 
 def find_diffTV(con, pres, cut, left, right):

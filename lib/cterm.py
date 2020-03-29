@@ -117,9 +117,14 @@ def catIden(x:str, y:str, conn={'/', '\\', '^', '!'}) -> (bool, frozenset):
 
 
 def atomicIden(x: str, y: str, 
-               pattern=re.compile(r'(?:\A|\()(?:\W*)([a-zA-Z]+)_?(\d*)(?:\Z|\))'), 
+               pattern=re.compile(r'(?:\A|\()(?:~*)([-a-zA-Z]+)_?(\d*)(?:\Z|\))'), 
                indexIden=False):
-    '''Check if `x` equals `y` (up to indexation).'''
+    '''Check if `x` equals `y` (up to indexation).
+    An atom stands alone or is enclosed in parentheses.
+    It contains only letters and hyphens,
+    starting with optional `~` for negation in CMLL, and
+    optionally suffixed by a numeric index after `_`.
+    '''
     x, x_i = pattern.search(x).groups()
     y, y_i = pattern.search(y).groups()
     return x == y and (not indexIden or x_i == y_i)
