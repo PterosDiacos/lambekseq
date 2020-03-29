@@ -111,22 +111,22 @@ def initArgParser():
     ap.add_argument('--offSymbolOnly',
         default=False,
         action='store_true',
-        help='[default] off. Used by Proofnet.'
+        help='Used by Proofnet.'
     )
     ap.add_argument('--offEarlyCollapse',
         default=False,
         action='store_true',
-        help='[default] off. Used by continuized CCG.'
+        help='Used by continuized CCG.'
     )
     ap.add_argument('--offMatchConn',
         default=False,
         action='store_true',
-        help='[default] off. Used by continuized CCG.'
+        help='Used by continuized CCG.'
     )
     ap.add_argument('--islandFirst',
         default=False,
         action='store_true',
-        help='[default] off. Used by Displacement calculus.'
+        help='Used by Displacement calculus.'
     )
     return ap
 
