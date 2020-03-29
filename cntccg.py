@@ -123,11 +123,12 @@ def reduce(x:Result, y:Result) -> set:
 
 
 class Cntccg:
-    def __init__(self, con:str, pres:list, **kwargs):
+    def __init__(self, con:str, pres:list, *,
+                       matchCon=True, earlyCollapse=True, **kwargs):
         self.con = con
         self.pres = list(pres)
-        Cntccg._matchCon = kwargs.get('matchCon', True)
-        Result._earlyCollapse = kwargs.get('earlyCollapse', True)
+        Cntccg._matchCon = matchCon
+        Result._earlyCollapse = earlyCollapse
 
     def __len__(self):
         return len(self.pres)

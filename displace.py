@@ -123,9 +123,9 @@ def findproof(con, *pres):
 
 
 class DisplaceProof(_LambekProof):
-    def __init__(self, con, pres, **kwargs):
+    def __init__(self, con, pres, *, concatFirst=False, **kwargs):
         _LambekProof.__init__(self, con, pres, **kwargs)
-        DisplaceProof._concatFirst = kwargs.get('concatFirst', False)
+        DisplaceProof._concatFirst = concatFirst
 
     def parse(self):
         self.proofs = findproof(self.con, *self.pres)
