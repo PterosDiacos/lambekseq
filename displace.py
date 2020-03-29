@@ -104,14 +104,11 @@ def findproof(con, *pres):
                 altBranches.update(find_diffTV(con, pres, i, left, right))
             elif conn == '\\':
                 altBranches.update(find_diffUT(con, pres, i, left, right))
-        
-        if not DisplaceProof._concatFirst or not altBranches:
-            for (i, left, right), conn in zip(nonatoms, naconns):
-                if conn == '!':
-                    altBranches.update(find_extract(con, pres, i, left, right))
-                elif conn == '^':
-                    altBranches.update(find_diffTV(con, pres, i, left, right))
-                    altBranches.update(find_diffUT(con, pres, i, right, left))
+            elif conn == '!':
+                altBranches.update(find_extract(con, pres, i, left, right))
+            elif conn == '^':
+                altBranches.update(find_diffTV(con, pres, i, left, right))
+                altBranches.update(find_diffUT(con, pres, i, right, left))
 
         if nonatoms:
             return altBranches
@@ -123,9 +120,11 @@ def findproof(con, *pres):
 
 
 class DisplaceProof(_LambekProof):
-    def __init__(self, con, pres, *, concatFirst=False, **kwargs):
+    def __init__(self, con, pres, *, islandFirst=False, **kwargs):
         _LambekProof.__init__(self, con, pres, **kwargs)
-        DisplaceProof._concatFirst = concatFirst
+
+        # TODO: add island-first processing options
+        DisplaceProof._islandFirst = islandFirst
 
     def parse(self):
         findproof.cache.clear()

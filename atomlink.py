@@ -123,7 +123,7 @@ def initArgParser():
         action='store_true',
         help='[default] off. Used by continuized CCG.'
     )
-    ap.add_argument('--concatFirst',
+    ap.add_argument('--islandFirst',
         default=False,
         action='store_true',
         help='[default] off. Used by Displacement calculus.'
@@ -145,7 +145,7 @@ if __name__ == '__main__':
                                            symbolOnly=not args.offSymbolOnly,
                                            earlyCollapse=not args.offEarlyCollapse,
                                            matchConn=not args.offMatchConn,
-                                           concatFirst=args.concatFirst)
+                                           islandFirst=args.islandFirst)
         total += parser.proofCount
         printLinks(con, pres, parser)
 
