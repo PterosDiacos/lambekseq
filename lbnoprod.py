@@ -81,6 +81,7 @@ class LambekProof:
         self.pres = pres
 
     def parse(self):
+        findproof.cache.clear()
         self.proofs = findproof(self.con, *self.pres)
 
     @property

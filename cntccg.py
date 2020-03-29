@@ -129,6 +129,7 @@ class Cntccg:
         self.pres = list(pres)
         Cntccg._matchCon = matchCon
         Result._earlyCollapse = earlyCollapse
+        towerSplit.cache.clear()
 
     def __len__(self):
         return len(self.pres)

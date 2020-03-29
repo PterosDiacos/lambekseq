@@ -128,6 +128,7 @@ class DisplaceProof(_LambekProof):
         DisplaceProof._concatFirst = concatFirst
 
     def parse(self):
+        findproof.cache.clear()
         self.proofs = findproof(self.con, *self.pres)
 
 
