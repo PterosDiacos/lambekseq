@@ -59,7 +59,7 @@ def deAbbr(con: str, pres: list, abbr: dict,
             yield con, pres
 
 
-def searchLinks(cls, con, pres):
+def searchLinks(cls, con, pres, **kwargs):
     '''Return the indexed `con`, `pres`,
     the run parser and the index dictionary `idxDic`.
     `idxDic.toToken` maps indices to token numbers.
@@ -67,9 +67,9 @@ def searchLinks(cls, con, pres):
     '''
     (con, *pres), idxDic = indexSeq(con, pres)   
     if cls == ProofNet:
-        parser = cls.fromLambekSeq(con, pres)
+        parser = cls.fromLambekSeq(con, pres, **kwargs)
     else:
-        parser = cls(con, pres)
+        parser = cls(con, pres, **kwargs)
     
     parser.parse()
     return con, pres, parser, idxDic
@@ -78,10 +78,7 @@ def searchLinks(cls, con, pres):
 def printLinks(con, pres, parser):
     if parser.proofCount:
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
-        if isinstance(parser, ProofNet):
-            parser.printProofs(symbolOnly=True)
-        else:
-            parser.printProofs()      
+        parser.printProofs()      
         print('Total: %d\n' % parser.proofCount)
 
 
@@ -111,6 +108,26 @@ def initArgParser():
              'lb for classic Lambek calculus; '
              'pn for Proofnet based Lambek calculus.'
     )
+    ap.add_argument('--offSymbolOnly',
+        default=False,
+        action='store_true',
+        help='[default] False. Used by Proofnet.'
+    )
+    ap.add_argument('--offEarlyCollapse',
+        default=False,
+        action='store_true',
+        help='[default] False. Used by continuized CCG.'
+    )
+    ap.add_argument('--offMatchConn',
+        default=False,
+        action='store_true',
+        help='[default] False. Used by continuized CCG.'
+    )
+    ap.add_argument('--concatFirst',
+        default=False,
+        action='store_true',
+        help='[default] False. Used by Displacement calculus.'
+    )
     return ap
 
 
@@ -124,7 +141,11 @@ if __name__ == '__main__':
 
     total = 0
     for con, pres in deAbbr(con, pres, abbr, calc):
-        con, pres, parser, _ = searchLinks(calc, con, pres)
+        con, pres, parser, _ = searchLinks(calc, con, pres, 
+                                           symbolOnly=not args.offSymbolOnly,
+                                           earlyCollapse=not args.offEarlyCollapse,
+                                           matchConn=not args.offMatchConn,
+                                           concatFirst=args.concatFirst)
         total += parser.proofCount
         printLinks(con, pres, parser)
 

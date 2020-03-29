@@ -123,10 +123,11 @@ def reduce(x:Result, y:Result) -> set:
 
 
 class Cntccg:
-    def __init__(self, con:str, pres:list, earlyCollapse=True):
+    def __init__(self, con:str, pres:list, **kwargs):
         self.con = con
         self.pres = list(pres)
-        Result._earlyCollapse = earlyCollapse
+        Cntccg._matchCon = kwargs.get('matchCon', True)
+        Result._earlyCollapse = kwargs.get('earlyCollapse', True)
 
     def __len__(self):
         return len(self.pres)
@@ -141,13 +142,13 @@ class Cntccg:
                     self.allProofs))
 
     @property
-    def proofCount(self, matchCon=True):
-        return len(self.proofs if matchCon else self.allProofs)
+    def proofCount(self):
+        return len(self.proofs if self._matchCon else self.allProofs)
 
-    def printProofs(self, matchCon=True):
-        pool = self.proofs if matchCon else self.allProofs
+    def printProofs(self):
+        pool = self.proofs if self._matchCon else self.allProofs
         for r in pool:
-            if matchCon: r.links |= catIden(r.cat, self.con)[1]
+            if self._matchCon: r.links |= catIden(r.cat, self.con)[1]
             s = sorted('(%s, %s)' % (i, j) for i, j in r.links)
             print(', '.join(s))
         if pool: print()

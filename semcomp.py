@@ -100,7 +100,8 @@ class SemComp:
         cls.vocab = json.load(open(vocab_path))
 
 
-    def unify(self, con:str='s'):
+    def unify(self, con:str='s', **kwargs):
+        '''Unification.'''
         self.semantics = []
         self.syntax = []
 
@@ -113,7 +114,7 @@ class SemComp:
         sorts = [g.sort for g in self.tokens]
 
         for con, pres in al.deAbbr(con, pres, self.abbr, self.calc):
-            con, pres, parse, idxDic = al.searchLinks(self.calc, con, pres)
+            con, pres, parse, idxDic = al.searchLinks(self.calc, con, pres, **kwargs)
 
             if parse.proofs:
                 _tokens = self.tokens.copy()

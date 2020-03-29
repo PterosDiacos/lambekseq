@@ -104,7 +104,10 @@ class ProofNet:
         return cls(cat2cmll(s))
 
     @classmethod
-    def fromLambekSeq(cls, con: str, pres: list):
+    def fromLambekSeq(cls, con:str, pres:list, **kwargs):
+        '''Show only symbol pairs when printing proofs if `symbolOnly`.'''
+        cls._symbolOnly = kwargs.get('symbolOnly', True)
+
         fm = cat2cmll(con)
         for p in pres:
             fm = (Neg(cat2cmll(p)), Par, fm)
@@ -118,16 +121,16 @@ class ProofNet:
     def proofCount(self):
         return len(self.proofs)
 
-    def printProofs(self, symbolOnly=False):
+    def printProofs(self):
         a = lambda x, y: ((self.adict[x], self.adict[y])
                           if isNeg(self.adict[x]) else
                           (self.adict[y], self.adict[x]))
 
         for parse in self.proofs:
-            if not symbolOnly: print(parse)
+            if not self._symbolOnly: print(parse)
             s = sorted('(%s, %s)' % a(x, y) for x, y in parse.links)
-            print(', '.join(s), end='\n' if symbolOnly else '\n\n')
-        if symbolOnly: print()
+            print(', '.join(s), end='\n' if self._symbolOnly else '\n\n')
+        if self._symbolOnly: print()
 
     @staticmethod
     def __minCommonAnces(seq1, seq2):

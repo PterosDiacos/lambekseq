@@ -76,7 +76,7 @@ def findproof(con, *pres):
 
 
 class LambekProof:
-    def __init__(self, con, pres):
+    def __init__(self, con, pres, **kwargs):
         self.con = con
         self.pres = pres
 

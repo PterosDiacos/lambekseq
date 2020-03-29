@@ -91,22 +91,29 @@ def findproof(con, *pres):
     # when the conclusion is atomic
     else:
         altBranches = set()
-        hit_nonatomic = False
+        nonatoms = []
+        naconns = []
         for i in range(len(pres)):
             if not isatomic(pres[i], conn=Conns):
-                hit_nonatomic = True
                 conn, left, right = bipart(pres[i], conn=Conns, noComma=True)
-                if conn == '/':
-                    altBranches.update(find_diffTV(con, pres, i, left, right))
-                elif conn == '\\':
-                    altBranches.update(find_diffUT(con, pres, i, left, right))
-                elif conn == '!':
+                nonatoms.append((i, left, right))
+                naconns.append(conn)
+
+        for (i, left, right), conn in zip(nonatoms, naconns):
+            if conn == '/':
+                altBranches.update(find_diffTV(con, pres, i, left, right))
+            elif conn == '\\':
+                altBranches.update(find_diffUT(con, pres, i, left, right))
+        
+        if not DisplaceProof._concatFirst or not altBranches:
+            for (i, left, right), conn in zip(nonatoms, naconns):
+                if conn == '!':
                     altBranches.update(find_extract(con, pres, i, left, right))
                 elif conn == '^':
                     altBranches.update(find_diffTV(con, pres, i, left, right))
                     altBranches.update(find_diffUT(con, pres, i, right, left))
 
-        if hit_nonatomic:
+        if nonatoms:
             return altBranches
         else:
             if len(pres) == 1 and atomicIden(pres[0], con):
@@ -116,6 +123,10 @@ def findproof(con, *pres):
 
 
 class DisplaceProof(_LambekProof):
+    def __init__(self, con, pres, **kwargs):
+        _LambekProof.__init__(self, con, pres, **kwargs)
+        DisplaceProof._concatFirst = kwargs.get('concatFirst', False)
+
     def parse(self):
         self.proofs = findproof(self.con, *self.pres)
 
