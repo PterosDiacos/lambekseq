@@ -107,7 +107,6 @@ class ProofNet:
     def fromLambekSeq(cls, con:str, pres:list, *, symbolOnly=True, **kwargs):
         '''Show only symbol pairs when printing proofs if `symbolOnly`.'''
         cls._symbolOnly = symbolOnly
-
         fm = cat2cmll(con)
         for p in pres:
             fm = (Neg(cat2cmll(p)), Par, fm)

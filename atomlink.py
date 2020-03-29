@@ -108,17 +108,7 @@ def initArgParser():
              'lb for classic Lambek calculus; '
              'pn for Proofnet based Lambek calculus.'
     )
-    ap.add_argument('--offSymbolOnly',
-        default=False,
-        action='store_true',
-        help='Used by Proofnet.'
-    )
-    ap.add_argument('--offEarlyCollapse',
-        default=False,
-        action='store_true',
-        help='Used by continuized CCG.'
-    )
-    ap.add_argument('--offMatchConn',
+    ap.add_argument('--earlyCollapse',
         default=False,
         action='store_true',
         help='Used by continuized CCG.'
@@ -142,9 +132,7 @@ if __name__ == '__main__':
     total = 0
     for con, pres in deAbbr(con, pres, abbr, calc):
         con, pres, parser, _ = searchLinks(calc, con, pres, 
-                                           symbolOnly=not args.offSymbolOnly,
-                                           earlyCollapse=not args.offEarlyCollapse,
-                                           matchConn=not args.offMatchConn,
+                                           earlyCollapse=args.earlyCollapse,
                                            islandFirst=args.islandFirst)
         total += parser.proofCount
         printLinks(con, pres, parser)
