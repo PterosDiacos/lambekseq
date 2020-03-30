@@ -85,6 +85,7 @@ def printLinks(con, pres, parser):
 def printTree(con, pres, parser):
     if parser.proofCount:
         print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
+        parser.buildTree()
         parser.printTree()      
         print('Total: %d\n' % parser.proofCount)
 
