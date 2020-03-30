@@ -144,7 +144,6 @@ class LambekProof:
             for links in self.cache[key]:
                 if parentLinks and not links <= parentLinks:
                     continue 
-
                 if not indent:
                     s = sorted('(%s, %s)' % (i, j) for (i, j) in links)
                     print(', '.join(s) + '\n' + '-' * 10 + '\n')
@@ -153,13 +152,16 @@ class LambekProof:
                     for sub in self.tree[key, links]:
                         onCall(sub[0], sub[1:], links, indent + space)
                 print(indent, *pres, '->', con)
-                
                 if not indent: print('\n')
 
         onCall(self.con, self.pres)
 
-    def printBussTree(self):
-        print(toBuss(self.con, self.pres, self.cache, self.tree))
+    def printBussTree(self, file=None):
+        if file:
+            print(toBuss(self.con, self.pres, self.cache, self.tree),
+                file=open(file, 'w'))
+        else:
+            print(toBuss(self.con, self.pres, self.cache, self.tree))
 
 
 def selfTest():
