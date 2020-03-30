@@ -149,7 +149,6 @@ def selfTest():
     (con, *pres), _ = indexSeq(con, pres)
     dsp = DisplaceProof(con, pres)
     dsp.parse()
-    dsp.printProofs()
     dsp.buildTree()
     dsp.printTree()
 

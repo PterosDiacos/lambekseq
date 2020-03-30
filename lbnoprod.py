@@ -141,10 +141,15 @@ class LambekProof:
         def onCall(con, pres, indent=''):
             key = con, *pres
             for links in self.cache[key]:
+                if not indent:
+                    s = sorted('(%s, %s)' % (i, j) for (i, j) in links)
+                    print(', '.join(s) + '\n' + '-' * 10 + '\n')
+
                 if (key, links) in self.tree:
                     for sub in self.tree[key, links]:
                         onCall(sub[0], sub[1:], indent + space)
                 print(indent, *pres, '->', con)
+                
                 if not indent: print()
 
         onCall(self.con, self.pres)
@@ -156,7 +161,6 @@ def selfTest():
     (con, *pres), _ = indexSeq(con, pres)
     lbk = LambekProof(con, pres)
     lbk.parse()
-    lbk.printProofs()
     lbk.buildTree()
     lbk.printTree()
 
