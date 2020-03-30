@@ -158,8 +158,12 @@ class LambekProof:
 
         onCall(self.con, self.pres)
 
-    def printBussTree(self):
-        print(toBuss(self.con, self.pres, self.cache, self.tree))
+    def printBussTree(self, file=None):
+        if file:
+            print(toBuss(self.con, self.pres, self.cache, self.tree),
+                file=open(file, 'w'))
+        else:
+            print(toBuss(self.con, self.pres, self.cache, self.tree))
 
 
 def selfTest():
