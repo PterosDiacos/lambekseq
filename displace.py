@@ -3,7 +3,7 @@ This script finds the axioms of every proof.
 Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 '''
 from lambekseq.lib.cterm import bipart, isatomic, atomicIden, catIden
-from lambekseq.lbnoprod import usecache
+from lambekseq.lbnoprod import usecache, tracecache
 from lambekseq.lbnoprod import LambekProof as _LambekProof
 
 
@@ -61,6 +61,7 @@ def find_extract(con, pres, cut, left, right):
     return alts
 
 
+@tracecache
 @usecache
 def findproof(con, *pres):
     pres = list(pres)
@@ -135,7 +136,10 @@ class DisplaceProof(_LambekProof):
 
     def parse(self):
         findproof.cache.clear()
+        findproof.trace.clear()
         self.proofs = findproof(self.con, *self.pres)
+        self.cache = findproof.cache
+        self.trace = findproof.trace
 
 
 def selfTest():
@@ -146,6 +150,8 @@ def selfTest():
     dsp = DisplaceProof(con, pres)
     dsp.parse()
     dsp.printProofs()
+    dsp.buildTree()
+    dsp.printTree()
 
 
 if __name__ == '__main__':

@@ -97,6 +97,8 @@ class LambekProof:
         findproof.cache.clear()
         findproof.trace.clear()
         self.proofs = findproof(self.con, *self.pres)
+        self.cache = findproof.cache
+        self.trace = findproof.trace
 
     @property
     def proofCount(self):
@@ -108,6 +110,45 @@ class LambekProof:
             print(', '.join(s))        
         if self.proofs: print()
 
+    def buildTree(self):
+        tree = {}
+        class ChildrenFound(Exception): pass
+        for i in range(len(self.trace)):
+            if len(self.trace[i][1][0]) > 1:
+                for seti in self.trace[i][1]:
+                    if (self.trace[i][0], seti) in tree: 
+                        continue
+                    try:
+                        for setpre in self.trace[i - 1][1]:
+                            if setpre == seti:
+                                tree[self.trace[i][0], seti] = (self.trace[i - 1][0],)
+                                raise ChildrenFound
+
+                        for j in range(i - 1, -1, -1):
+                            for setj in self.trace[j][1]:
+                                if setj < seti:
+                                    for k in range(j - 1, -1, -1):
+                                        for setk in self.trace[k][1]:
+                                            if seti == setj | setk:
+                                                tree[self.trace[i][0], seti] = (self.trace[j][0],
+                                                                                self.trace[k][0])
+                                                raise ChildrenFound
+                    except ChildrenFound:
+                        continue
+        self.tree = tree
+
+    def printTree(self, space='.' * 4):
+        def onCall(con, pres, indent=''):
+            key = con, *pres
+            for links in self.cache[key]:
+                if (key, links) in self.tree:
+                    for sub in self.tree[key, links]:
+                        onCall(sub[0], sub[1:], indent + space)
+                print(indent, *pres, '->', con)
+                if not indent: print()
+
+        onCall(self.con, self.pres)
+
 
 def selfTest():
     from lambekseq.lib.cindex import indexSeq
@@ -116,6 +157,8 @@ def selfTest():
     lbk = LambekProof(con, pres)
     lbk.parse()
     lbk.printProofs()
+    lbk.buildTree()
+    lbk.printTree()
 
 
 if __name__ == '__main__':
