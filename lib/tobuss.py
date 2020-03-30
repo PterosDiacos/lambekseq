@@ -1,5 +1,5 @@
 '''Utilities for translating lambek calculus proof tree
-into Bussproofs Latex code.
+into Bussproofs Latex code (https://ctan.org/pkg/bussproofs).
 
 Use `tobuss` function:
     - `con`:        conclusion
