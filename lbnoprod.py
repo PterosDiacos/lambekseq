@@ -143,11 +143,11 @@ class LambekProof:
             key = con, *pres
             for links in self.cache[key]:
                 if parentLinks and not links <= parentLinks:
-                    continue 
+                    continue
+
                 if not indent:
                     s = sorted('(%s, %s)' % (i, j) for (i, j) in links)
                     print(', '.join(s) + '\n' + '-' * 10 + '\n')
-
                 if (key, links) in self.tree:
                     for sub in self.tree[key, links]:
                         onCall(sub[0], sub[1:], links, indent + space)
