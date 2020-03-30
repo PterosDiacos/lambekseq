@@ -151,7 +151,7 @@ class LambekProof:
                         onCall(sub[0], sub[1:], indent + space)
                 print(indent, *pres, '->', con)
                 
-                if not indent: print()
+                if not indent: print('\n')
 
         onCall(self.con, self.pres)
 

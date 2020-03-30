@@ -82,6 +82,13 @@ def printLinks(con, pres, parser):
         print('Total: %d\n' % parser.proofCount)
 
 
+def printTree(con, pres, parser):
+    if parser.proofCount:
+        print('%s\n%s <= %s\n' % ('-' * 10, con, ' '.join(pres)))
+        parser.printTree()      
+        print('Total: %d\n' % parser.proofCount)
+
+
 def initArgParser():
     ap = argparse.ArgumentParser(
         description='CG based Atom Linker')
@@ -118,6 +125,11 @@ def initArgParser():
         action='store_true',
         help='Used by Displacement calculus.'
     )
+    ap.add_argument('--showTree',
+        default=False,
+        action='store_true',
+        help='Used by Lambek/Displacement calculus.'
+    )
     return ap
 
 
@@ -135,6 +147,9 @@ if __name__ == '__main__':
                                            earlyCollapse=args.earlyCollapse,
                                            islandFirst=args.islandFirst)
         total += parser.proofCount
-        printLinks(con, pres, parser)
+        if args.showTree and calc in {DisplaceProof, LambekProof}:
+            printTree(con, pres, parser)
+        else:
+            printLinks(con, pres, parser)
 
     if not total: print('Total: 0\n')
