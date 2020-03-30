@@ -14,6 +14,18 @@ def usecache(func):
     return onCall
 
 
+def tracecache(func):
+    def onCall(*args, **kwargs):
+        res = func(*args, **kwargs)
+        if res: 
+            onCall.trace.append([args, list(res)])
+        return res
+
+    onCall.cache = func.cache
+    onCall.trace = []
+    return onCall
+
+
 def find_diffTV(con, pres, cut, left, right):
     U = pres[:cut]
     alts = set()
@@ -42,6 +54,7 @@ def find_diffUT(con, pres, cut, left, right):
     return alts
 
 
+@tracecache
 @usecache
 def findproof(con, *pres):
     '''Find proofs by showing the axiomatic premises.'''
@@ -82,6 +95,7 @@ class LambekProof:
 
     def parse(self):
         findproof.cache.clear()
+        findproof.trace.clear()
         self.proofs = findproof(self.con, *self.pres)
 
     @property
