@@ -2,6 +2,7 @@
 This script finds the axioms of every proof.
 '''
 from lambekseq.lib.cterm import isatomic, bipart, atomicIden
+from lambekseq.lib.tobuss import toBuss
 
 
 def usecache(func):
@@ -153,6 +154,9 @@ class LambekProof:
                 if not indent: print()
 
         onCall(self.con, self.pres)
+
+    def printBussTree(self):
+        print(toBuss(self.con, self.pres, self.cache, self.tree))
 
 
 def selfTest():
