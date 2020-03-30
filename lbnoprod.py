@@ -130,7 +130,7 @@ class LambekProof:
                                 if setj < seti:
                                     for k in range(j - 1, -1, -1):
                                         for setk in self.trace[k][1]:
-                                            if seti == setj | setk:
+                                            if setk == seti - setj:
                                                 tree[self.trace[i][0], seti] = (self.trace[j][0],
                                                                                 self.trace[k][0])
                                                 raise ChildrenFound
