@@ -79,6 +79,6 @@ def toBuss(con, pres, tree, proofs,
             res += axiom_line(con, pres, indent)
 
         if not indent:
-            res += '\\end{prooftree}\n\n'
+            res += '\\end{prooftree}\n\n\n'
 
     return res

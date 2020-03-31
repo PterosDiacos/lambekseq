@@ -111,10 +111,17 @@ def initArgParser():
         default='dsp',
         help='[default] "dsp". '
              'The calculus used to resolve atom links. '
-             'ccg for continuized CCG; '
-             'dsp for Displacement calculus; '
-             'lb for classic Lambek calculus; '
-             'pn for Proofnet based Lambek calculus.'
+             '"ccg" for continuized CCG; '
+             '"dsp" for Displacement calculus; '
+             '"lb" for classic Lambek calculus; '
+             '"pn" for Proofnet based Lambek calculus.'
+    )
+    ap.add_argument('-t', '--traceMode',
+        default='none',
+        help='[default] "none". '
+             'Used by Lambek/Displacement calculus.'
+             '"trace" is used to build tree.'
+             '"count" counts proof search calls.'
     )
     ap.add_argument('--earlyCollapse',
         default=False,
@@ -146,7 +153,8 @@ if __name__ == '__main__':
     for con, pres in deAbbr(con, pres, abbr, calc):
         con, pres, parser, _ = searchLinks(calc, con, pres, 
                                            earlyCollapse=args.earlyCollapse,
-                                           islandFirst=args.islandFirst)
+                                           islandFirst=args.islandFirst,
+                                           traceMode=args.traceMode)
         total += parser.proofCount
         if args.showTree and calc in {DisplaceProof, LambekProof}:
             printTree(con, pres, parser)

@@ -5,43 +5,6 @@ from lambekseq.lib.cterm import isatomic, bipart, atomicIden
 from lambekseq.lib.tobuss import toBuss
 
 
-def usecache(func):
-    def onCall(*args, **kwargs):
-        if args not in onCall.cache:
-            onCall.cache[args] = func(*args, **kwargs)
-        return onCall.cache[args]
-    
-    onCall.cache = dict()
-    return onCall
-
-
-def tracecache(mode):
-    def decoTrace(func):
-        def onCall(*args, **kwargs):
-            res = func(*args, **kwargs)
-            if res: 
-                onCall.trace.append([args, list(res)])
-            return res
-
-        onCall.cache = func.cache
-        onCall.trace = []
-        return onCall
-
-    def decoCount(func):
-        def onCall(*args, **kwargs):
-            onCall.trace += 1
-            return func(*args, **kwargs)
-
-        onCall.cache = func.cache
-        onCall.trace = 0
-        return onCall
-    
-    def decoElse(func): return func
-
-    return {'trace': decoTrace,
-            'count': decoCount}.get(mode, decoElse)
-
-
 def find_diffTV(con, pres, cut, left, right):
     U = pres[:cut]
     alts = set()
@@ -70,7 +33,16 @@ def find_diffUT(con, pres, cut, left, right):
     return alts
 
 
-@tracecache(mode='trace')
+def usecache(func):
+    def onCall(*args, **kwargs):
+        if args not in onCall.cache:
+            onCall.cache[args] = func(*args, **kwargs)
+        return onCall.cache[args]
+    
+    onCall.cache = dict()
+    return onCall
+
+
 @usecache
 def findproof(con, *pres):
     '''Find proofs by showing the axiomatic premises.'''
@@ -104,26 +76,68 @@ def findproof(con, *pres):
                 return set()
 
 
+def usetrace(mode):
+    def decoTrace(func):
+        def onCall(*args, **kwargs):
+            res = func(*args, **kwargs)
+            if res: 
+                onCall.trace.append([args, list(res)])
+            return res
+
+        onCall.cache = func.cache
+        onCall.trace = []
+        return onCall
+
+    def decoCount(func):
+        def onCall(*args, **kwargs):
+            onCall.callCount += 1
+            return func(*args, **kwargs)
+
+        onCall.cache = func.cache
+        onCall.callCount = 0
+        return onCall
+    
+    def decoNone(func): return func
+
+    return {'trace': decoTrace,
+            'count': decoCount}.get(mode, decoNone)
+
+
 class LambekProof:
-    def __init__(self, con, pres, **kwargs):
+    def __init__(self, con, pres, *, traceMode='trace', **kwargs):
         self.con = con
         self.pres = pres
+        self.traceMode = traceMode
+        
+        global findproof
+        findproof = usetrace(traceMode)(findproof)
+        if traceMode == 'trace':
+            findproof.trace.clear()
+        elif traceMode == 'count':
+            findproof.callCount = 0
+        self.findproof = findproof
+
 
     def parse(self):
-        findproof.cache.clear()
-        findproof.trace.clear()
-        self.proofs = findproof(self.con, *self.pres)
-        self.trace = findproof.trace
+        self.findproof.cache.clear()
+        self.proofs = self.findproof(self.con, *self.pres)        
+        if self.traceMode == 'trace':
+            self.trace = self.findproof.trace
+        elif self.traceMode == 'count':
+            self.callCount = self.findproof.callCount
+
 
     @property
     def proofCount(self):
         return len(self.proofs)
+
 
     def printProofs(self):
         for p in self.proofs:
             s = sorted('(%s, %s)' % (i, j) for (i, j) in p)
             print(', '.join(s))        
         if self.proofs: print()
+
 
     def buildTree(self):
         tree = {}
@@ -152,6 +166,7 @@ class LambekProof:
                         continue
         self.tree = tree
 
+
     def printTree(self, space='.' * 4):
         def onCall(con, pres, proofs, indent=''):
             key = con, *pres
@@ -169,6 +184,7 @@ class LambekProof:
                     print('\n')
 
         onCall(self.con, self.pres, self.proofs)
+
 
     @property
     def bussproof(self):

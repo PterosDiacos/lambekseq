@@ -3,8 +3,8 @@ This script finds the axioms of every proof.
 Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 '''
 from lambekseq.lib.cterm import bipart, isatomic, atomicIden, catIden
-from lambekseq.lbnoprod import usecache, tracecache
-from lambekseq.lbnoprod import LambekProof as _LambekProof
+from lambekseq.lbnoprod import usecache, usetrace
+from lambekseq.lbnoprod import LambekProof
 
 
 Gap = '-'
@@ -61,7 +61,6 @@ def find_extract(con, pres, cut, left, right):
     return alts
 
 
-@tracecache(mode='trace')
 @usecache
 def findproof(con, *pres):
     pres = list(pres)
@@ -129,16 +128,20 @@ def findproof(con, *pres):
                 return set()
 
 
-class DisplaceProof(_LambekProof):
-    def __init__(self, con, pres, *, islandFirst=False, **kwargs):
-        _LambekProof.__init__(self, con, pres, **kwargs)
+class DisplaceProof(LambekProof):
+    def __init__(self, con, pres, *, islandFirst=False, 
+                                     traceMode='trace', **kwargs):
         DisplaceProof._islandFirst = islandFirst
+        LambekProof.__init__(self, con, pres, 
+            traceMode=traceMode, **kwargs)
 
-    def parse(self):
-        findproof.cache.clear()
-        findproof.trace.clear()
-        self.proofs = findproof(self.con, *self.pres)
-        self.trace = findproof.trace
+        global findproof
+        findproof = usetrace(traceMode)(findproof)
+        if traceMode == 'trace':
+            findproof.trace.clear()
+        elif traceMode == 'count':
+            findproof.callCount = 0
+        self.findproof = findproof
 
 
 def selfTest():
