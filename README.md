@@ -76,6 +76,38 @@ s_0 <= (s_1^np_2)!s_3 (np_4\s_5)/s_6 (s_7^np_8)!s_9 np_10\s_11
 Total: 1
 ```
 
+When using Lambek/Displacement calculus, you can also inspect the proof tree that yields atom links:
+
+```
+>>> con, *pres = 's', 'np', '(np\\s)/np', 'np'
+>>> con, pres, parser, _ = al.searchLinks(al.LambekProof, con, pres)
+>>> parser.buildTree()
+>>> parser.printTree()
+(np_1, np_2), (np_4, np_5), (s_0, s_3)
+........ s_3 -> s_0
+........ np_1 -> np_2
+.... np_1 np_2\s_3 -> s_0
+.... np_5 -> np_4
+ np_1 (np_2\s_3)/np_4 np_5 -> s_0
+```
+
+You can export the tree to [`Bussproofs`](https://ctan.org/pkg/bussproofs) code for Latex display:
+
+<img src="demo/img-buss.png" alt="bussproof" width="250"/>
+
+```
+>>> print(parser.bussproof)
+...
+\begin{prooftree}
+\EnableBpAbbreviations
+        \AXC{s$_{3}$ $\to$ s$_{0}$}
+        \AXC{np$_{1}$ $\to$ np$_{2}$}
+    \BIC{np$_{1}$\enskip{}np$_{2}$\textbackslash s$_{3}$ $\to$ s$_{0}$}
+    \AXC{np$_{5}$ $\to$ np$_{4}$}
+\BIC{np$_{1}$\enskip{}(np$_{2}$\textbackslash s$_{3}$)/np$_{4}$\enskip{}np$_{5}$ $\to$ s$_{0}$}
+\end{prooftree}
+```
+
 Run `python atomlink.py --help` for details.
 
 ## Semantic Parsing
@@ -100,7 +132,7 @@ This outputs
 
 You can inspect the syntax behind this parse:
 ```
->>> sc.syntax[0].con, sc.syntax[0].pres
+>>> sc.syntax[0].insight.con, sc.syntax[0].insight.pres
 ('s_0', ['np_1/n_2', 'n_3', '(np_4\\s_5)/np_6', 'np_7/n_8', 'n_9'])
 
 >>> sc.syntax[0].links
