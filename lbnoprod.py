@@ -29,11 +29,11 @@ def tracecache(mode):
 
     def decoCount(func):
         def onCall(*args, **kwargs):
-            onCall.count += 1
+            onCall.trace += 1
             return func(*args, **kwargs)
 
         onCall.cache = func.cache
-        onCall.count = 0
+        onCall.trace = 0
         return onCall
     
     def decoElse(func): return func
