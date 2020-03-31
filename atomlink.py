@@ -160,6 +160,7 @@ if __name__ == '__main__':
         con, pres, parser, _ = searchLinks(calc, con, pres, 
                                            earlyCollapse=args.earlyCollapse,
                                            islandFirst=args.islandFirst,
+                                           gapLimit=args.gapLimit,
                                            traceMode=args.traceMode)
         total += parser.proofCount
         if args.showTree and calc in {DisplaceProof, LambekProof}:
