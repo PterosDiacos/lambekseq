@@ -1,4 +1,4 @@
-'''Product-free Basic Displacement sequent calculus.
+'''Product-free Displacement sequent calculus with finite gaps.
 This script finds the axioms of every proof.
 Write `^` for upward arrow, '!' for downward arrow, '-' for gap.
 '''
@@ -51,7 +51,7 @@ def find_extract(con, pres, cut, left, right):
     alts = set()
     for i in range(cut, -1, -1):
         for j in range(cut, len(pres)):
-            if not pres[i:j + 1].count(Gap):
+            if pres[i:j + 1].count(Gap) < DisplaceProof._gapLimit:
                 rightproof = findproof(con, *pres[:i], right, *pres[j + 1:])
                 if rightproof:
                     leftproof = findproof(left, *pres[i:cut], Gap, *pres[cut + 1:j + 1])
@@ -77,7 +77,7 @@ def findproof(con, *pres):
                    findproof(right, *pres, left))
         elif conn == '^':
             ngaps = pres.count(Gap)
-            if ngaps > 1:
+            if ngaps > DisplaceProof._gapLimit:
                 return set()
             elif ngaps == 0:
                 alts = set()
@@ -85,8 +85,11 @@ def findproof(con, *pres):
                     alts.update(findproof(con, *pres[:i], Gap, *pres[i:]))
                 return alts
             else:
-                cut = pres.index(Gap)
-                return findproof(left, *pres[:cut], right, *pres[cut + 1:])
+                alts = set()
+                for i in range(len(pres)):
+                    if pres[i] == Gap:
+                        alts.update(findproof(left, *pres[:i], right, *pres[i + 1:]))
+                return alts
 
     # when the conclusion is atomic
     else:
@@ -129,9 +132,13 @@ def findproof(con, *pres):
 
 
 class DisplaceProof(LambekProof):
-    def __init__(self, con, pres, *, islandFirst=False, 
-                                     traceMode='trace', **kwargs):
+    def __init__(self, con, pres, *, traceMode='trace', 
+                                     islandFirst=False, 
+                                     gapLimit=1, **kwargs):
+        
+        DisplaceProof._gapLimit = gapLimit
         DisplaceProof._islandFirst = islandFirst
+        
         LambekProof.__init__(self, con, pres, 
             traceMode=traceMode, **kwargs)
 

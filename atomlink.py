@@ -123,6 +123,12 @@ def initArgParser():
              '"trace" is used to build tree.'
              '"count" counts proof search calls.'
     )
+    ap.add_argument('-g', '--gapLimit',
+        default=1,
+        type=int,
+        help='[default] 1. '
+             'Used by Displacement calculus.'
+    )
     ap.add_argument('--earlyCollapse',
         default=False,
         action='store_true',
