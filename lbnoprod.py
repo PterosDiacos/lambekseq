@@ -98,7 +98,6 @@ class LambekProof:
         findproof.cache.clear()
         findproof.trace.clear()
         self.proofs = findproof(self.con, *self.pres)
-        self.cache = findproof.cache
         self.trace = findproof.trace
 
     @property
@@ -122,7 +121,7 @@ class LambekProof:
                     try:
                         for setpre in self.trace[i - 1][1]:
                             if setpre == seti:
-                                tree[self.trace[i][0], seti] = (self.trace[i - 1][0],)
+                                tree[self.trace[i][0], seti] = ((self.trace[i - 1][0], setpre),)
                                 raise ChildrenFound
 
                         for j in range(i - 1, -1, -1):
@@ -131,37 +130,34 @@ class LambekProof:
                                     for k in range(j - 1, -1, -1):
                                         for setk in self.trace[k][1]:
                                             if setk == seti - setj:
-                                                tree[self.trace[i][0], seti] = (self.trace[j][0],
-                                                                                self.trace[k][0])
+                                                tree[self.trace[i][0], seti] = ((self.trace[j][0], setj),
+                                                                                (self.trace[k][0], setk))
                                                 raise ChildrenFound
                     except ChildrenFound:
                         continue
         self.tree = tree
 
     def printTree(self, space='.' * 4):
-        def onCall(con, pres, parentLinks=None, indent=''):
+        def onCall(con, pres, proofs, indent=''):
             key = con, *pres
-            for links in self.cache[key]:
-                if parentLinks and not links <= parentLinks:
-                    continue
-
+            for links in proofs:
                 if not indent:
                     s = sorted('(%s, %s)' % (i, j) for (i, j) in links)
                     print(', '.join(s) + '\n' + '-' * 10 + '\n')
+
                 if (key, links) in self.tree:
                     for sub in self.tree[key, links]:
-                        onCall(sub[0], sub[1:], links, indent + space)
+                        onCall(sub[0][0], sub[0][1:], [sub[1]], indent + space)
                 print(indent, *pres, '->', con)
-                if not indent: print('\n')
 
-        onCall(self.con, self.pres)
+                if not indent:
+                    print('\n')
 
-    def printBussTree(self, file=None):
-        if file:
-            print(toBuss(self.con, self.pres, self.cache, self.tree),
-                file=open(file, 'w'))
-        else:
-            print(toBuss(self.con, self.pres, self.cache, self.tree))
+        onCall(self.con, self.pres, self.proofs)
+
+    @property
+    def toBussproof(self):
+        return toBuss(self.con, self.pres, self.tree, self.proofs)
 
 
 def selfTest():
