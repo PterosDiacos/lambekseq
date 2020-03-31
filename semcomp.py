@@ -58,10 +58,9 @@ def quotSet(proof, idxDic, xref, sorts):
 
 
 class PackSyntax:
-    __slots__ = ['con', 'pres', 'links', 'idxDic']
-    def __init__(self, con, pres, links, idxDic):
-        self.con = con
-        self.pres = pres
+    __slots__ = ['insight', 'links', 'idxDic']
+    def __init__(self, insight, links, idxDic):
+        self.insight = insight
         self.idxDic = idxDic
         self.links = links
 
@@ -135,4 +134,4 @@ class SemComp:
                 
                 self.semantics.append(compose_all(Gs))
                 self.syntax.append(PackSyntax(
-                    con=con, pres=pres, links=p, idxDic=idxDic))
+                    insight=parse, links=p, idxDic=idxDic))
