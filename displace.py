@@ -138,7 +138,6 @@ class DisplaceProof(_LambekProof):
         findproof.cache.clear()
         findproof.trace.clear()
         self.proofs = findproof(self.con, *self.pres)
-        self.cache = findproof.cache
         self.trace = findproof.trace
 
 
