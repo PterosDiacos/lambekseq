@@ -63,7 +63,7 @@ Total: 1
 You can run `atomlink` in command line. The following finds proofs for the **first** themorem in [`input.json`](input.json), using abbreviation definitions in [`abbr.json`](abbr.json) and Contintuized CCG.
 
 ```
-$ python atomlink.py -j input.json -a abbr.json -c ccg
+$ python atomlink.py -j input.json -a abbr.json -c ccg --earlyCollapse
 ```
 Theorem `["s", "qpd", "vp/s", "qpd", "vp"]` (the first item is the **conclusion**, the rest the **premises**) is thus proved as follows:
 ```
