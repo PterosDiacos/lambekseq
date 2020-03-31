@@ -156,7 +156,7 @@ class LambekProof:
         onCall(self.con, self.pres, self.proofs)
 
     @property
-    def toBussproof(self):
+    def bussproof(self):
         return toBuss(self.con, self.pres, self.tree, self.proofs)
 
 
