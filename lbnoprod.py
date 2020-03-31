@@ -15,16 +15,31 @@ def usecache(func):
     return onCall
 
 
-def tracecache(func):
-    def onCall(*args, **kwargs):
-        res = func(*args, **kwargs)
-        if res: 
-            onCall.trace.append([args, list(res)])
-        return res
+def tracecache(mode):
+    def decoTrace(func):
+        def onCall(*args, **kwargs):
+            res = func(*args, **kwargs)
+            if res: 
+                onCall.trace.append([args, list(res)])
+            return res
 
-    onCall.cache = func.cache
-    onCall.trace = []
-    return onCall
+        onCall.cache = func.cache
+        onCall.trace = []
+        return onCall
+
+    def decoCount(func):
+        def onCall(*args, **kwargs):
+            onCall.count += 1
+            return func(*args, **kwargs)
+
+        onCall.cache = func.cache
+        onCall.count = 0
+        return onCall
+    
+    def decoElse(func): return func
+
+    return {'trace': decoTrace,
+            'count': decoCount}.get(mode, decoElse)
 
 
 def find_diffTV(con, pres, cut, left, right):
@@ -55,7 +70,7 @@ def find_diffUT(con, pres, cut, left, right):
     return alts
 
 
-@tracecache
+@tracecache(mode='trace')
 @usecache
 def findproof(con, *pres):
     '''Find proofs by showing the axiomatic premises.'''

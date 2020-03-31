@@ -61,7 +61,7 @@ def find_extract(con, pres, cut, left, right):
     return alts
 
 
-@tracecache
+@tracecache(mode='trace')
 @usecache
 def findproof(con, *pres):
     pres = list(pres)
