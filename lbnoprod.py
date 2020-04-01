@@ -5,75 +5,14 @@ from lambekseq.lib.cterm import isatomic, bipart, atomicIden
 from lambekseq.lib.tobuss import toBuss
 
 
-def find_diffTV(con, pres, cut, left, right):
-    U = pres[:cut]
-    alts = set()
-    for j in range(cut + 1, len(pres) + 1):
-        T, V = pres[cut + 1:j], pres[j:]
-        rightproof = findproof(right, *T)
-        if rightproof:
-            leftproof = findproof(con, *U, left, *V)
-            if leftproof:
-                alts.update({r | l for r in rightproof 
-                                   for l in leftproof}) 
-    return alts
-
-
-def find_diffUT(con, pres, cut, left, right):
-    V = pres[cut + 1:]
-    alts = set()
-    for j in range(cut + 1):
-        U, T = pres[:j], pres[j:cut]
-        leftproof = findproof(left, *T)
-        if leftproof:
-            rightproof = findproof(con, *U, right, *V)
-            if rightproof:
-                alts.update({l | r for l in leftproof
-                                   for r in rightproof})
-    return alts
-
-
 def usecache(func):
-    def onCall(*args, **kwargs):
-        if args not in onCall.cache:
-            onCall.cache[args] = func(*args, **kwargs)
-        return onCall.cache[args]
+    def onCall(*args, **kwargs): 
+        if args[1:] not in onCall.cache:
+            onCall.cache[args[1:]] = func(*args, **kwargs)
+        return onCall.cache[args[1:]]
     
     onCall.cache = dict()
     return onCall
-
-
-@usecache
-def findproof(con, *pres):
-    '''Find proofs by showing the axiomatic premises.'''
-    # when the conclusion is non-atomic
-    if not isatomic(con):
-        slash, left, right = bipart(con, noComma=True)
-        if slash == '/':
-            return findproof(left, *pres, right)
-        elif slash == '\\':
-            return findproof(right, left, *pres)
-
-    # when the conclusion is atomic
-    else:
-        altBranches = set()
-        hit_nonatomic = False
-        for i in range(len(pres)):
-            if not isatomic(pres[i]):
-                hit_nonatomic = True
-                slash, left, right = bipart(pres[i], noComma=True)
-                if slash == '/':
-                    altBranches.update(find_diffTV(con, pres, i, left, right))
-                elif slash == '\\':
-                    altBranches.update(find_diffUT(con, pres, i, left, right))
-
-        if hit_nonatomic:
-            return altBranches
-        else:
-            if len(pres) == 1 and atomicIden(pres[0], con):
-                return {frozenset({tuple(sorted({pres[0], con}))})}
-            else:
-                return set()
 
 
 def usetrace(mode):
@@ -81,7 +20,7 @@ def usetrace(mode):
         def onCall(*args, **kwargs):
             res = func(*args, **kwargs)
             if res: 
-                onCall.trace.append([args, list(res)])
+                onCall.trace.append([args[1:], list(res)])
             return res
 
         onCall.cache = func.cache
@@ -108,14 +47,12 @@ class LambekProof:
         self.con = con
         self.pres = pres
         self.traceMode = traceMode
-        
-        global findproof
-        findproof = usetrace(traceMode)(findproof)
+                
+        LambekProof.findproof = usetrace(traceMode)(LambekProof.findproof)
         if traceMode == 'trace':
-            findproof.trace.clear()
+            LambekProof.findproof.trace.clear()
         elif traceMode == 'count':
-            findproof.callCount = 0
-        self.findproof = findproof
+            LambekProof.findproof.callCount = 0
 
 
     def parse(self):
@@ -125,6 +62,67 @@ class LambekProof:
             self.trace = self.findproof.trace
         elif self.traceMode == 'count':
             self.callCount = self.findproof.callCount
+
+
+    def find_diffTV(self, con, pres, cut, left, right):
+        U = pres[:cut]
+        alts = set()
+        for j in range(cut + 1, len(pres) + 1):
+            T, V = pres[cut + 1:j], pres[j:]
+            rightproof = self.findproof(right, *T)
+            if rightproof:
+                leftproof = self.findproof(con, *U, left, *V)
+                if leftproof:
+                    alts.update({r | l for r in rightproof 
+                                       for l in leftproof}) 
+        return alts
+
+
+    def find_diffUT(self, con, pres, cut, left, right):
+        V = pres[cut + 1:]
+        alts = set()
+        for j in range(cut + 1):
+            U, T = pres[:j], pres[j:cut]
+            leftproof = self.findproof(left, *T)
+            if leftproof:
+                rightproof = self.findproof(con, *U, right, *V)
+                if rightproof:
+                    alts.update({l | r for l in leftproof
+                                       for r in rightproof})
+        return alts
+
+
+    @usecache
+    def findproof(self, con, *pres):
+        '''Find proofs by showing the axiomatic premises.'''
+        # when the conclusion is non-atomic
+        if not isatomic(con):
+            slash, left, right = bipart(con, noComma=True)
+            if slash == '/':
+                return self.findproof(left, *pres, right)
+            elif slash == '\\':
+                return self.findproof(right, left, *pres)
+
+        # when the conclusion is atomic
+        else:
+            altBranches = set()
+            hit_nonatomic = False
+            for i in range(len(pres)):
+                if not isatomic(pres[i]):
+                    hit_nonatomic = True
+                    slash, left, right = bipart(pres[i], noComma=True)
+                    if slash == '/':
+                        altBranches.update(self.find_diffTV(con, pres, i, left, right))
+                    elif slash == '\\':
+                        altBranches.update(self.find_diffUT(con, pres, i, left, right))
+
+            if hit_nonatomic:
+                return altBranches
+            else:
+                if len(pres) == 1 and atomicIden(pres[0], con):
+                    return {frozenset({tuple(sorted({pres[0], con}))})}
+                else:
+                    return set()
 
 
     @property
