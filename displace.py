@@ -43,9 +43,8 @@ class DisplaceProof(LambekProof):
                     rightproof = self.findproof(con, *pres[:i], right, *pres[j + 1:])
                     if rightproof:
                         leftproof = self.findproof(left, *pres[i:cut], Gap, *pres[cut + 1:j + 1])
-                        if leftproof:
-                            alts.update({l | r for l in leftproof
-                                               for r in rightproof})
+                        alts.update({l | r for l in leftproof
+                                           for r in rightproof})
         return alts
 
 

@@ -7,9 +7,9 @@ from lambekseq.lib.tobuss import toBuss
 
 def usecache(func):
     def onCall(*args, **kwargs): 
-        if args[1:] not in onCall.cache:
-            onCall.cache[args[1:]] = func(*args, **kwargs)
-        return onCall.cache[args[1:]]
+        if args not in onCall.cache:
+            onCall.cache[args] = func(*args, **kwargs)
+        return onCall.cache[args]
     
     onCall.cache = dict()
     return onCall
@@ -72,9 +72,8 @@ class LambekProof:
             rightproof = self.findproof(right, *T)
             if rightproof:
                 leftproof = self.findproof(con, *U, left, *V)
-                if leftproof:
-                    alts.update({r | l for r in rightproof 
-                                       for l in leftproof}) 
+                alts.update({r | l for r in rightproof 
+                                   for l in leftproof}) 
         return alts
 
 
@@ -86,9 +85,8 @@ class LambekProof:
             leftproof = self.findproof(left, *T)
             if leftproof:
                 rightproof = self.findproof(con, *U, right, *V)
-                if rightproof:
-                    alts.update({l | r for l in leftproof
-                                       for r in rightproof})
+                alts.update({l | r for l in leftproof
+                                   for r in rightproof})
         return alts
 
 
