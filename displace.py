@@ -48,6 +48,14 @@ class DisplaceProof(LambekProof):
         return alts
 
 
+    def find_insert(self, con, power, left, right):
+        leftproof = self.findproof(right, *power)
+        if leftproof:
+            rightproof = self.findproof(con, left)
+            return {l | r for l in leftproof
+                          for r in rightproof}
+
+
     @usecache
     def findproof(self, con, *pres):
         pres = list(pres)
@@ -60,8 +68,16 @@ class DisplaceProof(LambekProof):
             elif conn == '\\':
                 return self.findproof(right, left, *pres)
             elif conn == '!':
-                return self.findproof(right, left, *pres).union(
-                       self.findproof(right, *pres, left))
+                alts = set()
+                if len(pres) == 1 and not isatomic(pres[0], conn=Conns):
+                    pconn, pleft, pright = bipart(pres[0], conn=Conns, noComma=True)
+                    if pconn == '!':
+                        alts.update(self.find_insert(right, [left], pright, pleft))
+                if not isatomic(left, conn=Conns):
+                    lconn, lleft, lright = bipart(left, conn=Conns, noComma=True)
+                    if lconn == '^':
+                        alts.update(self.find_insert(right, pres, lleft, lright))
+                return alts
             elif conn == '^':
                 ngaps = pres.count(Gap)
                 if ngaps > self._gapLimit:
@@ -70,6 +86,10 @@ class DisplaceProof(LambekProof):
                     alts = set()
                     for i in range(len(pres) + 1):
                         alts.update(self.findproof(con, *pres[:i], Gap, *pres[i:]))
+                    if len(pres) == 1 and not isatomic(pres[0], conn=Conns):
+                        pconn, pleft, pright = bipart(pres[0], conn=Conns, noComma=True)
+                        if pconn == '^':
+                            alts.update(self.find_insert(left, [right], pleft, pright))
                     return alts
                 else:
                     alts = set()
@@ -106,8 +126,7 @@ class DisplaceProof(LambekProof):
                     elif conn == '!':
                         altBranches.update(self.find_extract(con, pres, i, left, right))
                     elif conn == '^':
-                        altBranches.update(self.find_diffTV(con, pres, i, left, right))
-                        altBranches.update(self.find_diffUT(con, pres, i, right, left))
+                        pass
 
             if nonatomIsland or nonatomPlain:
                 return altBranches
