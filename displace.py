@@ -54,6 +54,8 @@ class DisplaceProof(LambekProof):
             rightproof = self.findproof(con, left)
             return {l | r for l in leftproof
                           for r in rightproof}
+        else:
+            return set()
 
 
     @usecache
