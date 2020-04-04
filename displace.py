@@ -28,7 +28,7 @@ class DisplaceProof(LambekProof):
         self._gapLimit = gapLimit
         self._islandFirst = islandFirst
 
-        DisplaceProof.findproof = usetrace(traceMode)(DisplaceProof.findproof)
+        DisplaceProof.findproof = usetrace(traceMode)(DisplaceProof._findproof)
         if traceMode == 'trace':
             DisplaceProof.findproof.trace.clear()
         elif traceMode == 'count':
@@ -59,7 +59,7 @@ class DisplaceProof(LambekProof):
 
 
     @usecache
-    def findproof(self, con, *pres):
+    def _findproof(self, con, *pres):
         pres = list(pres)
 
         # when the conclusion is non-atomic

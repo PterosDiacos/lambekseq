@@ -48,7 +48,7 @@ class LambekProof:
         self.pres = pres
         self.traceMode = traceMode
                 
-        LambekProof.findproof = usetrace(traceMode)(LambekProof.findproof)
+        LambekProof.findproof = usetrace(traceMode)(LambekProof._findproof)
         if traceMode == 'trace':
             LambekProof.findproof.trace.clear()
         elif traceMode == 'count':
@@ -91,7 +91,7 @@ class LambekProof:
 
 
     @usecache
-    def findproof(self, con, *pres):
+    def _findproof(self, con, *pres):
         '''Find proofs by showing the axiomatic premises.'''
         # when the conclusion is non-atomic
         if not isatomic(con):
