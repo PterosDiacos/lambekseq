@@ -194,7 +194,6 @@ class ProofNet:
                                     po = newPo
                                     if step < self.natom - 1:
                                         span[i, k].add(Parse(po, ends, links))
-
                                     else:
                                         exConn = {self.mca[ends[i], ends[i + 1]] for i in range(1, len(ends) - 2, 2)}
                                         exTensors, exPars = self.__TPSplit(exConn)
