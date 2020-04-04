@@ -3,7 +3,7 @@
 from collections import defaultdict
 
 from lambekseq.lib.cterm import bipart, isatomic, atomicIden
-from lambekseq.lib.porder import PartialOrder
+from lambekseq.lib.porder import PartialOrder, CyclicOrderError
 
 
 Par = 'P'
@@ -167,11 +167,10 @@ class ProofNet:
                             if not inPars:
                                 newEdges = {(t, inPar) for t in inTensors}
                                 newPo = PartialOrder(parse.po.nodes, parse.po.edges)
-                                for u, v in newEdges:
-                                    if (v, u) in newPo:
-                                        break
-                                    else:
-                                        newPo.addEdge(u, v)
+                                try:
+                                    newPo.addEdgesFrom(newEdges)
+                                except CyclicOrderError:
+                                    pass
                                 else:
                                     span[i, k].add(Parse(newPo, (i, k), links))
                       
@@ -187,16 +186,15 @@ class ProofNet:
                             else:
                                 newEdges = parse2.po - parse1.po
                                 newPo = PartialOrder(parse1.po.nodes, parse1.po.edges)
-                                for u, v in newEdges:
-                                    if (v, u) in newPo:
-                                        break
-                                    else:
-                                        newPo.addEdge(u, v)
+                                try:
+                                    newPo.addEdgesFrom(newEdges)
+                                except CyclicOrderError:
+                                    pass
                                 else:
                                     po = newPo
                                     if step < self.natom - 1:
                                         span[i, k].add(Parse(po, ends, links))
-                                        
+
                                     else:
                                         exConn = {self.mca[ends[i], ends[i + 1]] for i in range(1, len(ends) - 2, 2)}
                                         exTensors, exPars = self.__TPSplit(exConn)
@@ -204,11 +202,10 @@ class ProofNet:
                                         if len(exPars) == 1:
                                             newEdges = {(t, 0) for t in exTensors}
                                             newPo = PartialOrder(po.nodes, po.edges)
-                                            for u, v in newEdges:
-                                                if (v, u) in newPo:
-                                                    break
-                                                else:
-                                                    newPo.addEdge(u, v)
+                                            try:
+                                                newPo.addEdgesFrom(newEdges)
+                                            except CyclicOrderError:
+                                                pass
                                             else:
                                                 span[i, k].add(Parse(newPo, ends, links))
 

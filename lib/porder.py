@@ -1,6 +1,8 @@
 '''Utilities for partial order objects.
 '''
 
+class CyclicOrderError(Exception): pass
+
 class PartialOrder:
     def __init__(self, nodes, edges):
         self.nodes = nodes.copy()
@@ -19,6 +21,14 @@ class PartialOrder:
             toU = {x for x in self.nodes if (x, u) in self.edges}
             fromV = {y for y in self.nodes if (v, y) in self.edges}
             self.edges.update({(x, y) for x in toU for y in fromV})
+
+
+    def addEdgesFrom(self, edges):
+        for u, v in edges:
+            if (v, u) in self:
+                raise CyclicOrderError
+            else:
+                self.addEdge(u, v)
 
 
     def isAcyclic(self):
