@@ -50,6 +50,7 @@ class DisplaceProof(LambekProof):
 
     def find_insert(self, con, base, expo):
         alts = set()
+        if not expo: alts.update(self.findproof(con, *base))
         if len(expo) == 1 and not isatomic(expo[0], conn=Conns):
             ec, el, er = bipart(expo[0], conn=Conns, noComma=True)
             if ec == '!':
