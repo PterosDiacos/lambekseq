@@ -48,14 +48,25 @@ class DisplaceProof(LambekProof):
         return alts
 
 
-    def find_double(self, flag, con1, pres1, con2, pres2):
-        if flag:
-            leftproof = self.findproof(con1, *pres1)
-            if leftproof:
-                rightproof = self.findproof(con2, *pres2)
-                return {l | r for l in leftproof
-                              for r in rightproof}
-        return set()
+    def find_insert(self, con, base, expo):
+        alts = set()
+        if len(expo) == 1 and not isatomic(expo[0], conn=Conns):
+            ec, el, er = bipart(expo[0], conn=Conns, noComma=True)
+            if ec == '!':
+                leftproof = self.findproof(el, *base)
+                if leftproof:
+                    rightproof = self.findproof(con, er)
+                    alts.update({l | r for l in leftproof
+                                       for r in rightproof})
+        if len(base) == 1 and not isatomic(base[0], conn=Conns):
+            bc, bl, br = bipart(base[0], conn=Conns, noComma=True)
+            if bc == '^':
+                leftproof = self.findproof(br, *expo)
+                if leftproof:
+                    rightproof = self.findproof(con, bl)
+                    alts.update({l | r for l in leftproof
+                                       for r in rightproof})
+        return alts
 
 
     @usecache
@@ -70,16 +81,7 @@ class DisplaceProof(LambekProof):
             elif conn == '\\':
                 return self.findproof(right, left, *pres)
             elif conn == '!':
-                alts = set()
-                if len(pres) == 1 and not isatomic(pres[0], conn=Conns):
-                    pconn, pleft, pright = bipart(pres[0], conn=Conns, noComma=True)
-                    alts.update(self.find_double(conn == pconn,
-                                                 pleft, [left], right, [pright]))
-                if not isatomic(left, conn=Conns):
-                    lconn, lleft, lright = bipart(left, conn=Conns, noComma=True)
-                    alts.update(self.find_double(lconn == '^',
-                                                 lright, pres, right, [lleft]))
-                return alts
+                return self.find_insert(right, [left], pres)
             elif conn == '^':
                 ngaps = pres.count(Gap)
                 if ngaps > self._gapLimit:
@@ -88,14 +90,7 @@ class DisplaceProof(LambekProof):
                     alts = set()
                     for i in range(len(pres) + 1):
                         alts.update(self.findproof(con, *pres[:i], Gap, *pres[i:]))
-                    if len(pres) == 1 and not isatomic(pres[0], conn=Conns):
-                        pconn, pleft, pright = bipart(pres[0], conn=Conns, noComma=True)
-                        alts.update(self.find_double(conn == pconn, 
-                                                     left, [pleft], pright, [right]))
-                    if not isatomic(right, conn=Conns):
-                        rconn, rleft, rright = bipart(right, conn=Conns, noComma=True)
-                        alts.update(self.find_double(rconn == '!',
-                                                     rleft, pres, left, [rright]))
+                    alts.update(self.find_insert(left, pres, [right]))
                     return alts
                 else:
                     alts = set()
