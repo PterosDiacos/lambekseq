@@ -48,7 +48,16 @@ class DisplaceProof(LambekProof):
         return alts
 
 
-    def find_insert(self, con, base, expo):
+    def find_insert(self, con, pres, cut, left, right):
+        leftproof = self.findproof(right)
+        if leftproof:
+            rightproof = self.findproof(con, *pres[:cut], left, *pres[cut + 1:])
+            return {l | r for l in leftproof
+                          for r in rightproof}
+        return set()
+
+
+    def find_stack(self, con, base, expo):
         alts = set()
         if not expo: alts.update(self.findproof(con, *base))
         if len(expo) == 1 and not isatomic(expo[0], conn=Conns):
@@ -82,7 +91,7 @@ class DisplaceProof(LambekProof):
             elif conn == '\\':
                 return self.findproof(right, left, *pres)
             elif conn == '!':
-                return self.find_insert(right, [left], pres)
+                return self.find_stack(right, [left], pres)
             elif conn == '^':
                 ngaps = pres.count(Gap)
                 if ngaps > self._gapLimit:
@@ -91,7 +100,7 @@ class DisplaceProof(LambekProof):
                     alts = set()
                     for i in range(len(pres) + 1):
                         alts.update(self.findproof(con, *pres[:i], Gap, *pres[i:]))
-                    alts.update(self.find_insert(left, pres, [right]))
+                    alts.update(self.find_stack(left, pres, [right]))
                     return alts
                 else:
                     alts = set()
@@ -128,7 +137,7 @@ class DisplaceProof(LambekProof):
                     elif conn == '!':
                         altBranches.update(self.find_extract(con, pres, i, left, right))
                     elif conn == '^':
-                        pass
+                        altBranches.update(self.find_insert(con, pres, i, left, right))
 
             if nonatomIsland or nonatomPlain:
                 return altBranches
