@@ -118,7 +118,7 @@ class DisplaceProof(LambekProof):
                 elif conn == '\\':
                     altBranches.update(self.find_diffUT(con, pres, i, left, right))
 
-            if not self._islandFirst or not nonatomIsland:
+            if not (self._islandFirst and nonatomIsland):
                 for i, conn, left, right in nonatomPlain:
                     if conn == '/':
                         altBranches.update(self.find_diffTV(con, pres, i, left, right))
