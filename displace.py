@@ -48,15 +48,6 @@ class DisplaceProof(LambekProof):
         return alts
 
 
-    def find_insert(self, con, pres, cut, left, right):
-        leftproof = self.findproof(right)
-        if leftproof:
-            rightproof = self.findproof(con, *pres[:cut], left, *pres[cut + 1:])
-            return {l | r for l in leftproof
-                          for r in rightproof}
-        return set()
-
-
     def find_stack(self, con, base, expo):
         alts = set()
         if len(expo) == 1 and not isatomic(expo[0], conn=Conns):
