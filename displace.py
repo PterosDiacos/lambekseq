@@ -137,7 +137,8 @@ class DisplaceProof(LambekProof):
                     elif conn == '!':
                         altBranches.update(self.find_extract(con, pres, i, left, right))
                     elif conn == '^':
-                        altBranches.update(self.find_insert(con, pres, i, left, right))
+                        # altBranches.update(self.find_insert(con, pres, i, left, right))
+                        pass
 
             if nonatomIsland or nonatomPlain:
                 return altBranches
