@@ -191,7 +191,8 @@ class Cntccg:
                     for x in span[i, j - 1]:
                         for y in span[j, k]:
                             res = x + y
-                            for r in res: tree[r] = (x, y)
+                            for r in res:
+                                if r not in tree: tree[r] = (x, y)
                             span[i, k].update(res)
 
         if not Result._earlyCollapse:
