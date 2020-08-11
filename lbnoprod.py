@@ -160,7 +160,7 @@ class LambekProof:
                                                 raise ChildrenFound
                     except ChildrenFound:
                         continue
-        self.tree = tree
+        self._tree = tree
 
 
     def printTree(self, space='.' * 4):
@@ -171,8 +171,8 @@ class LambekProof:
                     s = sorted('(%s, %s)' % (i, j) for (i, j) in links)
                     print(', '.join(s) + '\n' + '-' * 10 + '\n')
 
-                if (key, links) in self.tree:
-                    for sub in self.tree[key, links]:
+                if (key, links) in self._tree:
+                    for sub in self._tree[key, links]:
                         onCall(sub[0][0], sub[0][1:], [sub[1]], indent + space)
                 print(indent, *pres, '->', con)
 
@@ -184,7 +184,7 @@ class LambekProof:
 
     @property
     def bussproof(self):
-        return toBuss(self.con, self.pres, self.tree, self.proofs)
+        return toBuss(self.con, self.pres, self._tree, self.proofs)
 
 
 def selfTest():

@@ -143,6 +143,9 @@ class Cntccg:
             print(', '.join(s))
         if pool: print()
 
+    def buildTree(self):
+        self._tree = {k: v for k, v in self._tree.items()}
+
     def printTree(self, space='.' * 4):
         def onCall(proofs, indent=''):
             for r in proofs:
@@ -150,18 +153,16 @@ class Cntccg:
                     s = sorted('(%s, %s)' % (i, j) for i, j in r.links)
                     print(', '.join(s) + '\n' + '-' * 10 + '\n')
                 
-                if r in tree:
-                    for sub in tree[r]:
+                if r in self._tree:
+                    for sub in self._tree[r]:
                         onCall([sub], indent + space)
                 print(indent, r.cat)
 
-        tree = {k: v for k, v in self._tree.items()}
         onCall(self.proofs if self._matchCon else self.allProofs)
 
     @property
     def bussproof(self):
-        tree = {k: v for k, v in self._tree.items()}
-        return toBussCcg(tree, 
+        return toBussCcg(self._tree, 
             self.proofs if self._matchCon else self.allProofs)
 
     def parse(self):
@@ -197,6 +198,7 @@ def selfTest():
     (con, *pres), _ = indexSeq(con, pres)        
     cntccg = Cntccg(con, pres, earlyCollapse=False)
     cntccg.parse()
+    cntccg.buildTree()
     cntccg.printTree()
     print('Total:', cntccg.proofCount)
 

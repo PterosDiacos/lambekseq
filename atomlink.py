@@ -49,8 +49,8 @@ def deAbbr(con: str, pres: list, abbr: dict,
             yield []
 
     def slashOnly(con, pres):
-        f = lambda x: '^' in x or '!' in x
-        return not any(f(x) for x in [con, *pres])
+        return not any('^' in x or '!' in x 
+            for x in [con, *pres])
 
     for con, *pres in gen([con] + pres):
         if calc in {DisplaceProof, Cntccg}:
@@ -142,7 +142,7 @@ def initArgParser():
     ap.add_argument('--showTree',
         default=False,
         action='store_true',
-        help='Used by Lambek/Displacement calculus.'
+        help='Used by Lambek/Displacement calculus/continuized CCG.'
     )
     return ap
 
@@ -163,7 +163,7 @@ if __name__ == '__main__':
                                            gapLimit=args.gapLimit,
                                            traceMode=args.traceMode)
         total += parser.proofCount
-        if args.showTree and calc in {DisplaceProof, LambekProof}:
+        if args.showTree and calc != ProofNet:
             printTree(con, pres, parser)
         else:
             printLinks(con, pres, parser)
