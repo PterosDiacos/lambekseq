@@ -18,11 +18,11 @@
     "neg": {
         "example": "do-not",
         "cat": "negd",
-        "sort": 2,
+        "sort": 4,
         "named": [
             ["a0", "¬"]
         ],
-        "anonyms": ["a1", "i0", "i1"],
+        "anonyms": ["a1", "a2", "a3", "i0", "i1"],
         "arrows":[
             ["a0", "i0", "ρ"],
             ["a0", "a1", "σ"],
