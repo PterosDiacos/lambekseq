@@ -58,11 +58,16 @@ def quotSet(proof, idxDic, xref, sorts):
 
 
 class PackSyntax:
-    __slots__ = ['insight', 'links', 'idxDic']
+    __slots__ = ['insight', '_links', 'idxDic']
     def __init__(self, insight, links, idxDic):
         self.insight = insight
         self.idxDic = idxDic
-        self.links = links
+        self._links = links
+    
+    @property
+    def links(self):
+        return sorted('(%s, %s)' % (i, j) 
+            for i, j in self._links)
 
 
 class SemComp:
