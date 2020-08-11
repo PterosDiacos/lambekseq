@@ -131,12 +131,19 @@
 
     "rl": {
         "example": "which",
-        "cat": "(np\\$np)/(s^np)",
+        "cat": "rld",
         "sort": 2,
         "anonyms": ["a0", "a1"],
         "arrows": [
             ["a0", "a1", "λ"]
         ]
+    },
+
+    "cgap": {
+        "example": "",
+        "cat": "(s^np)!$(s^np)",
+        "sort": 2,
+        "anonyms": ["a0", "a1"]
     },
 
     "adj": {
