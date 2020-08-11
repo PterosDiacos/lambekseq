@@ -5,6 +5,7 @@ from collections import defaultdict
 from lambekseq.lbnoprod import usecache
 from lambekseq.lib.cterm import bipart, isatomic, catIden
 from lambekseq.lib.cterm import unslash, addHypo
+from lambekseq.lib.tobussccg import toBussCcg
 
 
 Conns = {'/', '\\', '^', '!'}
@@ -155,9 +156,31 @@ class Cntccg:
             print(', '.join(s))
         if pool: print()
 
+    def printTree(self, space='.' * 4):
+        def onCall(proofs, indent=''):
+            for r in proofs:
+                if not indent:
+                    s = sorted('(%s, %s)' % (i, j) for i, j in r.links)
+                    print(', '.join(s) + '\n' + '-' * 10 + '\n')
+                
+                if r in tree:
+                    for sub in tree[r]:
+                        onCall([sub], indent + space)
+                print(indent, r.cat)
+
+        tree = {k: v for k, v in self._tree.items()}
+        onCall(self.proofs if self._matchCon else self.allProofs)
+
+    @property
+    def bussproof(self):
+        tree = {k: v for k, v in self._tree.items()}
+        return toBussCcg(tree, 
+            self.proofs if self._matchCon else self.allProofs)
+
     def parse(self):
         '''CKY parsing.'''
         span = defaultdict(set)
+        tree = {}
         for i in range(len(self)):
             span[i, i] = {Result(self.pres[i])}
 
@@ -167,13 +190,16 @@ class Cntccg:
                 for j in range(i + 1, k + 1):
                     for x in span[i, j - 1]:
                         for y in span[j, k]:
-                            span[i, k].update(x + y)
+                            res = x + y
+                            for r in res: tree[r] = (x, y)
+                            span[i, k].update(res)
 
         if not Result._earlyCollapse:
             span[0, len(self) - 1] = {r.collapse()
                 for r in span[0, len(self) - 1]}
 
         self._proofSpan = span
+        self._tree = tree
 
 
 def selfTest():
@@ -183,7 +209,7 @@ def selfTest():
     (con, *pres), _ = indexSeq(con, pres)        
     cntccg = Cntccg(con, pres, earlyCollapse=False)
     cntccg.parse()
-    cntccg.printProofs()
+    cntccg.printTree()
     print('Total:', cntccg.proofCount)
 
 
