@@ -11,8 +11,8 @@ import re
 
 
 ESCAPE_MAP = {'\\': '\\textbackslash ',
-              '^': '\\uparrow ',
-              '!': '\\downarrow ',
+              '^': '\\text{\\uparrow}',
+              '!': '\\text{\\downarrow}',
               '$': '_{\\$}',
               '&': '_{\\&}'}
 
