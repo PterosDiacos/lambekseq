@@ -61,12 +61,29 @@ def bipart(s: str, leftPr='(', rightPr=')',
 
             left, right = stripparentheses(s[:i]), stripparentheses(s[i + j:]) 
             left, right = commaSplit(left), commaSplit(right)
-            if noComma: left, right = left.pop(), right.pop()
+            if noComma:
+                left, right = left.pop(), right.pop()
             
             if withMod:
                 return s[i], smod, left, right
             else:
                 return s[i], left, right
+
+
+def towerSplit(x:str, conn={'/', '\\', '^', '!'}):
+    '''Split a tower of `((b^c)!a)` into `(c, a, b)`.'''
+    if isatomic(x, conn=conn):
+        return (x, None, None)
+    else:
+        sep, l, a = bipart(x, conn=conn, noComma=True)
+        if sep != '!' or isatomic(l, conn=conn):
+            return (x, None, None)
+        else:
+            sep, b, c = bipart(l, conn=conn, noComma=True)
+            if sep != '^':
+                return (x, None, None)
+            else:
+                return (c, a, b)
 
 
 def addHypo(x, slash, hypo, fwd={'/', '^'}, 

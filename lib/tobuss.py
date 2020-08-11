@@ -11,20 +11,22 @@ import re
 
 
 ESCAPE_MAP = {'\\': '\\textbackslash ',
-              '^': '$\\uparrow$',
-              '!': '$\\downarrow$',
-              '$': '$_{\\$}$',
-              '&': '$_{\\&}$'}
+              '^': '\\uparrow ',
+              '!': '\\downarrow ',
+              '$': '_{\\$}',
+              '&': '_{\\&}'}
 
 
 def trans_term(s,
+    inMath=False,
     pat0=re.compile(r'(?<=\A)-(?=\Z)'),
     pat1=re.compile('|'.join(re.escape(c) for c in ESCAPE_MAP)),
-    pat2=re.compile(r'_(\d+)')):
+    pat2=re.compile(r'(\w+)_(\d+)')):
 
     s = pat0.sub('[]', s)
     s = pat1.sub(lambda m: ESCAPE_MAP[m.group(0)], s)
-    s = pat2.sub(lambda m: '$_{%s}$' % m.group(1), s)
+    s = pat2.sub(lambda m: '{\\rm %s}_{%s}' % m.groups(), s)
+    if not inMath: s = '$%s$' % s
     return s
 
 

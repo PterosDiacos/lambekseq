@@ -1,14 +1,26 @@
+from .cterm import towerSplit
 from .tobuss import trans_term
+
+
+def trans_cat(cat, inMath):
+    c, a, b = towerSplit(cat)
+    if a:
+        return '$\\dfrac{%s|%s}{%s}$' % (
+            trans_cat(a, True),
+            trans_cat(b, True),
+            trans_cat(c, True))
+    else:
+        return trans_term(cat, inMath)
 
 
 def axiom_line(cat, indent=''):
     return '%s\\AXC{%s}\n' %  (
-        indent, trans_term(cat))
+        indent, trans_cat(cat, False))
 
 
 def binary_infer(above1, above2, cat, indent=''):
     return '%s%s%s\\BIC{%s}\n' % (
-        above1, above2, indent, trans_term(cat))
+        above1, above2, indent, trans_cat(cat, False))
 
 
 def toBussCcg(tree, proofs, 
