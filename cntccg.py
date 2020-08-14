@@ -138,7 +138,6 @@ class Cntccg:
     def printProofs(self):
         pool = self.proofs if self._matchCon else self.allProofs
         for r in pool:
-            if self._matchCon: r.links |= catIden(r.cat, self.con)[1]
             s = sorted('(%s, %s)' % (i, j) for i, j in r.links)
             print(', '.join(s))
         if pool: print()
@@ -186,6 +185,10 @@ class Cntccg:
         if not Result._earlyCollapse:
             span[0, len(self) - 1] = {r.collapse()
                 for r in span[0, len(self) - 1]}
+
+        if self._matchCon:
+            for r in span[0, len(self) - 1]:
+                r.links |= catIden(r.cat, self.con)[1]
 
         self._proofSpan = span
         self._tree = tree
