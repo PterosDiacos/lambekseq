@@ -6,114 +6,108 @@ SemComp.load_lexicon(abbr_path='../abbr.json',
                      vocab_path='../schema.json')
 
 # %%
-ex0a = [('a', 'ind'), ('boy', 'n'), 
-       ('walked', 'vt'), ('a', 'ind'), ('dog', 'n')]
-sc = SemComp(ex0a)
+ex = 'a boy walked a dog'
+pos = 'ind n vt ind n'
+sc = SemComp(zip(ex.split(), pos.split()))
 sc.unify()      
 
 # %%
-ex0b = [('every', 'qnt'), ('boy', 'n'), 
-       ('walked', 'vt'), ('a', 'ind'), ('dog', 'n')]
-sc = SemComp(ex0b)
+ex = 'every boy walked a dog'
+pos = 'qnt n vt ind n'
+sc = SemComp(zip(ex.split(), pos.split()))
 sc.unify()
 
 # %%
-ex0c = [('every', 'qnt'), ('boy', 'n'), 
-       ('walked', 'vt'), ('a', 'indl'), ('dog', 'n')]
-xref0c = [('g4x0', 'g1a0')]
-sc = SemComp(ex0c, xref0c)
+ex = 'every boy walked a dog'
+pos = 'qnt n vt indl n'
+xref = [('g4x0', 'g1a0')]
+sc = SemComp(zip(ex.split(), pos.split()), xref)
 sc.unify()
 
 # %%
-ex1a = [('every', 'qnt'), ('boy', 'n'), 
-       ('walked', 'vt'), ('most', 'qnt'), ('dogs', 'n')]
-sc = SemComp(ex1a)
+ex = 'every boy walked most dogs'
+pos = 'qnt n vt qnt n'
+sc = SemComp(zip(ex.split(), pos.split()))
 sc.unify()
 
 # %%
-ex1b = [('every', 'qnt'), ('boy', 'n'), 
-       ('walked', 'vt'), ('most', 'qnt'), ('dogs', 'n'),
-       ('in', 'pv'), ('every', 'qnt'), ('park', 'n')]
-sc = SemComp(ex1b, calc='ccg')
+ex = 'every boy walked most dogs in every park'
+pos = 'qnt n vt qnt n pv qnt n'
+sc = SemComp(zip(ex.split(), pos.split()), calc='ccg')
 sc.unify()
 
 # %%
-ex1c = [('most', 'qnt'), ('voters', 'n'),
-        ('from', 'pn'), ('every', 'qnt'), ('state', 'n'),
-        ('who', 'rl'), ('voted', 'vi'), ('complained', 'vi')]
-sc = SemComp(ex1c)
+ex = 'most voters from every state who voted complained'
+pos = 'qnt n pn qnt n rl vi vi'
+sc = SemComp(zip(ex.split(), pos.split()))
 sc.unify()
 
 # %%
-ex2 = [('every', 'qnt'), ('boy', 'n'), 
-      ('who', 'rl'), ('walk', 'vt'), ('a', 'ind'), ('dog', 'n'),
-      ('fed', 'vt'), ('it', 'pro')]
-xref2 = [('g8x0', 'g6a0')]
-sc = SemComp(ex2, xref2)
+ex = 'every boy who walked a dog fed it'
+pos = 'qnt n rl vt ind n vt pro'
+xref = [('g8x0', 'g6a0')]
+sc = SemComp(zip(ex.split(), pos.split()), xref)
 sc.unify()
 
 # %%
-ex3 = [('Joe', 'prp'), ('walked', 'vt'), ('and', 'cj'), 
-      ('Ben', 'prp'), ('fed', 'vt'), ('his', 'pros'), ('dog', 'n')]
-xref3 = [('g6x0', 'g1a0'), ('g6x1', 'g4a0')]
-sc = SemComp(ex3, xref3)
+ex = 'Joe walked and Ben fed his dog'
+pos = 'prp vt cj prp vt pros n'
+xref = [('g6x0', 'g1a0'), ('g6x1', 'g4a0')]
+sc = SemComp(zip(ex.split(), pos.split()), xref)
 sc.unify()
 
 # %%
-ex4a = [('Joe', 'prp'), ('ask', 'vco'), ('every', 'qnt'), ('boy', 'n'), 
-       ('to', 'nonf'), ('walk', 'vt'), ('a', 'ind'), ('dog', 'n')]
-sc = SemComp(ex4a)
+ex = 'Joe ask every boy to walk a dog'
+pos = 'prp vco qnt n inf vt ind n'
+sc = SemComp(zip(ex.split(), pos.split()))
 sc.unify()
 
 # %%
-ex4b = [('Joe', 'prp'), ('ask', 'vco'), ('and', 'cj'), 
-        ('Zac', 'prp'), ('want', 'vco'), ('Ben', 'prp'),
-       ('to', 'nonf'), ('walk', 'vt'), ('a', 'ind'), ('dog', 'n')]
-sc = SemComp(ex4b)
+ex = 'Joe ask and Zac want Ben to walk a dog'
+pos = 'prp vco cj prp vco prp inf vt ind n'
+sc = SemComp(zip(ex.split(), pos.split()))
 sc.unify()
 
 # %%
-ex4c = [('Joe', 'prp'), ('ask', 'vco'), ('Ben', 'prp'), 
-        ('and', 'cj'), ('Zac', 'prp'), ('want', 'vco'), ('Dan', 'prp'),
-       ('to', 'nonf'), ('walk', 'vt'), ('a', 'ind'), ('dog', 'n')]
-sc = SemComp(ex4c)
+ex = 'Joe ask Ben and Zac want Dan to walk a dog'
+pos = 'prp vco prp cj prp vco prp inf vt ind n'
+sc = SemComp(zip(ex.split(), pos.split()))
 sc.unify()
 
 # %%
-ex5a = [('Joe', 'prp'), ('believe', 'vce'), ('Ben', 'prp'), 
-       ('to', 'nonf'), ('walk', 'vt'), ('every', 'qnt'), ('dog', 'n')]
-sc = SemComp(ex5a, calc='ccg')
+ex = 'Joe believe Ben to walk every dog'
+pos = 'prp vce prp inf vt qnt n'
+sc = SemComp(zip(ex.split(), pos.split()), calc='ccg')
 sc.unify()
 
 # %%
-ex5b = [('Joe', 'prp'), ('believe', 'vts'), ('Ben', 'prp'), 
-       ('walk', 'vt'), ('every', 'qnt'), ('dog', 'n')]
-sc = SemComp(ex5b, calc='ccg')
+ex = 'Joe believe Ben walk every dog'
+pos = 'prp vts prp vt qnt n'
+sc = SemComp(zip(ex.split(), pos.split()), calc='ccg')
 sc.unify()
 
 # %%
-ex6 = [('Joe', 'prp'), ('promise', 'vcs'), ('Ben', 'prp'), 
-       ('to', 'nonf'), ('walk', 'vt'), ('a', 'ind'), ('dog', 'n')]
-sc = SemComp(ex6)
+ex = 'Joe promise Ben to walk a dog'
+pos = 'prp vcs prp inf vt ind n'
+sc = SemComp(zip(ex.split(), pos.split()))
 sc.unify()
 
 # %%
-ex7 = [('Joe', 'prp'), ('want', 'vtt'),
-       ('to', 'nonf'), ('walk', 'vt'), ('a', 'ind'), ('dog', 'n')]
-sc = SemComp(ex7)
+ex = 'Joe want to walk a dog'
+pos = 'prp vtv inf vt ind n'
+sc = SemComp(zip(ex.split(), pos.split()))
 sc.unify()
 
 # %%
-ex8 = [('every', 'qnt'), ('boy', 'n'), ('and', 'cj'),
-       ('every', 'qnt'), ('dog', 'n'), ('smile', 'vi')]
-sc = SemComp(ex8)
+ex = 'every boy and every dog smile'
+pos = 'qnt n cj qnt n vi'
+sc = SemComp(zip(ex.split(), pos.split()), calc='ccg')
 sc.unify()
 
 # %%
-ex9 = [('Joe', 'prp'), 
-       ('and', 'cj'), ('Ben', 'prp'), 
-       ('or', 'dj'), ('Zac', 'prp')]
-sc = SemComp(ex9)
+ex = 'Joe and Ben or Zac'
+pos = 'prp cj prp dj prp'
+sc = SemComp(zip(ex.split(), pos.split()))
 sc.unify('np')
 
 # %%

@@ -65,7 +65,7 @@ You can run `atomlink` in command line. The following finds proofs for the **fir
 ```
 $ python atomlink.py -j input.json -a abbr.json -c ccg --earlyCollapse
 ```
-Theorem `["s", "qpd", "vp/s", "qpd", "vp"]` (the first item is the **conclusion**, the rest the **premises**) is thus proved as follows:
+Theorem `["s", "qp", "vp/s", "qp", "vp"]` (the first item is the **conclusion**, the rest the **premises**) is thus proved as follows:
 ```
 <class 'lambekseq.cntccg.Cntccg'>
 ----------
@@ -76,7 +76,7 @@ s_0 <= (s_1^np_2)!s_3 (np_4\s_5)/s_6 (s_7^np_8)!s_9 np_10\s_11
 Total: 1
 ```
 
-When using Lambek/Displacement calculus, you can also inspect the proof tree that yields atom links:
+When using Lambek/Displacement/CCG calculus, you can also inspect the proof tree that yields atom links:
 
 ```
 >>> con, *pres = 's', 'np', '(np\\s)/np', 'np'
@@ -116,9 +116,9 @@ Use `semcomp` module for semantic parsing. You need to define graph schemata for
 >>> from lambekseq.semcomp import SemComp
 >>> SemComp.load_lexicon(abbr_path='abbr.json',
                          vocab_path='schema.json')
->>> ex = [('a', 'ind'), ('boy', 'n'), 
-          ('walked', 'vt'), ('a', 'ind'), ('dog', 'n')]
->>> sc = SemComp(ex, calc='dsp')
+>>> ex = 'a boy walked a dog'
+>>> pos = 'ind n vt ind n'
+>>> sc = SemComp(zip(ex.split(), pos.split()), calc='dsp')
 >>> sc.unify('s')
 ```
 
@@ -136,7 +136,7 @@ You can inspect the syntax behind this parse:
 ('s_0', ['np_1/n_2', 'n_3', '(np_4\\s_5)/np_6', 'np_7/n_8', 'n_9'])
 
 >>> sc.syntax[0].links
-frozenset({('n_2', 'n_3'), ('s_0', 's_5'), ('np_1', 'np_4'), ('np_6', 'np_7'), ('n_8', 'n_9')}) 
+['(n_2, n_3)', '(n_8, n_9)', '(np_1, np_4)', '(np_6, np_7)', '(s_0, s_5)']
 ```
 
 See [`demo/demo.ipynb`](demo/demo.ipynb) for more examples.
