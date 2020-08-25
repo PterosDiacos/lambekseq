@@ -17,7 +17,7 @@
 
     "neg": {
         "example": "do-not",
-        "cat": "negd",
+        "cat": "neg",
         "sort": 4,
         "named": [
             ["a0", "¬"]
@@ -102,9 +102,14 @@
         "example": "his",
         "cat": "np/n",
         "sort": 1,
+        "named": [
+            ["i1", "own"]
+        ],
         "anonyms": ["a0", "i0", "x0"],
         "arrows": [
-            ["a0", "i0", "of"],
+            ["a0", "i1", "λ"],
+            ["i1", "a0", "th"],
+            ["i1", "i0", "ag"],
             ["x0", "i0", "="]
         ]
     },
@@ -113,9 +118,14 @@
         "example": "in",
         "cat": "(np\\$np)/np",
         "sort": 2,
+        "named": [
+            ["i0", ""]
+        ],
         "anonyms": ["a0", "a1"],
         "arrows": [
-            ["a0", "a1", ""]
+            ["a0", "i0", "λ"],
+            ["i0", "a0", "th"],
+            ["i0", "a1", "lo"]
         ]
     },
 
@@ -123,15 +133,20 @@
         "example": "in",
         "cat": "(vp\\$vp)/np",
         "sort": 3,
+        "named": [
+            ["i0", ""]
+        ],
         "anonyms": ["a0", "a1", "a2"],
         "arrows": [
-            ["a0", "a1", ""]
+            ["a0", "i0", "λ"],
+            ["i0", "a0", "th"],
+            ["i0", "a1", "lo"]
         ]
     },
 
     "rl": {
         "example": "which",
-        "cat": "rld",
+        "cat": "rl",
         "sort": 2,
         "anonyms": ["a0", "a1"],
         "arrows": [
@@ -139,9 +154,9 @@
         ]
     },
 
-    "cgap": {
+    "gap": {
         "example": "",
-        "cat": "(s^np)!$(s^np)",
+        "cat": "gap",
         "sort": 2,
         "anonyms": ["a0", "a1"]
     },
@@ -158,6 +173,19 @@
             ["a0", "i0", "λ"],
             ["i0", "a0", "th"]
         ]  
+    },
+
+    "mod": {
+        "example": "can",
+        "cat": "neg",
+        "sort": 4,
+        "named": [
+            ["a0", ""]
+        ],
+        "anonyms": ["a1", "a2", "a3"],
+        "arrows": [
+            ["a0", "a1", "κ"]
+        ]
     },
 
     "vi": {
@@ -221,7 +249,7 @@
         ]
     },
 
-    "vtt": {
+    "vtv": {
         "example": "want",
         "cat": "(np\\s)/vp",
         "sort": 3,
@@ -293,7 +321,7 @@
         ]
     },
 
-    "nonf": {
+    "inf": {
         "example": "to",
         "remark": "non-finite marker",
         "cat": "vp/$vp",

@@ -1,26 +1,26 @@
 [
-    ["s", "qpd", "vp/s", "qpd", "vp"],
-    ["s", "np", "vt", "np", "rl", "qpd", "vt"],
+    ["s", "qp", "vp/s", "qp", "vp"],
+    ["s", "np", "vt", "np", "rl", "qp", "vt"],
 
     "----Control----",
     
-    ["s", "np", "vp/vp", "vt", "qpd"],
-    ["s", "np", "(vp/vp)/np", "np", "vt", "qpd"],
+    ["s", "np", "vp/vp", "vt", "qp"],
+    ["s", "np", "(vp/vp)/np", "np", "vt", "qp"],
     
     
     "----For Displacement Calculus----",
     
-    ["s", "qpd", "negd", "vp"],
-    ["s", "v4", "qpd", "qpd", "qpd", "qpd"],
-    ["s", "qpd", "vt", "qpd", "inx", "qpd"],
+    ["s", "qp", "neg", "vp"],
+    ["s", "((snp/np)/np)/np", "qp", "qp", "qp", "qp"],
+    ["s", "qp", "vt", "qp", "inx", "qp"],
     ["s^np", "np", "vt", "-", "inx", "np"],
-    ["s", "qpd", "inn", "qpd", "rld", "-", "vp", "vt", "qpd"],
+    ["s", "qp", "inn", "qp", "rl", "-", "vp", "vt", "qp"],
 
 
     "----For Continuized CCG----",
     
     ["s/np", "np", "vt", "inx", "np"],
-    ["s", "qpd", "inn", "qpd", "rl", "vp", "vt", "qpd"],
+    ["s", "qp", "inn", "qp", "rl", "gap", "vp", "vt", "qp"],
 
 
     "----For Lambek Calculus----",
