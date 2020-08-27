@@ -82,36 +82,33 @@ class DisplaceProof(LambekProof):
     @usecache
     def _findproof(self, con, *pres):
         pres = list(pres)
+        alts = set()
+        atomicCon = isatomic(con, conn=Conns)
 
         # when the conclusion is non-atomic
-        if not isatomic(con, conn=Conns):
+        if not atomicCon:
             conn, left, right = bipart(con, conn=Conns, noComma=True)
             if conn == '/':
-                return self.findproof(left, *pres, right)        
+                alts = self.findproof(left, *pres, right)        
             elif conn == '\\':
-                return self.findproof(right, left, *pres)
+                alts = self.findproof(right, left, *pres)
             elif conn == '!':
-                return self.find_stack(right, [left], pres)
+                alts = self.find_stack(right, [left], pres)
             elif conn == '^':
                 ngaps = pres.count(Gap)
-                if ngaps > self._gapLimit:
-                    return set()
-                elif ngaps == 0:
-                    alts = set()
+                if ngaps == 0:
                     for i in range(len(pres) + 1):
                         alts.update(self.findproof(con, *pres[:i], Gap, *pres[i:]))
                     alts.update(self.find_stack(left, pres, [right]))
-                    return alts
-                else:
-                    alts = set()
+                elif ngaps <= self._gapLimit:
                     for i in range(len(pres)):
                         if pres[i] == Gap:
                             alts.update(self.findproof(left, *pres[:i], right, *pres[i + 1:]))
-                    return alts
 
+        # if alts:
+            return alts
         # when the conclusion is atomic
         else:
-            altBranches = set()
             nonatomPlain = []
             nonatomIsland = []
             for i in range(len(pres)):
@@ -124,26 +121,26 @@ class DisplaceProof(LambekProof):
 
             for i, conn, left, right in nonatomIsland:
                 if conn == '/':
-                    altBranches.update(self.find_diffTV(con, pres, i, left, right))
+                    alts.update(self.find_diffTV(con, pres, i, left, right))
                 elif conn == '\\':
-                    altBranches.update(self.find_diffUT(con, pres, i, left, right))
+                    alts.update(self.find_diffUT(con, pres, i, left, right))
 
             if not (self._islandFirst and nonatomIsland):
                 for i, conn, left, right in nonatomPlain:
                     if conn == '/':
-                        altBranches.update(self.find_diffTV(con, pres, i, left, right))
+                        alts.update(self.find_diffTV(con, pres, i, left, right))
                     elif conn == '\\':
-                        altBranches.update(self.find_diffUT(con, pres, i, left, right))
+                        alts.update(self.find_diffUT(con, pres, i, left, right))
                     elif conn == '!':
-                        altBranches.update(self.find_extract(con, pres, i, left, right))
+                        alts.update(self.find_extract(con, pres, i, left, right))
                     elif conn == '^':
-                        # altBranches.update(self.find_insert(con, pres, i, left, right))
+                        # alts.update(self.find_insert(con, pres, i, left, right))
                         pass
 
             if nonatomIsland or nonatomPlain:
-                return altBranches
+                return alts
             else:
-                if len(pres) == 1 and atomicIden(pres[0], con):
+                if len(pres) == 1 and atomicCon and atomicIden(pres[0], con):
                     return {frozenset({tuple(sorted({pres[0], con}))})}
                 else:
                     return set()
