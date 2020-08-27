@@ -103,19 +103,19 @@ class LambekProof:
 
         # when the conclusion is atomic
         else:
-            altBranches = set()
+            alts = set()
             hit_nonatomic = False
             for i in range(len(pres)):
                 if not isatomic(pres[i]):
                     hit_nonatomic = True
                     slash, left, right = bipart(pres[i], noComma=True)
                     if slash == '/':
-                        altBranches.update(self.find_diffTV(con, pres, i, left, right))
+                        alts.update(self.find_diffTV(con, pres, i, left, right))
                     elif slash == '\\':
-                        altBranches.update(self.find_diffUT(con, pres, i, left, right))
+                        alts.update(self.find_diffUT(con, pres, i, left, right))
 
             if hit_nonatomic:
-                return altBranches
+                return alts
             else:
                 if len(pres) == 1 and atomicIden(pres[0], con):
                     return {frozenset({tuple(sorted({pres[0], con}))})}

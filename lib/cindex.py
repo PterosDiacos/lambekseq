@@ -10,11 +10,11 @@ Conns = {'/', '\\', '^', '!'}
 ConnModes = {'$', '&'}
 
 
-def aLen(s: str, 
-    pattern=re.compile('[()%s%s]+' % (''.join(Conns), 
-                                      ''.join(ConnModes)))):
-    '''Return the number of atoms in `s` minus one.'''
-    return len(list(filter(None, pattern.split(s)))) - 1
+def aLen(s: str, conn=Conns, pattern=re.compile(r'(\w+):(\d+)')):
+    '''Return the number of depth indices in `s` minus one.'''
+    f = lambda p: int(p[1])
+    return len({f(pattern.search(x).groups())
+                for x in depthTag(s) if x not in conn}) - 1
 
 
 def depthTag(s: str, rootdepth=0, chopcount=0,

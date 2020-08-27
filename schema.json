@@ -86,7 +86,54 @@
         "arrows": [
             ["a0", "x0", "λ"]
         ]
-    },        
+    },
+
+    "le": {
+        "example": "less than",
+        "cat": "(np/$n)/(np/$n)",
+        "sort": 2,
+        "anonyms": ["a0", "a1"],
+        "arrows": [
+            ["a0", "a1", "⊂"]
+        ]
+    },
+
+    "ge": {
+        "example": "more than",
+        "cat": "(np/$n)/(np/$n)",
+        "sort": 2,
+        "anonyms": ["a0", "a1"],
+        "arrows": [
+            ["a0", "a1", "⊃"]
+        ]
+    },
+
+    "num": {
+        "example": "three",
+        "cat": "np/$n",
+        "sort": 1,
+        "named": [
+            ["i0", ""]
+        ],
+        "anonyms": ["a0"],
+        "arrows": [
+            ["a0", "i0", "#"]
+        ]
+    },
+
+    "numl": {
+        "example": "three",
+        "cat": "np/$n",
+        "sort": 1,
+        "named": [
+            ["i0", ""]
+        ],
+        "anonyms": ["a0", "x0"],
+        "arrows": [
+            ["a0", "i0", "#"],
+            ["a0", "x0", "λ"]
+        ]
+    },
 
     "pro": {
         "example": "he",
@@ -163,7 +210,7 @@
 
     "adj": {
         "example": "good",
-        "cat": "np\\$np",
+        "cat": "n/$n",
         "sort": 1,
         "named":[
             ["i0", ""]

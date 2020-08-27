@@ -67,8 +67,9 @@ class Semgraph(nx.DiGraph):
         '''Add `a`-prefix-sources according to the expanded category of `self`.
         Return a new copy.'''
         g = deepcopy(self)
-        conj_len = len([i for i, t in idxDict.toToken.items() 
-                          if t == self.toknum]) // 3
+        conj_len = len({idxDict.toDepth[i] 
+                        for i, t in idxDict.toToken.items() 
+                        if t == self.toknum}) // 3
 
         for i in range(1, conj_len):
             nfrom1 = 'a%d' % (2 + i)

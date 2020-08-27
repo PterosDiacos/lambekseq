@@ -28,14 +28,19 @@ MATH_SYMBOL_MAP = {'ρ': '$\\rho$',
                    '∈': '$\\in$',
                    '⊇': '$\\supseteq$',
                    '⊒': '$\\sqsupseteq$',
+                   '⊂': '$\\subset$',
+                   '⊃': '$\\supset$',
+                   '\\\\#': '$\\#$',
                    '(?<=\\{)%(?=\\})':  '$\\%$',
                    '(?<=\\{)no(?=\\})': '$\\neg$'}
 
 
 def make_math_trans(math_symbol_map=MATH_SYMBOL_MAP):
+    def prefix(s):
+        return ('\\' if s.startswith('\\') else '') + s
     def math_trans(s, 
         pattern=re.compile('|'.join(math_symbol_map))):
-        return pattern.sub(lambda m: math_symbol_map[m.group(0)], s)
+        return pattern.sub(lambda m: math_symbol_map[prefix(m.group(0))], s)
     return math_trans
 
 

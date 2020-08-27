@@ -20,6 +20,7 @@
     "conj":   ["(np\\&np)/&np", 
                "(qp\\&qp)/&qp",
                "(vp\\&vp)/&vp",
+               "(vt\\&vt)/&vt",
                "(snp\\&snp)/&snp",
                "((svp/np)\\&(svp/np))/&(svp/np)"]
 }
