@@ -22,11 +22,13 @@ def islandDiv(slash, left, right, islands=Islands):
 class DisplaceProof(LambekProof):
     def __init__(self, con, pres, *, traceMode='trace', 
                                      islandFirst=False, 
+                                     rruleFirst=True, 
                                      gapLimit=1, **kwargs):
 
         LambekProof.__init__(self, con, pres, traceMode=traceMode, **kwargs)
         self._gapLimit = gapLimit
         self._islandFirst = islandFirst
+        self._rruleFirst = rruleFirst
 
         DisplaceProof.findproof = usetrace(traceMode)(DisplaceProof._findproof)
         if traceMode == 'trace':
@@ -49,6 +51,7 @@ class DisplaceProof(LambekProof):
 
 
     def find_insert(self, con, pres, cut, left, right):
+        '''Deprecated: treating a type as a stack with zero power'''
         leftproof = self.findproof(right)
         if leftproof:
             rightproof = self.findproof(con, *pres[:cut], left, *pres[cut + 1:])
@@ -104,11 +107,11 @@ class DisplaceProof(LambekProof):
                     for i in range(len(pres)):
                         if pres[i] == Gap:
                             alts.update(self.findproof(left, *pres[:i], right, *pres[i + 1:]))
-
-        # if alts:
-            return alts
+            if alts or self._rruleFirst:
+                return alts
+        
         # when the conclusion is atomic
-        else:
+        if not alts:
             nonatomPlain = []
             nonatomIsland = []
             for i in range(len(pres)):
@@ -134,7 +137,6 @@ class DisplaceProof(LambekProof):
                     elif conn == '!':
                         alts.update(self.find_extract(con, pres, i, left, right))
                     elif conn == '^':
-                        # alts.update(self.find_insert(con, pres, i, left, right))
                         pass
 
             if nonatomIsland or nonatomPlain:
