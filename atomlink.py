@@ -139,6 +139,11 @@ def initArgParser():
         action='store_true',
         help='Used by Displacement calculus.'
     )
+    ap.add_argument('--rruleFirst',
+        default=False,
+        action='store_true',
+        help='Used by Displacement calculus.'
+    )
     ap.add_argument('--showTree',
         default=False,
         action='store_true',
@@ -160,6 +165,7 @@ if __name__ == '__main__':
         con, pres, parser, _ = searchLinks(calc, con, pres, 
                                            earlyCollapse=args.earlyCollapse,
                                            islandFirst=args.islandFirst,
+                                           rruleFirst=args.rruleFirst,
                                            gapLimit=args.gapLimit,
                                            traceMode=args.traceMode)
         total += parser.proofCount
