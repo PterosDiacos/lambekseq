@@ -19,6 +19,7 @@
 
     "conj":   ["(np\\&np)/&np", 
                "(qp\\&qp)/&qp",
+               "(s\\&s)/&s",
                "(vp\\&vp)/&vp",
                "(vt\\&vt)/&vt",
                "(snp\\&snp)/&snp",
