@@ -104,16 +104,6 @@
         ]
     },
 
-    "ge": {
-        "example": "more than",
-        "cat": "(np/$n)/(np/$n)",
-        "sort": 2,
-        "anonyms": ["a0", "a1"],
-        "arrows": [
-            ["a0", "a1", "⊃"]
-        ]
-    },
-
     "num": {
         "example": "three",
         "cat": "np/$n",
