@@ -93,12 +93,11 @@ def printTree(con, pres, parser):
 def initArgParser():
     ap = argparse.ArgumentParser(
         description='CG based Atom Linker')
-    ap.add_argument('-j', '--json', 
-        default='input.json',
-        help='[default] "input.json". '
-             'A json file that contains a list of lists, '
-             'the first of which serves as the input '
-             'sequent.')
+    ap.add_argument('-i', '--input', 
+        default='input',
+        help='[default] "input". '
+             'A text file where each line is'
+             ' an input sequent.')
     ap.add_argument('-a', '--abbr',
         default='abbr.json',
         help='[default] "abbr.json". '
@@ -155,23 +154,26 @@ def initArgParser():
 if __name__ == '__main__':
     args = initArgParser().parse_args()
 
-    con, *pres = json.load(open(args.json))[0]
     abbr = json.load(open(args.abbr))
     calc = CALC_DICT.get(args.calc, DisplaceProof)
     print(calc)
 
-    total = 0
-    for con, pres in deAbbr(con, pres, abbr, calc):
-        con, pres, parser, _ = searchLinks(calc, con, pres, 
-                                           earlyCollapse=args.earlyCollapse,
-                                           islandFirst=args.islandFirst,
-                                           rruleFirst=args.rruleFirst,
-                                           gapLimit=args.gapLimit,
-                                           traceMode=args.traceMode)
-        total += parser.proofCount
-        if args.showTree and calc != ProofNet:
-            printTree(con, pres, parser)
-        else:
-            printLinks(con, pres, parser)
+    for line in open(args.input):
+        line = line.strip()
+        if line and not line.startswith('#'):
+            con, *pres = line.split()
+            total = 0
+            for con, pres in deAbbr(con, pres, abbr, calc):
+                con, pres, parser, _ = searchLinks(calc, con, pres, 
+                                                earlyCollapse=args.earlyCollapse,
+                                                islandFirst=args.islandFirst,
+                                                rruleFirst=args.rruleFirst,
+                                                gapLimit=args.gapLimit,
+                                                traceMode=args.traceMode)
+                total += parser.proofCount
+                if args.showTree and calc != ProofNet:
+                    printTree(con, pres, parser)
+                else:
+                    printLinks(con, pres, parser)
 
-    if not total: print('Total: 0\n')
+            if not total: print('Total: 0\n')

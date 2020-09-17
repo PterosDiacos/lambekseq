@@ -46,7 +46,7 @@ To prove a theorem, use `atomlink` module. For example, using Lambek Calculus to
 ```
 >>> import lambekseq.atomlink as al
 
->>> con, *pres = 's', 'np', 'np\\s'
+>>> con, *pres = 's np np\\s'.split()
 >>> con, pres, parser, _ = al.searchLinks(al.LambekProof, con, pres)
 >>> al.printLinks(con, pres, parser)
 ```
@@ -60,12 +60,12 @@ s_0 <= np_1 np_2\s_3
 Total: 1
 ```
 
-You can run `atomlink` in command line. The following finds proofs for the **first** themorem in [`input.json`](input.json), using abbreviation definitions in [`abbr.json`](abbr.json) and Contintuized CCG.
+You can run `atomlink` in command line. The following finds proofs for the theorems in [`input`](input), using abbreviation definitions in [`abbr.json`](abbr.json) and Contintuized CCG.
 
 ```
-$ python atomlink.py -j input.json -a abbr.json -c ccg --earlyCollapse
+$ python atomlink.py -i input -a abbr.json -c ccg --earlyCollapse
 ```
-Theorem `["s", "qp", "vp/s", "qp", "vp"]` (the first item is the **conclusion**, the rest the **premises**) is thus proved as follows:
+Theorem `s qp vp/s qp vp` (the first item is the **conclusion**, the rest the **premises**) is thus proved as follows:
 ```
 <class 'lambekseq.cntccg.Cntccg'>
 ----------

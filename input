@@ -1,0 +1,33 @@
+s qp vp/s qp vp
+s np vt np rl qp vt
+
+## Control
+
+s np vp/vp vt qp
+s np (vp/vp)/np np vt qp
+
+
+## For Displacement Calculus
+# s qp neg vp
+# s ((snp/np)/np)/np qp qp qp qp
+# s qp vt qp inx qp
+# s^np np vt - inx np
+# s qp inn qp rl - vp vt qp
+
+
+## For Continuized CCG
+# s/np np vt inx np
+# s qp inn qp rl gap vp vt qp
+
+
+## For Lambek Calculus
+# Argument Raising
+#    (qnp\\s)/np vt
+#    vp/qnp vt
+
+# Three quantifiers
+#    s qnp vt qnp inx qnp
+#    vt vt qnp inx
+    
+# Two quantifiers
+#     s qnp vt qnp
