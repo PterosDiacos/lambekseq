@@ -199,9 +199,16 @@
 
     "gap": {
         "example": "",
+        "remark": "gap used by ccg",
         "cat": "gap",
         "sort": 2,
         "anonyms": ["a0", "a1"]
+    },
+
+    "nul": {
+        "example": "",
+        "remark": "gap used by dsp",
+        "cat": "-"
     },
 
     "adj": {

@@ -119,7 +119,6 @@ def indexSeq(con: str, pres: list):
      - to the atom's depth.
     '''
     natom = 0
-    stopCount = 0
     alltokens = []
     idx2Token = {}
     idx2Depth = {}
@@ -129,11 +128,9 @@ def indexSeq(con: str, pres: list):
         alltokens.append(s)
 
         for idx in range(natom, natom1): 
-            idx2Token[str(idx)] = n - stopCount
+            idx2Token[str(idx)] = n
 
-        if s in StopAtoms:
-            stopCount += 1
-        else:
+        if s not in StopAtoms:
             idx2Depth.update(idx2depthDict(depthTag(s)))
 
         natom = natom1
