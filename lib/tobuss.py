@@ -19,13 +19,14 @@ ESCAPE_MAP = {'\\': '\\textbackslash ',
 
 def trans_term(s,
     inMath=False,
+    font='it',
     pat0=re.compile(r'(?<=\A)-(?=\Z)'),
     pat1=re.compile('|'.join(re.escape(c) for c in ESCAPE_MAP)),
     pat2=re.compile(r'(\w+)_(\d+)')):
 
     s = pat0.sub('[]', s)
     s = pat1.sub(lambda m: ESCAPE_MAP[m.group(0)], s)
-    s = pat2.sub(lambda m: '{\\rm %s}_{%s}' % m.groups(), s)
+    s = pat2.sub(lambda m: '{\\%s' % font + '%s}_{%s}' % m.groups(), s)
     if not inMath: s = '$%s$' % s
     return s
 
