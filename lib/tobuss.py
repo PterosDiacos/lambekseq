@@ -26,7 +26,7 @@ def trans_term(s,
 
     s = pat0.sub('[]', s)
     s = pat1.sub(lambda m: ESCAPE_MAP[m.group(0)], s)
-    s = pat2.sub(lambda m: '{\\%s' % font + '%s}_{%s}' % m.groups(), s)
+    s = pat2.sub(lambda m: '{\\%s ' % font + '%s}_{%s}' % m.groups(), s)
     if not inMath: s = '$%s$' % s
     return s
 
