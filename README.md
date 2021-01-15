@@ -19,7 +19,7 @@ Semantic graphs derive from digraph:
 - [networkx](https://networkx.github.io/)  
 
 For graph visualization we use
-- [pydot](https://github.com/xflr6/graphviz) (required by `networkx`)
+- [pydot](https://github.com/pydot/pydot) (required by `networkx`)
 - [Graphviz](https://www.graphviz.org/)
 - [python-graphviz](https://github.com/xflr6/graphviz)
 - [dot2tex](https://dot2tex.readthedocs.io)
