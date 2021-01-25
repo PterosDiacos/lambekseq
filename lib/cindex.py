@@ -19,7 +19,9 @@ def aLen(s: str, conn=Conns, pattern=re.compile(r'(\w+):(\d+)')):
 
 def depthTag(s: str, rootdepth=0, chopcount=0,
              fdConn={'/', '^'}, bkConn={'\\', '!'}):
-    '''Tag each atomic symbol with its depth. No top level comma.'''
+    '''Tag each atomic symbol with its depth. No top level comma.
+       No connective mod in return (as required by `idx2depthDict`).
+    '''
     if isatomic(s, conn=Conns):
         return ('%s:%d' % (s, rootdepth), )
     else:
