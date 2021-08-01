@@ -14,7 +14,6 @@
 
     "vp":     ["np\\s"],
     "vt":     ["vp/np"],
-    "vtd":    ["vp/(vp\\$vp)"],
     "snp":    ["s/np"],
     "svp":    ["s/vp"],
 
