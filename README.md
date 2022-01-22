@@ -2,7 +2,7 @@
 
 <img src="demo/img-cover.png" alt="semgraph" width="270"/>
 
-_"Everyone who failed Greek or Latin hates it."_
+Constructing _"Joe washed and Ben shaved himself"_.
 
 <br>
 
@@ -27,7 +27,7 @@ For graph visualization we use
 
 
 ## Background
-This package is used for the author's PhD thesis in progress.
+This package is used for the author's [PhD thesis](https://arxiv.org/abs/2112.06448).
 
 ### Categorial grammars:
 - Associative Lambek Calculus Allowing Empty Premises ([Lambek 1958](https://www.cs.cmu.edu/~fp/courses/15816-f16/misc/Lambek58.pdf))
