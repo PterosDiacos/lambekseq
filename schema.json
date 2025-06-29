@@ -146,7 +146,7 @@
         "cat": "np/n",
         "sort": 1,
         "named": [
-            ["i1", "own"]
+            ["i1", "rel"]
         ],
         "anonyms": ["a0", "i0", "x0"],
         "arrows": [
@@ -154,6 +154,34 @@
             ["i1", "a0", "th"],
             ["i1", "i0", "ag"],
             ["x0", "i0", "="]
+        ]
+    },
+
+    "pos": {
+        "example": "`s",
+        "remark": "possessive apostrophe", 
+        "cat": "np\\(np/$n)",
+        "sort": 2,
+        "named": [
+            ["i0", "rel"]
+        ],
+        "anonyms": ["a0", "a1"],
+        "arrows": [
+            ["a0", "i0", "λ"],
+            ["i0", "a0", "th"],
+            ["i0", "a1", "ag"]
+        ]
+    },
+
+    "_pos_sp": {
+        "example": "`s",
+        "remark": "possessive apostrophe - experimental, secular", 
+        "cat": "np\\(np/$n)",
+        "sort": 2,
+        "named": [],
+        "anonyms": ["a0", "a1"],
+        "arrows": [
+            ["a0", "a1", "is_rel_of"]
         ]
     },
 
